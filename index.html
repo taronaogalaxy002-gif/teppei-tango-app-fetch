@@ -606,10 +606,12 @@
 
 <script>
 /* ================= Word Data (外部Gistからfetch) ================= */
-  // Secret Gist の場合はハッシュ付き完全URLにする（順番は id 1-1157 → id 1158-2176）
+// 何のためにこの書き方にするか：
+// 1. /raw/ の直後にファイル名を書いて「常に最新のGist」を参照させるため
+// 2. 末尾に ?v=99 を付けて、スマホのブラウザが保持している古いキャッシュを強制破棄させるため
 const DATA_URLS = [
-  "https://gist.githubusercontent.com/taronaogalaxy002-gif/94e6c5313db513c1a6b71384588754c4/raw/8d91cad8b7fb1c50e2d5bb663915d095b596db13/words.json",
-  "https://gist.githubusercontent.com/taronaogalaxy002-gif/65144621efb78b5625e0075967f78c1d/raw/3e57fdb452618ca84cc09156be32f687d0d8b4f3/words.json2"
+  "https://gist.githubusercontent.com/taronaogalaxy002-gif/94e6c5313db513c1a6b71384588754c4/raw/words.json?v=99",
+  "https://gist.githubusercontent.com/taronaogalaxy002-gif/65144621efb78b5625e0075967f78c1d/raw/words.json2?v=99"
 ];
 
 let wordData = [];
