@@ -606,11 +606,12 @@
 
 <script>
 /* ================= Word Data (外部Gistからfetch) ================= */
-// 順序を「id 1-1157」→「id 1158-2176」の正しい順番に修復し、キャッシュ対策(?v=1)を追加
+  // Secret Gist の場合はハッシュ付き完全URLにする（順番は id 1-1157 → id 1158-2176）
 const DATA_URLS = [
-  "https://gist.githubusercontent.com/taronaogalaxy002-gif/94e6c5313db513c1a6b71384588754c4/raw/words.json?v=1",     // 1つ目: id 1-1157
-  "https://gist.githubusercontent.com/taronaogalaxy002-gif/65144621efb78b5625e0075967f78c1d/raw/words.json2?v=1"   // 2つ目: id 1158-2176
+  "https://gist.githubusercontent.com/taronaogalaxy002-gif/94e6c5313db513c1a6b71384588754c4/raw/0a22e2c27cf08de902dd33ae02bf772e2bd8b982/words.json",
+  "https://gist.githubusercontent.com/taronaogalaxy002-gif/65144621efb78b5625e0075967f78c1d/raw/3e57fdb452618ca84cc09156be32f687d0d8b4f3/words.json2"
 ];
+
 let wordData = [];
 
 async function loadWordData(){
