@@ -604,16 +604,12 @@
 
 </div>
 
-
 <script>
-/* ================= Word Data (外部Gistからfetch) =================
-   このファイルには単語データを埋め込んでいない。以下のDATA_URLSに
-   GitHub GistのRaw URLを指定すると、起動時にfetch()で読み込んで結合する。
-   1つのURLにまとめてもよいし、複数ファイルに分けたGistでもよい
-   (配列に何個URLを追加してもよい)。 */
+/* ================= Word Data (外部Gistからfetch) ================= */
+// 順序を「id 1-1157」→「id 1158-2176」の正しい順番に修復し、キャッシュ対策(?v=1)を追加
 const DATA_URLS = [
-  "https://gist.githubusercontent.com/taronaogalaxy002-gif/65144621efb78b5625e0075967f78c1d/raw/words.json2",   // id 1158-2176 (最新版)
-  "https://gist.githubusercontent.com/taronaogalaxy002-gif/94e6c5313db513c1a6b71384588754c4/raw/words.json"     // id 1-1157 (最新版)
+  "https://gist.githubusercontent.com/taronaogalaxy002-gif/94e6c5313db513c1a6b71384588754c4/raw/words.json?v=1",     // 1つ目: id 1-1157
+  "https://gist.githubusercontent.com/taronaogalaxy002-gif/65144621efb78b5625e0075967f78c1d/raw/words.json2?v=1"   // 2つ目: id 1158-2176
 ];
 let wordData = [];
 
@@ -628,12 +624,17 @@ async function loadWordData(){
     }));
     wordData = results.flat();
     if(!Array.isArray(wordData) || wordData.length === 0) throw new Error('データが空です');
-    overlay.classList.add('hide');
+    if(overlay) overlay.classList.add('hide');
     initApp();
   }catch(err){
-    textEl.textContent = '読み込みに失敗しました。DATA_URLSの設定を確認してください。(' + err.message + ')';
+    console.error(err);
+    if(textEl) textEl.textContent = '読み込みに失敗しました。DATA_URLSの設定を確認してください。(' + err.message + ')';
   }
 }
+
+// 🚀 【追加した部分】画面(HTML)の読み込み完了時に自動的に loadWordData を呼び出す
+window.addEventListener('DOMContentLoaded', loadWordData);
+
 
 /* ================= Config ================= */
 /* セクション開始番号(1始まり)。指定リストに基づく全50セクション */
