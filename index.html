@@ -604,6 +604,7 @@
 
 </div>
 
+
 <script>
 /* ================= Word Data (外部Gistからfetch) =================
    このファイルには単語データを埋め込んでいない。以下のDATA_URLSに
@@ -611,10 +612,9 @@
    1つのURLにまとめてもよいし、複数ファイルに分けたGistでもよい
    (配列に何個URLを追加してもよい)。 */
 const DATA_URLS = [
-  "https://gist.githubusercontent.com/taronaogalaxy002-gif/65144621efb78b5625e0075967f78c1d/raw/3e57fdb452618ca84cc09156be32f687d0d8b4f3/words.json2",   // id 1158-2176
-  "https://gist.githubusercontent.com/taronaogalaxy002-gif/94e6c5313db513c1a6b71384588754c4/raw/0a22e2c27cf08de902dd33ae02bf772e2bd8b982/words.json",  // id 1-1157
+  "https://gist.githubusercontent.com/taronaogalaxy002-gif/65144621efb78b5625e0075967f78c1d/raw/words.json2",   // id 1158-2176 (最新版)
+  "https://gist.githubusercontent.com/taronaogalaxy002-gif/94e6c5313db513c1a6b71384588754c4/raw/words.json"     // id 1-1157 (最新版)
 ];
-
 let wordData = [];
 
 async function loadWordData(){
