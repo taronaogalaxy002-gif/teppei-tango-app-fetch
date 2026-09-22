@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="teppeki">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>単語帳 — 全2176語</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&family=Zen+Old+Mincho:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  /* ============ Font stacks ============ */
+  :root{
+    --font-mincho: "Shippori Mincho", serif;
+    --font-oldmincho: "Zen Old Mincho", serif;
+    --font-gothic: "Zen Kaku Gothic New", "Noto Sans JP", sans-serif;
+    --font-rounded: "M PLUS Rounded 1c", "Zen Kaku Gothic New", sans-serif;
+    --font-sans: "Noto Sans JP", sans-serif;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  /* ============ Theme 1: 鉄壁 — 表紙準拠: 黒地に白文字, 「鉄壁」の朱赤, 金バッジ(彩度を抑制) ============ */
+  :root[data-theme="teppeki"]{
+    --bg:#0a0a0a; --bg-elevated:#17151a; --bg-card-back:#141212;
+    --text-main:#eeece6; --text-sub:#9c8f6e; --text-inverse:#0a0a0a;
+    --accent:#b02420; --accent-strong:#7e1815; --accent-2:#af8e4c;
+    --border:#2a2723; --shadow: 0 18px 40px rgba(0,0,0,.5);
+    --badge-syn-bg:rgba(176,36,32,.15); --badge-syn-border:#b02420; --badge-syn-text:#e19792;
+    --badge-ant-bg:rgba(175,142,76,.16); --badge-ant-border:#af8e4c; --badge-ant-text:#cbb583;
+    --font-heading: var(--font-gothic); --heading-weight:900;
+    --btn-text:#f3f1ec;
+  }
+  /* ============ Theme 2: ターゲット1900 — 表紙準拠: 紺(ロイヤルブルー)地に白文字, ベージュの帯(彩度を抑制) ============ */
+  :root[data-theme="target"]{
+    --bg:#f4f5f7; --bg-elevated:#ffffff; --bg-card-back:#efeadc;
+    --text-main:#1c2a41; --text-sub:#57647c; --text-inverse:#ffffff;
+    --accent:#233e64; --accent-strong:#152840; --accent-2:#bfa97e;
+    --border:#dde2e9; --shadow: 0 14px 32px rgba(21,40,64,.14);
+    --badge-syn-bg:#e6eaf1; --badge-syn-border:#233e64; --badge-syn-text:#233e64;
+    --badge-ant-bg:#f1e9d6; --badge-ant-border:#9d875e; --badge-ant-text:#75613c;
+    --font-heading: var(--font-gothic); --heading-weight:900;
+    --btn-text:#ffffff;
+  }
+  /* ============ Theme 3: パス単 — 表紙準拠: 緑のストライプ x 黄帯 x 白抜き文字(彩度を抑制) ============ */
+  :root[data-theme="passtan"]{
+    --bg:#fafbf5; --bg-elevated:#ffffff; --bg-card-back:#eef3e0;
+    --text-main:#2b3420; --text-sub:#63704a; --text-inverse:#ffffff;
+    --accent:#77934c; --accent-strong:#546a30; --accent-2:#e6bd3a;
+    --border:#dfe7ce; --shadow: 0 14px 32px rgba(84,106,48,.14);
+    --badge-syn-bg:#e9f0dc; --badge-syn-border:#77934c; --badge-syn-text:#4f6431;
+    --badge-ant-bg:#faedbb; --badge-ant-border:#c99f1e; --badge-ant-text:#7a5f12;
+    --font-heading: var(--font-rounded); --heading-weight:800;
+    --btn-text:#ffffff;
+  }
+  /* ============ Theme 4: シス単 — 表紙準拠: 空色の地紙 x 「SYSTEM」の金文字 x 白文字(彩度を抑制) ============ */
+  :root[data-theme="systan"]{
+    --bg:#eff4f7; --bg-elevated:#ffffff; --bg-card-back:#e6eef2;
+    --text-main:#243b4a; --text-sub:#5f7382; --text-inverse:#ffffff;
+    --accent:#5a90ab; --accent-strong:#3c6c85; --accent-2:#a4855c;
+    --border:#d7e2e7; --shadow: 0 14px 32px rgba(60,108,133,.14);
+    --badge-syn-bg:#e4edf2; --badge-syn-border:#5a90ab; --badge-syn-text:#3c6c85;
+    --badge-ant-bg:#efe6d5; --badge-ant-border:#a4855c; --badge-ant-text:#75603f;
+    --font-heading: var(--font-oldmincho); --heading-weight:700;
+    --btn-text:#ffffff;
+  }
+  /* ============ Theme 5: LEAP — 表紙準拠: アイボリー地に太いジオメトリック書体, ターコイズ x 焦げ茶(彩度を抑制) ============ */
+  :root[data-theme="leap"]{
+    --bg:#f4ecdd; --bg-elevated:#fdf9f0; --bg-card-back:#e9f0ec;
+    --text-main:#2b241d; --text-sub:#75695b; --text-inverse:#ffffff;
+    --accent:#2e8a7d; --accent-strong:#1f665c; --accent-2:#b95c37;
+    --border:#e2d7c1; --shadow: 0 14px 32px rgba(43,36,29,.12);
+    --badge-syn-bg:#e3f0ec; --badge-syn-border:#2e8a7d; --badge-syn-text:#1f665c;
+    --badge-ant-bg:#f4e2d7; --badge-ant-border:#b95c37; --badge-ant-text:#8a442a;
+    --font-heading: var(--font-gothic); --heading-weight:800;
+    --btn-text:#ffffff;
+  }
+  :root[data-theme="leap"] .app-header h1, :root[data-theme="leap"] .theme-swatch span:last-child{letter-spacing:.03em;}
+
+  /* ---- パス単テーマ専用UI調整(表紙の緑ストライプ×黄帯×白抜きロゴを再現) ---- */
+  :root[data-theme="passtan"] .app-header{
+    background: repeating-linear-gradient(135deg, var(--accent) 0 12px, #698c3c 12px 24px);
+    border-radius: 18px;
+    padding: 20px 18px 18px;
+    margin-bottom: 16px;
+  }
+  :root[data-theme="passtan"] .app-header h1{
+    color:#ffffff;
+    letter-spacing: .04em;
+    text-shadow: 0 2px 0 #22310f, 0 3px 6px rgba(0,0,0,.35);
+  }
+  :root[data-theme="passtan"] .app-header .subtitle{
+    color:#f4fbe4; font-weight:700; opacity:.95;
+  }
+  :root[data-theme="passtan"] .start-btn{
+    background: repeating-linear-gradient(135deg, var(--accent) 0 10px, #698c3c 10px 20px);
+    color:#fff; text-shadow: 0 1px 0 rgba(0,0,0,.3);
+  }
+
+  /* ---- シス単テーマ専用UI調整(表紙の空色マーブル地×金文字のSYSTEMロゴを再現) ---- */
+  :root[data-theme="systan"] .app-header{
+    background: linear-gradient(155deg, #79b0cc 0%, #4f8fb0 55%, #6fa4c2 100%);
+    border-left: 4px solid var(--accent-2);
+    border-radius: 14px;
+    padding: 20px 18px 18px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  :root[data-theme="systan"] .app-header::before{
+    content: "2176";
+    position: absolute;
+    right: 10px; bottom: -10px;
+    font-family: var(--font-oldmincho);
+    font-weight: 700;
+    font-size: 3.4rem;
+    line-height: 1;
+    color: rgba(255,255,255,.16);
+    pointer-events: none;
+  }
+  :root[data-theme="systan"] .app-header h1{
+    color:#ffffff;
+    position: relative;
+  }
+  :root[data-theme="systan"] .app-header h1::after{
+    content:"";
+    display:block;
+    width:46px; height:3px;
+    background: var(--accent-2);
+    margin-top:9px;
+    border-radius:2px;
+  }
+  :root[data-theme="systan"] .app-header .subtitle{
+    color:#f0f6fa; font-weight:600; opacity:.9; position:relative;
+  }
+
+  /* ---- 鉄壁テーマ専用UI調整(表紙の黒地×単語の壁×朱赤の「鉄壁」×金バッジを再現) ---- */
+  :root[data-theme="teppeki"] .app-header{
+    background: linear-gradient(180deg, #0a0a0a 0%, #0a0a0a 55%, #131b2e 100%);
+    border-radius: 14px;
+    padding: 22px 18px 20px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  :root[data-theme="teppeki"] .app-header::before{
+    content: "make a difference trivial common ordinary emphasize resource negotiation broaden wealth ignore neglect eminent make a difference trivial common ordinary emphasize resource negotiation broaden wealth ignore neglect eminent";
+    position: absolute;
+    inset: -6px;
+    color: rgba(70,100,150,.20);
+    font-size: .68rem;
+    font-weight: 700;
+    line-height: 1.9;
+    overflow: hidden;
+    pointer-events: none;
+    font-family: var(--font-sans);
+  }
+  :root[data-theme="teppeki"] .app-header::after{
+    content:"";
+    position:absolute;
+    top:14px; right:14px;
+    width:32px; height:32px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #ecd48a, #af8e4c 72%);
+    box-shadow: 0 2px 6px rgba(0,0,0,.45);
+  }
+  :root[data-theme="teppeki"] .app-header h1{
+    position: relative;
+    color:#ffffff;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(238,236,230,.5);
+  }
+  :root[data-theme="teppeki"] .app-header .subtitle{
+    position: relative;
+    color: var(--accent);
+    font-weight: 800;
+    margin-top: 8px;
+  }
+
+  /* ---- ターゲットテーマ専用UI調整(表紙の紺×ベージュの斜め分割、白抜き太字の巨大ナンバーを再現) ---- */
+  :root[data-theme="target"] .app-header{
+    background: linear-gradient(105deg, var(--accent) 0%, var(--accent) 62%, #d9c9a8 62%, #d9c9a8 100%);
+    border-radius: 14px;
+    padding: 20px 18px 18px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  :root[data-theme="target"] .app-header::before{
+    content: "2176";
+    position: absolute;
+    right: -8px; bottom: -20px;
+    font-family: var(--font-gothic);
+    font-weight: 900;
+    font-size: 4.6rem;
+    line-height: 1;
+    letter-spacing: -.02em;
+    color: rgba(255,255,255,.24);
+    pointer-events: none;
+  }
+  :root[data-theme="target"] .app-header::after{
+    content:"出る順";
+    position:absolute;
+    top:12px; right:14px;
+    width:44px; height:44px;
+    border-radius:50%;
+    background:#cfcfcf;
+    color:#333;
+    font-size:.58rem;
+    font-weight:800;
+    display:flex; align-items:center; justify-content:center;
+    text-align:center;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  }
+  :root[data-theme="target"] .app-header h1{
+    color:#ffffff;
+    position:relative;
+    text-shadow: 0 2px 6px rgba(0,0,0,.25);
+  }
+  :root[data-theme="target"] .app-header .subtitle{
+    color:#eef2f8; font-weight:600; opacity:.9; position:relative;
+  }
+  :root[data-theme="target"] .target-dog{
+    display:flex; align-items:center; justify-content:center;
+    position:absolute; bottom:8px; right:16px;
+    width:52px; height:52px; border-radius:50%;
+    background:#fff; font-size:1.7rem; line-height:1;
+    box-shadow: 0 3px 8px rgba(0,0,0,.3);
+  }
+
+  /* ---- LEAPテーマ専用UI調整(表紙のアイボリー地×ターコイズの地球×ロケットを再現) ---- */
+  :root[data-theme="leap"] .app-header{
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 20px 18px 56px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  :root[data-theme="leap"] .app-header::before{
+    content:"";
+    position:absolute;
+    left:-10%; right:-10%; bottom:-1px;
+    height:64px;
+    background: var(--accent);
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  }
+  :root[data-theme="leap"] .app-header::after{
+    content:"🚀";
+    position:absolute;
+    top:16px; right:18px;
+    font-size:1.4rem;
+    transform:rotate(35deg);
+  }
+  :root[data-theme="leap"] .app-header .subtitle{
+    color: var(--accent); font-weight:700; position:relative;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--text-main);
+    font-family:var(--font-sans);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    transition: background .3s ease, color .3s ease;
+  }
+  #app{max-width:560px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column;}
+
+  .screen{display:none; flex:1; flex-direction:column; padding:20px 18px calc(20px + env(safe-area-inset-bottom));}
+  .screen.active{display:flex;}
+
+  /* ---------- Settings screen ---------- */
+  .app-header{margin-bottom:18px;}
+  .target-dog{display:none;}
+  .app-header h1{
+    font-family:var(--font-heading); font-weight:var(--heading-weight);
+    font-size:clamp(1.5rem, 6vw, 2rem); margin:0 0 4px;
+    letter-spacing:.02em;
+  }
+  .app-header .subtitle{margin:0; color:var(--text-sub); font-size:.9rem;}
+
+  .panel{background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; margin-bottom:14px;}
+  .panel-title{font-size:.95rem; font-weight:700; margin:0 0 10px; color:var(--text-main);}
+  .panel-title-row{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px;}
+  .panel-title-row .panel-title{margin:0;}
+  #selectedCount{font-weight:500; font-size:.82rem; color:var(--accent-strong); margin-left:8px;}
+
+  .theme-switcher{display:flex; gap:10px; overflow-x:auto; padding-bottom:2px; -webkit-overflow-scrolling:touch;}
+  .theme-swatch{
+    flex:0 0 auto; width:74px; padding:8px 6px 10px; border-radius:var(--radius-sm);
+    border:2px solid var(--border); background:var(--bg); cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    font-family:var(--font-sans); color:var(--text-sub); font-size:.68rem;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .theme-swatch:active{transform:scale(.94);}
+  .theme-swatch .swatch-dots{display:flex; gap:3px;}
+  .theme-swatch .dot{width:11px; height:11px; border-radius:50%;}
+  .theme-swatch.active{border-color:var(--accent); transform:translateY(-2px); color:var(--text-main); font-weight:700;}
+
+  .direction-toggle{display:flex; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:4px; gap:4px;}
+  .dir-btn{
+    flex:1; border:none; background:transparent; padding:10px 6px; border-radius:6px;
+    font-family:var(--font-sans); font-size:.85rem; font-weight:600; color:var(--text-sub); cursor:pointer;
+    transition: background .15s ease, color .15s ease;
+  }
+  .dir-btn.active{background:var(--accent); color:var(--btn-text);}
+
+  .bulk-buttons{display:flex; gap:6px; flex:0 0 auto;}
+  .bulk-buttons button{
+    border:1px solid var(--border); background:var(--bg); color:var(--text-main);
+    font-size:.75rem; padding:6px 10px; border-radius:6px; cursor:pointer; font-family:var(--font-sans);
+  }
+  .bulk-buttons button:active{opacity:.6;}
+
+  .section-grid{
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .sec-tile{
+    position:relative; display:flex; align-items:center; gap:10px;
+    border:1.5px solid var(--border); border-radius:10px; padding:9px 12px; cursor:pointer;
+    background:var(--bg); user-select:none; transition:transform .1s ease;
+  }
+  .sec-tile:active{transform:scale(.98);}
+  .sec-tile input{position:absolute; opacity:0; width:100%; height:100%; margin:0; cursor:pointer;}
+  .sec-tile .sec-num{
+    flex:0 0 auto; width:24px; height:24px; border-radius:50%;
+    background:var(--bg-elevated); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-size:.68rem; font-weight:800; color:var(--text-sub);
+  }
+  .sec-tile .sec-title{flex:1; font-size:.8rem; font-weight:600; color:var(--text-main); line-height:1.3;}
+  .sec-tile .sec-range{flex:0 0 auto; font-size:.64rem; color:var(--text-sub); white-space:nowrap;}
+  .sec-tile.checked{background:var(--accent); border-color:var(--accent);}
+  .sec-tile.checked .sec-num{background:var(--btn-text); border-color:var(--btn-text); color:var(--accent);}
+  .sec-tile.checked .sec-title, .sec-tile.checked .sec-range{color:var(--btn-text);}
+
+  .start-btn{
+    margin-top:16px; position:sticky; bottom:12px;
+    background:var(--accent); color:var(--btn-text); border:none; border-radius:var(--radius);
+    padding:15px; font-size:1.02rem; font-weight:700; font-family:var(--font-sans);
+    box-shadow:var(--shadow); cursor:pointer; transition:transform .1s ease;
+  }
+  .start-btn:active:not(:disabled){transform:scale(.98);}
+  .start-btn:disabled{opacity:.4; cursor:not-allowed;}
+
+  /* ---------- Card screen ---------- */
+  .card-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+  .icon-btn{
+    border:none; background:transparent; color:var(--text-sub); font-family:var(--font-sans);
+    font-size:.85rem; padding:6px 4px; cursor:pointer;
+  }
+  .icon-btn:active{opacity:.6;}
+  .progress{font-family:var(--font-sans); font-weight:700; font-size:.9rem; color:var(--text-main); background:var(--bg-elevated); border:1px solid var(--border); padding:6px 12px; border-radius:20px;}
+
+  .card-stage{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; overflow:hidden; perspective:1700px;}
+  .card-wrap{
+    width:100%; max-width:420px; height:min(52vh,420px);
+    touch-action:pan-y; will-change:transform; cursor:grab; user-select:none;
+  }
+  .card-wrap:active{cursor:grabbing;}
+  .card{
+    position:relative; width:100%; height:100%;
+    transform-style:preserve-3d; transition:transform .38s cubic-bezier(.22,.9,.34,1);
+  }
+  .card.flipped{transform:rotateY(180deg);}
+  .card-face{
+    position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+    border-radius:22px; border:1px solid var(--border); box-shadow:var(--shadow);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:30px 24px; text-align:center; overflow-y:auto;
+  }
+  .card-front{background:var(--bg-elevated);}
+  .card-back{background:var(--bg-card-back); transform:rotateY(180deg);}
+  .card-text{
+    font-family:var(--font-heading); font-weight:var(--heading-weight);
+    font-size:clamp(1.55rem, 7.2vw, 2.5rem); line-height:1.45; color:var(--text-main);
+  }
+  .card-back .card-text{font-family:var(--font-sans); font-weight:600; font-size:clamp(1.25rem,5.6vw,1.95rem); line-height:1.5;}
+
+  .imp-badge{
+    position:absolute; top:14px; left:16px; font-size:.95rem; font-weight:800;
+    color:var(--accent-2); letter-spacing:.06em; line-height:1;
+  }
+
+  .related-area{display:flex; flex-direction:column; gap:9px; margin-top:18px; width:100%;}
+  .related-row{display:flex; align-items:flex-start; gap:8px; flex-wrap:wrap; justify-content:center;}
+  .related-label{font-size:.72rem; font-weight:700; color:var(--text-sub); padding-top:5px; flex:0 0 auto;}
+  .badges{display:flex; flex-wrap:wrap; gap:6px; justify-content:center;}
+  .badge{font-size:.78rem; font-weight:600; padding:4px 10px; border-radius:20px; border:1.3px solid;}
+  .badge-syn{background:var(--badge-syn-bg); border-color:var(--badge-syn-border); color:var(--badge-syn-text);}
+  .badge-ant{background:var(--badge-ant-bg); border-color:var(--badge-ant-border); color:var(--badge-ant-text);}
+
+  .hint{margin:0; font-size:.75rem; color:var(--text-sub);}
+
+  .nav-buttons{display:flex; gap:10px; margin-top:16px;}
+  .nav-btn{
+    flex:1; padding:13px; border-radius:var(--radius); border:1.5px solid var(--border);
+    background:var(--bg-elevated); color:var(--text-main); font-weight:700; font-size:.92rem;
+    font-family:var(--font-sans); cursor:pointer; transition:transform .1s ease;
+  }
+  .nav-btn:active:not(:disabled){transform:scale(.97);}
+  .nav-btn:disabled{opacity:.35; cursor:not-allowed;}
+
+  /* ---- テストボタン・もう一度ボタン ---- */
+  .test-btn{
+    margin-top:10px;
+    background:transparent; color:var(--accent); border:1.5px solid var(--accent); border-radius:var(--radius);
+    padding:13px; font-size:.95rem; font-weight:700; font-family:var(--font-sans);
+    cursor:pointer; transition:transform .1s ease;
+  }
+  .test-btn:active:not(:disabled){transform:scale(.98);}
+  .test-btn:disabled{opacity:.4; cursor:not-allowed;}
+  .encore-btn{
+    margin-top:14px; background:transparent; color:var(--text-sub); border:1.3px dashed var(--border);
+    border-radius:var(--radius); padding:10px; font-size:.78rem; font-weight:700; font-family:var(--font-sans);
+    cursor:pointer;
+  }
+  .encore-btn:active{opacity:.6;}
+  .card-meta{
+    position:absolute; top:14px; right:16px; font-size:.62rem; font-weight:700;
+    color:var(--text-sub); letter-spacing:.03em; text-align:right; line-height:1.3;
+  }
+
+  /* ---- テストモード ---- */
+  .quiz-header{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px;}
+  .quiz-ring{
+    --pct:0; width:46px; height:46px; border-radius:50%; flex:0 0 auto;
+    background: conic-gradient(var(--accent) calc(var(--pct)*1%), var(--border) 0);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .quiz-ring span{
+    width:36px; height:36px; border-radius:50%; background:var(--bg-elevated);
+    display:flex; align-items:center; justify-content:center;
+    font-size:.85rem; font-weight:800; color:var(--text-main);
+  }
+  .quiz-body{display:flex; flex-direction:column; flex:1; min-height:0;}
+  .quiz-timer{text-align:center; font-size:.75rem; color:var(--text-sub); font-weight:700; margin-bottom:6px;}
+  .quiz-question{
+    text-align:center; font-family:var(--font-heading); font-weight:var(--heading-weight);
+    font-size:clamp(1.4rem, 6.5vw, 2.2rem); color:var(--text-main);
+    background:var(--bg-elevated); border:1px solid var(--border); border-radius:18px;
+    padding:26px 18px; margin-bottom:16px; box-shadow:var(--shadow);
+  }
+  .quiz-choices{display:flex; flex-direction:column; gap:8px;}
+  .quiz-choice{
+    display:flex; align-items:baseline; gap:8px; text-align:left;
+    border:1.5px solid var(--border); border-radius:12px; padding:12px 14px;
+    background:var(--bg-elevated); font-family:var(--font-sans); font-size:.86rem; font-weight:600;
+    color:var(--text-main); cursor:pointer;
+  }
+  .quiz-choice:active{transform:scale(.98);}
+  .quiz-choice .qc-num{flex:0 0 auto; font-weight:800; color:var(--accent);}
+  .quiz-choice .qc-text{flex:1; min-width:0;}
+  .quiz-choice .qc-sub{display:block; font-size:.68rem; font-weight:600; color:var(--text-sub); margin-top:2px;}
+  .quiz-choice.correct{background:var(--badge-syn-bg); border-color:var(--badge-syn-border);}
+  .quiz-choice.wrong{background:var(--badge-ant-bg); border-color:var(--badge-ant-border); opacity:.75;}
+  .quiz-choice.picked{outline:2px solid var(--accent); outline-offset:1px;}
+  .quiz-choice:disabled, .quiz-choice[disabled]{cursor:default;}
+  .quiz-skip{
+    margin-top:8px; background:transparent; color:var(--text-sub); border:1.3px dashed var(--border);
+    border-radius:12px; padding:10px; font-size:.78rem; font-weight:700; font-family:var(--font-sans); cursor:pointer;
+  }
+  .quiz-reveal{display:none; flex-direction:column; margin-top:16px; padding-top:16px; border-top:1px dashed var(--border);}
+  .quiz-reveal.show{display:flex;}
+  .quiz-reveal-label{font-size:.72rem; font-weight:800; margin-bottom:8px;}
+  .quiz-reveal-label.ok{color:var(--badge-syn-text);}
+  .quiz-reveal-label.ng{color:var(--badge-ant-text);}
+  #quizRevealAnswer{font-size:clamp(1.1rem,4.8vw,1.6rem); margin-bottom:10px; text-align:center;}
+  .quiz-reveal-time{text-align:center; font-size:.7rem; color:var(--text-sub); margin-top:10px;}
+  #quizReveal .start-btn{position:static; margin-top:16px;}
+
+  .result-box{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:6px;}
+  .result-box h2{font-family:var(--font-heading); color:var(--text-main); margin:0 0 8px;}
+  .result-score{font-size:3rem; font-weight:900; color:var(--accent); font-family:var(--font-heading);}
+  .result-detail{color:var(--text-sub); font-size:.85rem; margin-bottom:18px;}
+  .result-box .start-btn{position:static; width:80%;}
+
+  .loading-overlay{
+    position:fixed; inset:0; z-index:999;
+    background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+    transition:opacity .3s ease;
+  }
+  .loading-overlay.hide{opacity:0; pointer-events:none;}
+  .loading-spinner{
+    width:38px; height:38px; border-radius:50%;
+    border:4px solid var(--border); border-top-color:var(--accent);
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .loading-text{color:var(--text-sub); font-size:.85rem; font-weight:600; text-align:center; padding:0 24px;}
+
+  ::-webkit-scrollbar{width:8px; height:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--border); border-radius:8px;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <section id="screen-settings" class="screen active">
+    <header class="app-header">
+      <span class="target-dog" aria-hidden="true">🐕</span>
+      <h1 id="appTitle">単語帳</h1>
+      <p class="subtitle" id="appSubtitle">全2176語 収録</p>
+    </header>
+
+    <div class="panel">
+      <h2 class="panel-title">テーマ</h2>
+      <div class="theme-switcher" id="themeSwitcher"></div>
+    </div>
+
+    <div class="panel">
+      <h2 class="panel-title">出題方向</h2>
+      <div class="direction-toggle" id="directionToggle">
+        <button type="button" class="dir-btn active" data-dir="ja-en">日本語 → 英語</button>
+        <button type="button" class="dir-btn" data-dir="en-ja">英語 → 日本語</button>
+      </div>
+    </div>
+
+    <div class="panel" style="flex:1; display:flex; flex-direction:column; min-height:0;">
+      <div class="panel-title-row">
+        <h2 class="panel-title">出題範囲<span id="selectedCount">0語選択中</span></h2>
+        <div class="bulk-buttons">
+          <button type="button" id="selectAllBtn">全選択</button>
+          <button type="button" id="deselectAllBtn">全解除</button>
+        </div>
+      </div>
+      <div class="section-grid" id="sectionGrid"></div>
+    </div>
+
+    <button type="button" class="start-btn" id="startBtn" disabled>スタート</button>
+    <button type="button" class="test-btn" id="testBtn" disabled>テスト</button>
+  </section>
+
+  <section id="screen-card" class="screen">
+    <header class="card-header">
+      <button type="button" class="icon-btn" id="backBtn">← 設定に戻る</button>
+      <div class="progress" id="progressText">0 / 0</div>
+    </header>
+
+    <div class="card-stage">
+      <div class="card-wrap" id="cardWrap">
+        <div class="card" id="card">
+          <div class="card-face card-front">
+            <div class="imp-badge" id="impBadgeFront"></div>
+            <div class="card-text" id="frontText"></div>
+          </div>
+          <div class="card-face card-back">
+            <div class="imp-badge" id="impBadgeBack"></div>
+            <div class="card-meta" id="cardMeta"></div>
+            <div class="card-text" id="backText"></div>
+            <div class="related-area" id="relatedArea"></div>
+          </div>
+        </div>
+      </div>
+      <p class="hint">タップで裏返す ／ スワイプで前後の単語へ</p>
+    </div>
+
+    <button type="button" class="encore-btn" id="encoreBtn">↻ もう一度(10問後に再出題)</button>
+    <div class="nav-buttons">
+      <button type="button" class="nav-btn" id="prevBtn">← 前へ</button>
+      <button type="button" class="nav-btn" id="nextBtn">次へ →</button>
+    </div>
+  </section>
+
+  <section id="screen-quiz" class="screen">
+    <header class="quiz-header">
+      <button type="button" class="icon-btn" id="quizCloseBtn">✕ 終了</button>
+      <div class="quiz-ring" id="quizRing"><span id="quizCorrectCount">0</span></div>
+      <div class="progress" id="quizProgressText">0 / 0</div>
+    </header>
+
+    <div class="quiz-body">
+      <div class="quiz-timer" id="quizTimer">0.0秒</div>
+      <div class="quiz-question" id="quizQuestion"></div>
+
+      <div class="quiz-choices" id="quizChoices"></div>
+      <button type="button" class="quiz-skip" id="quizSkipBtn">skip(わからない)</button>
+
+      <div class="quiz-reveal" id="quizReveal">
+        <div class="quiz-reveal-label" id="quizRevealLabel"></div>
+        <div class="card-text" id="quizRevealAnswer"></div>
+        <div class="related-area" id="quizRelatedArea"></div>
+        <div class="quiz-reveal-time" id="quizRevealTime"></div>
+        <button type="button" class="start-btn" id="quizNextBtn">次へ →</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="screen-quiz-result" class="screen">
+    <div class="result-box">
+      <h2>テスト結果</h2>
+      <div class="result-score" id="resultScoreText">0%</div>
+      <p class="result-detail" id="resultDetailText"></p>
+      <button type="button" class="start-btn" id="resultBackBtn">設定に戻る</button>
+    </div>
+  </section>
+
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+    <p class="loading-text" id="loadingText">単語データを読み込んでいます…</p>
+  </div>
+
+</div>
+
+<script>
+/* ================= Word Data (外部Gistからfetch) =================
+   このファイルには単語データを埋め込んでいない。以下のDATA_URLSに
+   GitHub GistのRaw URLを指定すると、起動時にfetch()で読み込んで結合する。
+   1つのURLにまとめてもよいし、複数ファイルに分けたGistでもよい
+   (配列に何個URLを追加してもよい)。 */
+const DATA_URLS = [
+  "https://gist.githubusercontent.com/taronaogalaxy002-gif/94e6c5313db513c1a6b71384588754c4/raw/words.json",   // id 1-1157
+  "https://gist.githubusercontent.com/taronaogalaxy002-gif/65144621efb78b5625e0075967f78c1d/raw/words.json2",  // id 1158-2176
+];
+
+let wordData = [];
+
+async function loadWordData(){
+  const overlay = document.getElementById('loadingOverlay');
+  const textEl = document.getElementById('loadingText');
+  try{
+    const results = await Promise.all(DATA_URLS.map(async (url)=>{
+      const res = await fetch(url);
+      if(!res.ok) throw new Error(url + ' → HTTP ' + res.status);
+      return res.json();
+    }));
+    wordData = results.flat();
+    if(!Array.isArray(wordData) || wordData.length === 0) throw new Error('データが空です');
+    overlay.classList.add('hide');
+    initApp();
+  }catch(err){
+    textEl.textContent = '読み込みに失敗しました。DATA_URLSの設定を確認してください。(' + err.message + ')';
+  }
+}
+
+/* ================= Config ================= */
+/* セクション開始番号(1始まり)。指定リストに基づく全50セクション */
+const SECTION_STARTS = [1,26,48,87,133,160,192,248,295,333,380,410,436,492,521,575,605,639,675,718,771,810,862,906,952,1000,1042,1086,1139,1192,1238,1282,1347,1383,1422,1471,1511,1556,1603,1653,1722,1780,1852,1900,1934,1973,2008,2048,2085,2129];
+/* 鉄壁 目次に基づく各セクションの見出し */
+const SECTION_TITLES = [
+  "重要な・ささいな","特徴・明確さ・点","構造・構成","動詞をイメージする・1","制約・強制・禁止",
+  "阻害・除去・供給・促進","目的・実行・達成","時間","金・経済","場所・領域・範囲",
+  "発生・繁栄・衰退・消滅","多義語・1","基本単語の確認","関係・対立・一致","言語・文学",
+  "調査・研究","議論・主張・要求","語源から覚える","力関係","知覚・感覚・感情",
+  "善悪・犯罪","数・量","思考・認識・知","人・人生","人間関係",
+  "価値・基準・選択・出来事・参加","政治","産業","医学・化学","宗教・民族・慣習",
+  "自然・環境","短い単語","傾向・可能性・反応","衣食住・日常","程度・割合",
+  "動詞をイメージする・2","基本動詞を用いた熟語表現・1","熟語表現・2","熟語表現・3","心・身体",
+  "コロケーションで覚える形容詞","カタカナ英語","教育・テクノロジー","多義語・2","歴史・軍事",
+  "接続詞・副詞・前置詞","難単語・1","難単語・2","難単語・3","難単語・4",
+];
+const THEMES = [
+  {id:'teppeki', label:'鉄壁',   colors:['#0a0a0a','#b02420','#af8e4c']},
+  {id:'target',  label:'Target', colors:['#233e64','#bfa97e','#ffffff']},
+  {id:'passtan', label:'パス単', colors:['#77934c','#e6bd3a','#ffffff']},
+  {id:'systan',  label:'シス単', colors:['#5a90ab','#a4855c','#eff4f7']},
+  {id:'leap',    label:'LEAP',   colors:['#f4ecdd','#2e8a7d','#2b241d']},
+];
+
+/* ================= State ================= */
+const state = {
+  theme: 'teppeki',
+  direction: 'ja-en',
+  selectedSections: new Set(),
+  deck: [],
+  index: 0,
+  flipped: false,
+};
+
+/* ================= Sections ================= */
+function getSections(){
+  const total = wordData.length;
+  const sections = [];
+  for(let i=0;i<SECTION_STARTS.length;i++){
+    const startIdx = SECTION_STARTS[i]-1;
+    const endIdx = (i+1 < SECTION_STARTS.length ? SECTION_STARTS[i+1]-1 : total) - 1;
+    sections.push({
+      index:i, startIdx, endIdx,
+      startId: wordData[startIdx].id, endId: wordData[endIdx].id,
+    });
+  }
+  return sections;
+}
+let SECTIONS = []; /* wordData のfetch完了後、initApp()内で算出する */
+
+/* ================= Theme switcher ================= */
+function renderThemeSwitcher(){
+  const el = document.getElementById('themeSwitcher');
+  el.innerHTML = THEMES.map(t => `
+    <button type="button" class="theme-swatch${t.id===state.theme?' active':''}" data-theme-id="${t.id}">
+      <span class="swatch-dots">${t.colors.map(c=>`<span class="dot" style="background:${c}"></span>`).join('')}</span>
+      <span>${t.label}</span>
+    </button>
+  `).join('');
+  el.querySelectorAll('.theme-swatch').forEach(btn=>{
+    btn.addEventListener('click', ()=> setTheme(btn.dataset.themeId));
+  });
+}
+function setTheme(themeId){
+  state.theme = themeId;
+  document.documentElement.setAttribute('data-theme', themeId);
+  document.querySelectorAll('.theme-swatch').forEach(b=>{
+    b.classList.toggle('active', b.dataset.themeId === themeId);
+  });
+}
+
+/* ================= Direction toggle ================= */
+document.querySelectorAll('.dir-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    state.direction = btn.dataset.dir;
+    document.querySelectorAll('.dir-btn').forEach(b=>b.classList.toggle('active', b===btn));
+  });
+});
+
+/* ================= Section grid ================= */
+function renderSectionGrid(){
+  const grid = document.getElementById('sectionGrid');
+  grid.innerHTML = SECTIONS.map(s=>{
+    const n = s.index+1;
+    const title = SECTION_TITLES[s.index] || '';
+    return `<label class="sec-tile" data-sec="${s.index}">
+      <input type="checkbox" class="sec-checkbox" data-sec="${s.index}">
+      <span class="sec-num">${n}</span>
+      <span class="sec-title">${title}</span>
+      <span class="sec-range">${s.startId}-${s.endId}</span>
+    </label>`;
+  }).join('');
+  grid.addEventListener('change', onSectionChange);
+}
+function onSectionChange(e){
+  if(!e.target.matches('.sec-checkbox')) return;
+  const idx = parseInt(e.target.dataset.sec,10);
+  const tile = e.target.closest('.sec-tile');
+  if(e.target.checked){ state.selectedSections.add(idx); tile.classList.add('checked'); }
+  else { state.selectedSections.delete(idx); tile.classList.remove('checked'); }
+  updateSelectedCount();
+}
+function updateSelectedCount(){
+  let total = 0;
+  state.selectedSections.forEach(i=>{
+    const s = SECTIONS[i];
+    total += (s.endIdx - s.startIdx + 1);
+  });
+  document.getElementById('selectedCount').textContent = `${total}語選択中`;
+  document.getElementById('startBtn').disabled = total === 0;
+  document.getElementById('testBtn').disabled = total === 0;
+}
+function buildPool(){
+  let pool = [];
+  Array.from(state.selectedSections).sort((a,b)=>a-b).forEach(i=>{
+    const s = SECTIONS[i];
+    pool = pool.concat(wordData.slice(s.startIdx, s.endIdx+1));
+  });
+  return pool;
+}
+/* 鉄壁の公式セクション(50区分)のうち、指定idがどこに属するかを返す */
+function findOfficialSection(id){
+  for(let i=0;i<SECTION_STARTS.length;i++){
+    const start = SECTION_STARTS[i];
+    const end = (i+1<SECTION_STARTS.length ? SECTION_STARTS[i+1]-1 : wordData.length);
+    if(id>=start && id<=end) return i+1;
+  }
+  return null;
+}
+document.getElementById('selectAllBtn').addEventListener('click', ()=>{
+  document.querySelectorAll('.sec-checkbox').forEach(cb=>{
+    cb.checked = true;
+    cb.closest('.sec-tile').classList.add('checked');
+    state.selectedSections.add(parseInt(cb.dataset.sec,10));
+  });
+  updateSelectedCount();
+});
+document.getElementById('deselectAllBtn').addEventListener('click', ()=>{
+  document.querySelectorAll('.sec-checkbox').forEach(cb=>{
+    cb.checked = false;
+    cb.closest('.sec-tile').classList.remove('checked');
+  });
+  state.selectedSections.clear();
+  updateSelectedCount();
+});
+
+/* ================= Fisher-Yates shuffle ================= */
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+/* ================= Screen navigation ================= */
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+}
+
+/* ================= Start ================= */
+document.getElementById('startBtn').addEventListener('click', ()=>{
+  state.deck = shuffle(buildPool());
+  state.index = 0;
+  state.flipped = false;
+  document.getElementById('card').classList.remove('flipped');
+  showScreen('card');
+  renderCard();
+});
+document.getElementById('backBtn').addEventListener('click', ()=> showScreen('settings'));
+
+/* ================= もう一度(encore) ================= */
+document.getElementById('encoreBtn').addEventListener('click', ()=>{
+  const word = state.deck[state.index];
+  const insertPos = Math.min(state.index + 10, state.deck.length);
+  state.deck.splice(insertPos, 0, word);
+  goNext();
+});
+
+/* ================= Card rendering ================= */
+function renderCard(){
+  const card = document.getElementById('card');
+  if(state.flipped){
+    card.style.transition = 'none';
+    card.classList.remove('flipped');
+    void card.offsetHeight; /* force reflow so the reset is instant, not animated */
+    card.style.transition = '';
+    state.flipped = false;
+  }
+
+  const word = state.deck[state.index];
+  const front = state.direction === 'ja-en' ? word.ja : word.en;
+  const back  = state.direction === 'ja-en' ? word.en : word.ja;
+  document.getElementById('frontText').textContent = front;
+  document.getElementById('backText').textContent = back;
+
+  const impText = word.imp === '**' ? '★★' : word.imp === '*' ? '★' : '';
+  document.getElementById('impBadgeFront').textContent = impText;
+  document.getElementById('impBadgeBack').textContent = impText;
+
+  const officialSec = findOfficialSection(word.id);
+  document.getElementById('cardMeta').textContent = `#${word.id}${officialSec?` ・S${officialSec}`:''}`;
+
+  const related = document.getElementById('relatedArea');
+  let html = '';
+  if(word.syn){
+    html += `<div class="related-row"><span class="related-label">= 類義語</span><div class="badges">${
+      word.syn.split(',').map(s=>`<span class="badge badge-syn">${s.trim()}</span>`).join('')
+    }</div></div>`;
+  }
+  if(word.ant){
+    html += `<div class="related-row"><span class="related-label">↔ 反対語</span><div class="badges">${
+      word.ant.split(',').map(s=>`<span class="badge badge-ant">${s.trim()}</span>`).join('')
+    }</div></div>`;
+  }
+  related.innerHTML = html;
+
+  document.getElementById('progressText').textContent = `${state.index+1} / ${state.deck.length}`;
+  document.getElementById('prevBtn').disabled = state.index === 0;
+  document.getElementById('nextBtn').disabled = state.index === state.deck.length-1;
+}
+
+function toggleFlip(){
+  const card = document.getElementById('card');
+  state.flipped = !state.flipped;
+  card.classList.toggle('flipped', state.flipped);
+}
+
+/* ================= Prev / Next ================= */
+function goNext(){
+  if(state.index < state.deck.length-1){
+    state.index++;
+    renderCard();
+  }
+}
+function goPrev(){
+  if(state.index > 0){
+    state.index--;
+    renderCard();
+  }
+}
+document.getElementById('nextBtn').addEventListener('click', goNext);
+document.getElementById('prevBtn').addEventListener('click', goPrev);
+
+/* ================= Test (Quiz) Mode ================= */
+const quizState = {
+  deck: [], index: 0, correctCount: 0, answeredCount: 0,
+  timerStart: 0, timerInterval: null, locked: false, _choiceWords: [],
+};
+
+document.getElementById('testBtn').addEventListener('click', ()=>{
+  quizState.deck = shuffle(buildPool());
+  quizState.index = 0;
+  quizState.correctCount = 0;
+  quizState.answeredCount = 0;
+  showScreen('quiz');
+  renderQuizQuestion();
+});
+
+function pickDistractors(correctWord, count){
+  const answerField = state.direction === 'ja-en' ? 'en' : 'ja';
+  const pool = shuffle(wordData.filter(w => w.id !== correctWord.id));
+  const seen = new Set([correctWord[answerField]]);
+  const picks = [];
+  for(const w of pool){
+    const key = w[answerField];
+    if(seen.has(key)) continue;
+    seen.add(key);
+    picks.push(w);
+    if(picks.length === count) break;
+  }
+  return picks;
+}
+
+function renderQuizQuestion(){
+  clearInterval(quizState.timerInterval);
+  quizState.locked = false;
+  const word = quizState.deck[quizState.index];
+  const answerField = state.direction === 'ja-en' ? 'en' : 'ja';
+  const subField = state.direction === 'ja-en' ? 'ja' : 'en';
+  const questionText = word[subField];
+
+  document.getElementById('quizQuestion').textContent = questionText;
+  document.getElementById('quizProgressText').textContent = `${quizState.index+1} / ${quizState.deck.length}`;
+
+  const distractors = pickDistractors(word, 3);
+  const choiceWords = shuffle([word, ...distractors]);
+  quizState._choiceWords = choiceWords;
+
+  const choicesEl = document.getElementById('quizChoices');
+  choicesEl.dataset.answerField = answerField;
+  choicesEl.dataset.subField = subField;
+  choicesEl.innerHTML = choiceWords.map((w,i)=>`
+    <button type="button" class="quiz-choice" data-idx="${i}" data-correct="${w.id===word.id}">
+      <span class="qc-num">${i+1}.</span>
+      <span class="qc-text"><span class="qc-main">${w[answerField]}</span><span class="qc-sub" style="display:none;"></span></span>
+    </button>`).join('') +
+    `<button type="button" class="quiz-choice" data-idx="none" data-correct="false">
+      <span class="qc-num">・</span><span class="qc-text"><span class="qc-main">1〜4に正解なし</span></span>
+    </button>`;
+  choicesEl.querySelectorAll('.quiz-choice').forEach(btn=>btn.addEventListener('click', onQuizChoice));
+
+  document.getElementById('quizReveal').classList.remove('show');
+
+  quizState.timerStart = Date.now();
+  updateQuizTimer();
+  quizState.timerInterval = setInterval(updateQuizTimer, 100);
+}
+
+function updateQuizTimer(){
+  const sec = (Date.now() - quizState.timerStart)/1000;
+  document.getElementById('quizTimer').textContent = sec.toFixed(1) + '秒';
+}
+
+function onQuizChoice(e){
+  if(quizState.locked) return;
+  finishQuizQuestion(e.currentTarget);
+}
+document.getElementById('quizSkipBtn').addEventListener('click', ()=>{
+  if(quizState.locked) return;
+  finishQuizQuestion(null);
+});
+
+function finishQuizQuestion(pickedBtn){
+  quizState.locked = true;
+  clearInterval(quizState.timerInterval);
+  const elapsed = ((Date.now() - quizState.timerStart)/1000).toFixed(1);
+  const word = quizState.deck[quizState.index];
+  const choicesEl = document.getElementById('quizChoices');
+  const answerField = choicesEl.dataset.answerField;
+  const subField = choicesEl.dataset.subField;
+  const choiceWords = quizState._choiceWords;
+
+  const isCorrect = !!(pickedBtn && pickedBtn.dataset.correct === 'true');
+  if(isCorrect) quizState.correctCount++;
+  quizState.answeredCount++;
+
+  choicesEl.querySelectorAll('.quiz-choice').forEach(btn=>{
+    btn.disabled = true;
+    const idx = btn.dataset.idx;
+    if(btn.dataset.correct === 'true') btn.classList.add('correct');
+    else if(idx !== 'none') btn.classList.add('wrong');
+    if(btn === pickedBtn) btn.classList.add('picked');
+    if(idx !== 'none'){
+      const w = choiceWords[parseInt(idx,10)];
+      const sub = btn.querySelector('.qc-sub');
+      sub.textContent = `(${w[subField]})`;
+      sub.style.display = 'block';
+    }
+  });
+
+  const label = document.getElementById('quizRevealLabel');
+  if(!pickedBtn){ label.textContent = 'スキップ'; label.className = 'quiz-reveal-label ng'; }
+  else if(isCorrect){ label.textContent = '正解！'; label.className = 'quiz-reveal-label ok'; }
+  else { label.textContent = '不正解'; label.className = 'quiz-reveal-label ng'; }
+
+  document.getElementById('quizRevealAnswer').textContent = word[answerField];
+  document.getElementById('quizRevealTime').textContent = `回答時間: ${elapsed}秒`;
+
+  const related = document.getElementById('quizRelatedArea');
+  let html = '';
+  if(word.syn){
+    html += `<div class="related-row"><span class="related-label">= 類義語</span><div class="badges">${
+      word.syn.split(',').map(s=>`<span class="badge badge-syn">${s.trim()}</span>`).join('')
+    }</div></div>`;
+  }
+  if(word.ant){
+    html += `<div class="related-row"><span class="related-label">↔ 反対語</span><div class="badges">${
+      word.ant.split(',').map(s=>`<span class="badge badge-ant">${s.trim()}</span>`).join('')
+    }</div></div>`;
+  }
+  related.innerHTML = html;
+
+  updateQuizRing();
+  document.getElementById('quizReveal').classList.add('show');
+}
+
+function updateQuizRing(){
+  const pct = quizState.answeredCount ? Math.round(quizState.correctCount/quizState.answeredCount*100) : 0;
+  document.getElementById('quizRing').style.setProperty('--pct', pct);
+  document.getElementById('quizCorrectCount').textContent = quizState.correctCount;
+}
+
+document.getElementById('quizNextBtn').addEventListener('click', ()=>{
+  if(quizState.index < quizState.deck.length-1){
+    quizState.index++;
+    renderQuizQuestion();
+  } else {
+    finishQuiz();
+  }
+});
+document.getElementById('quizCloseBtn').addEventListener('click', ()=>{
+  clearInterval(quizState.timerInterval);
+  showScreen('settings');
+});
+function finishQuiz(){
+  clearInterval(quizState.timerInterval);
+  const pct = quizState.deck.length ? Math.round(quizState.correctCount/quizState.deck.length*100) : 0;
+  document.getElementById('resultScoreText').textContent = pct + '%';
+  document.getElementById('resultDetailText').textContent = `${quizState.deck.length}問中 ${quizState.correctCount}問正解`;
+  showScreen('quiz-result');
+}
+document.getElementById('resultBackBtn').addEventListener('click', ()=> showScreen('settings'));
+
+/* ================= Swipe / tap (Touch Events — most reliable in embedded/iframe contexts) ================= */
+const cardWrap = document.getElementById('cardWrap');
+const cardEl = document.getElementById('card');
+const SWIPE_THRESHOLD = 55;
+const MOVE_THRESHOLD = 8;
+const FLY_MS = 173; /* 1.5倍速(260ms→約173ms) */
+let startX=0, startY=0, dx=0, dragging=false, moved=false, lastTouchEnd=0;
+
+function dragStart(x, y){
+  dragging = true; moved = false; dx = 0;
+  startX = x; startY = y;
+  cardEl.style.transition = 'none';
+}
+function dragMove(x, y){
+  if(!dragging) return false;
+  dx = x - startX;
+  const dy = y - startY;
+  if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > MOVE_THRESHOLD){
+    moved = true;
+    cardWrap.style.transform = `translateX(${dx}px) rotate(${(dx/28).toFixed(2)}deg)`;
+    return true;
+  }
+  return false;
+}
+function dragEnd(){
+  if(!dragging) return;
+  dragging = false;
+  cardEl.style.transition = '';
+
+  if(moved && Math.abs(dx) > SWIPE_THRESHOLD){
+    const flyDir = dx < 0 ? -1 : 1; /* ドラッグと同じ向きに画面外まで飛ばす */
+    const isNext = dx < 0; /* 左スワイプで次へ、右スワイプで前へ */
+    cardWrap.style.transition = `transform ${FLY_MS}ms ease`;
+    cardWrap.style.transform = `translateX(${flyDir*640}px) rotate(${flyDir*16}deg)`;
+    setTimeout(()=>{
+      cardWrap.style.transition = 'none';
+      cardWrap.style.transform = '';
+      if(isNext) goNext(); else goPrev();
+      void cardWrap.offsetWidth;
+      cardWrap.style.transition = '';
+    }, FLY_MS);
+  } else {
+    cardWrap.style.transform = '';
+    if(!moved){
+      toggleFlip();
+    }
+  }
+  dx = 0; moved = false;
+}
+
+/* Touch (primary — touch events keep targeting the original element for the
+   whole gesture, which is more reliable than pointer-capture inside embedded
+   viewers) */
+cardWrap.addEventListener('touchstart', (e)=>{
+  const t = e.touches[0];
+  dragStart(t.clientX, t.clientY);
+}, {passive:true});
+
+cardWrap.addEventListener('touchmove', (e)=>{
+  const t = e.touches[0];
+  const isHorizontal = dragMove(t.clientX, t.clientY);
+  if(isHorizontal && e.cancelable) e.preventDefault();
+}, {passive:false});
+
+cardWrap.addEventListener('touchend', (e)=>{
+  dragEnd();
+  lastTouchEnd = Date.now();
+  if(e.cancelable) e.preventDefault();
+}, {passive:false});
+
+cardWrap.addEventListener('touchcancel', ()=>{
+  dragging = false; moved = false; dx = 0;
+  cardEl.style.transition = '';
+  cardWrap.style.transform = '';
+  lastTouchEnd = Date.now();
+});
+
+/* Mouse (desktop/trackpad testing) — ignored right after a touch interaction
+   so the browser's synthetic ghost mouse events can't double-fire the flip */
+cardWrap.addEventListener('mousedown', (e)=>{
+  if(Date.now() - lastTouchEnd < 800) return;
+  dragStart(e.clientX, e.clientY);
+});
+window.addEventListener('mousemove', (e)=>{
+  if(dragging) dragMove(e.clientX, e.clientY);
+});
+window.addEventListener('mouseup', ()=>{
+  if(dragging) dragEnd();
+});
+
+/* ================= Init ================= */
+function initApp(){
+  SECTIONS = getSections();
+  renderThemeSwitcher();
+  renderSectionGrid();
+  setTheme(state.theme);
+}
+loadWordData();
+</script>
+</body>
+</html>
