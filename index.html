@@ -516,6 +516,7 @@
         <button type="button" class="dir-btn active" data-book="teppeki">鉄壁</button>
         <button type="button" class="dir-btn" data-book="target">ターゲット1900</button>
         <button type="button" class="dir-btn" data-book="target1200">ターゲット1200</button>
+        <button type="button" class="dir-btn" data-book="target1000">ターゲット1000</button>
       </div>
     </div>
 
@@ -632,8 +633,13 @@ const TARGET1200_DATA_URLS = [
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/target1200_part1.json",
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/target1200_part2.json"
 ];
-const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS};
-const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700};
+/* 熟語ターゲット1000(5訂版)のデータ。全1000熟語 */
+const JUKUGO1000_DATA_URLS = [
+  "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/jukugo1000_part1.json",
+  "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/jukugo1000_part2.json"
+];
+const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS, target1000: JUKUGO1000_DATA_URLS};
+const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000};
 let curBook = 'teppeki';
 const bookCache = {};
 
@@ -727,10 +733,16 @@ const TARGET1200_SECTION_TITLES = [
   "単語・熟語","単語・熟語","単語・熟語","単語・熟語","単語・熟語","単語・熟語","単語・熟語","単語・熟語","単語・熟語",
   "単語・熟語","単語・熟語","単語・熟語","単語・熟語","単語・熟語","単語・熟語","単語・熟語","単語・熟語"
 ];
+/* 熟語ターゲット1000: 本の章立てどおりの5セクション */
+const JUKUGO_SECTION_STARTS = [1,181,421,661,831];
+const JUKUGO_SECTION_TITLES = [
+  "絶対覚えておきたい","グルーピングで覚える","形で覚える","文法・構文で覚える","ここで差がつく難熟語"
+];
 const BOOK_SECTIONS = {
   teppeki: {starts: SECTION_STARTS, titles: SECTION_TITLES},
   target: {starts: TARGET_SECTION_STARTS, titles: TARGET_SECTION_TITLES},
-  target1200: {starts: TARGET1200_SECTION_STARTS, titles: TARGET1200_SECTION_TITLES}
+  target1200: {starts: TARGET1200_SECTION_STARTS, titles: TARGET1200_SECTION_TITLES},
+  target1000: {starts: JUKUGO_SECTION_STARTS, titles: JUKUGO_SECTION_TITLES}
 };
 const curStarts = () => BOOK_SECTIONS[curBook].starts;
 const curTitles = () => BOOK_SECTIONS[curBook].titles;
