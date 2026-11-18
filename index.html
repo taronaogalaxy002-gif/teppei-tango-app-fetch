@@ -515,6 +515,7 @@
       <div class="direction-toggle" id="bookToggle">
         <button type="button" class="dir-btn active" data-book="teppeki">鉄壁</button>
         <button type="button" class="dir-btn" data-book="target">ターゲット1900</button>
+        <button type="button" class="dir-btn" data-book="target1200">ターゲット1200</button>
       </div>
     </div>
 
@@ -626,8 +627,13 @@ const TARGET_DATA_URLS = [
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/target_part1.json",
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/target_part2.json"
 ];
-const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS};
-const BOOK_EXPECTED = {teppeki: 2176, target: 1900};
+/* ターゲット1200(改訂版)のデータ。単語・熟語あわせて1700語 */
+const TARGET1200_DATA_URLS = [
+  "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/target1200_part1.json",
+  "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/target1200_part2.json"
+];
+const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS};
+const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700};
 let curBook = 'teppeki';
 const bookCache = {};
 
@@ -715,9 +721,16 @@ const TARGET_SECTION_TITLES = [
   "Part 2 重要単語","Part 2 重要単語","Part 2 重要単語","Part 2 重要単語","Part 2 重要単語","Part 2 重要単語","Part 2 重要単語",
   "Part 3 難単語","Part 3 難単語","Part 3 難単語","Part 3 難単語"
 ];
+/* ターゲット1200: 100語ごとの17セクション */
+const TARGET1200_SECTION_STARTS = [1,101,201,301,401,501,601,701,801,901,1001,1101,1201,1301,1401,1501,1601];
+const TARGET1200_SECTION_TITLES = [
+  "単語・熟語","単語・熟語","単語・熟語","単語・熟語","単語・熟語","単語・熟語","単語・熟語","単語・熟語","単語・熟語",
+  "単語・熟語","単語・熟語","単語・熟語","単語・熟語","単語・熟語","単語・熟語","単語・熟語","単語・熟語"
+];
 const BOOK_SECTIONS = {
   teppeki: {starts: SECTION_STARTS, titles: SECTION_TITLES},
-  target: {starts: TARGET_SECTION_STARTS, titles: TARGET_SECTION_TITLES}
+  target: {starts: TARGET_SECTION_STARTS, titles: TARGET_SECTION_TITLES},
+  target1200: {starts: TARGET1200_SECTION_STARTS, titles: TARGET1200_SECTION_TITLES}
 };
 const curStarts = () => BOOK_SECTIONS[curBook].starts;
 const curTitles = () => BOOK_SECTIONS[curBook].titles;
