@@ -511,6 +511,14 @@
     </div>
 
     <div class="panel">
+      <h2 class="panel-title">単語帳</h2>
+      <div class="direction-toggle" id="bookToggle">
+        <button type="button" class="dir-btn active" data-book="teppeki">鉄壁</button>
+        <button type="button" class="dir-btn" data-book="target">ターゲット1900</button>
+      </div>
+    </div>
+
+    <div class="panel">
       <h2 class="panel-title">出題方向</h2>
       <div class="direction-toggle" id="directionToggle">
         <button type="button" class="dir-btn active" data-dir="ja-en">日本語 → 英語</button>
@@ -613,25 +621,70 @@ const DATA_URLS = [
   "https://gist.githubusercontent.com/taronaogalaxy002-gif/94e6c5313db513c1a6b71384588754c4/raw/words.json?v=99",
   "https://gist.githubusercontent.com/taronaogalaxy002-gif/65144621efb78b5625e0075967f78c1d/raw/words.json2?v=99"
 ];
+/* ターゲット1900(6訂版)のデータ。GitHubリポジトリ tango-data に前半/後半で配置 */
+const TARGET_DATA_URLS = [
+  "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/target_part1.json",
+  "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/target_part2.json"
+];
+const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS};
+const BOOK_EXPECTED = {teppeki: 2176, target: 1900};
+let curBook = 'teppeki';
+const bookCache = {};
 
 let wordData = [];
+
+async function fetchBookWords(key){
+  if(bookCache[key]) return bookCache[key];
+  const results = await Promise.all(BOOK_URLS[key].map(async (url)=>{
+    const res = await fetch(url);
+    if(!res.ok) throw new Error(url + ' → HTTP ' + res.status);
+    return res.json();
+  }));
+  const list = results.flat().slice().sort((a,b)=>a.id-b.id);
+  if(!Array.isArray(list) || list.length === 0) throw new Error('データが空です');
+  if(list.length !== BOOK_EXPECTED[key]) throw new Error('語数が ' + list.length + ' 語(期待値 ' + BOOK_EXPECTED[key] + ' 語)');
+  bookCache[key] = list;
+  return list;
+}
 
 async function loadWordData(){
   const overlay = document.getElementById('loadingOverlay');
   const textEl = document.getElementById('loadingText');
   try{
-    const results = await Promise.all(DATA_URLS.map(async (url)=>{
-      const res = await fetch(url);
-      if(!res.ok) throw new Error(url + ' → HTTP ' + res.status);
-      return res.json();
-    }));
-    wordData = results.flat();
-    if(!Array.isArray(wordData) || wordData.length === 0) throw new Error('データが空です');
+    wordData = await fetchBookWords('teppeki');
     if(overlay) overlay.classList.add('hide');
     initApp();
   }catch(err){
     console.error(err);
     if(textEl) textEl.textContent = '読み込みに失敗しました。DATA_URLSの設定を確認してください。(' + err.message + ')';
+  }
+}
+
+let bookSeq = 0;
+async function setBook(key){
+  if(!BOOK_URLS[key] || key === curBook) return;
+  const seq = ++bookSeq;
+  const overlay = document.getElementById('loadingOverlay');
+  const textEl = document.getElementById('loadingText');
+  if(textEl) textEl.textContent = '単語データを読み込んでいます…';
+  if(overlay) overlay.classList.remove('hide');
+  try{
+    const list = await fetchBookWords(key);
+    if(seq !== bookSeq) return;
+    curBook = key; wordData = list;
+    SECTIONS = getSections();
+    state.selectedSections.clear();
+    renderSectionGrid();
+    updateSelectedCount();
+    document.getElementById('appSubtitle').textContent = `全${list.length}語 収録`;
+    document.title = `単語帳 — 全${list.length}語`;
+    document.querySelectorAll('#bookToggle .dir-btn').forEach(b=>b.classList.toggle('active', b.dataset.book === key));
+    if(overlay) overlay.classList.add('hide');
+  }catch(err){
+    console.error(err);
+    if(seq !== bookSeq) return;
+    if(overlay) overlay.classList.add('hide');
+    alert('単語データの読み込みに失敗しました。通信環境を確認してもう一度お試しください。');
   }
 }
 
@@ -655,6 +708,19 @@ const SECTION_TITLES = [
   "コロケーションで覚える形容詞","カタカナ英語","教育・テクノロジー","多義語・2","歴史・軍事",
   "接続詞・副詞・前置詞","難単語・1","難単語・2","難単語・3","難単語・4",
 ];
+/* ターゲット1900: 100語ごとの19セクション(Part 1 基本 1-800 / Part 2 重要 801-1500 / Part 3 難単語 1501-1900) */
+const TARGET_SECTION_STARTS = [1,101,201,301,401,501,601,701,801,901,1001,1101,1201,1301,1401,1501,1601,1701,1801];
+const TARGET_SECTION_TITLES = [
+  "Part 1 基本単語","Part 1 基本単語","Part 1 基本単語","Part 1 基本単語","Part 1 基本単語","Part 1 基本単語","Part 1 基本単語","Part 1 基本単語",
+  "Part 2 重要単語","Part 2 重要単語","Part 2 重要単語","Part 2 重要単語","Part 2 重要単語","Part 2 重要単語","Part 2 重要単語",
+  "Part 3 難単語","Part 3 難単語","Part 3 難単語","Part 3 難単語"
+];
+const BOOK_SECTIONS = {
+  teppeki: {starts: SECTION_STARTS, titles: SECTION_TITLES},
+  target: {starts: TARGET_SECTION_STARTS, titles: TARGET_SECTION_TITLES}
+};
+const curStarts = () => BOOK_SECTIONS[curBook].starts;
+const curTitles = () => BOOK_SECTIONS[curBook].titles;
 const THEMES = [
   {id:'teppeki', label:'鉄壁',   colors:['#0a0a0a','#b02420','#af8e4c']},
   {id:'target',  label:'Target', colors:['#233e64','#bfa97e','#ffffff']},
@@ -677,9 +743,10 @@ const state = {
 function getSections(){
   const total = wordData.length;
   const sections = [];
-  for(let i=0;i<SECTION_STARTS.length;i++){
-    const startIdx = SECTION_STARTS[i]-1;
-    const endIdx = (i+1 < SECTION_STARTS.length ? SECTION_STARTS[i+1]-1 : total) - 1;
+  const starts = curStarts();
+  for(let i=0;i<starts.length;i++){
+    const startIdx = starts[i]-1;
+    const endIdx = (i+1 < starts.length ? starts[i+1]-1 : total) - 1;
     sections.push({
       index:i, startIdx, endIdx,
       startId: wordData[startIdx].id, endId: wordData[endIdx].id,
@@ -710,11 +777,16 @@ function setTheme(themeId){
   });
 }
 
+/* ================= Book toggle ================= */
+document.querySelectorAll('#bookToggle .dir-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=> setBook(btn.dataset.book));
+});
+
 /* ================= Direction toggle ================= */
-document.querySelectorAll('.dir-btn').forEach(btn=>{
+document.querySelectorAll('#directionToggle .dir-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     state.direction = btn.dataset.dir;
-    document.querySelectorAll('.dir-btn').forEach(b=>b.classList.toggle('active', b===btn));
+    document.querySelectorAll('#directionToggle .dir-btn').forEach(b=>b.classList.toggle('active', b===btn));
   });
 });
 
@@ -723,7 +795,7 @@ function renderSectionGrid(){
   const grid = document.getElementById('sectionGrid');
   grid.innerHTML = SECTIONS.map(s=>{
     const n = s.index+1;
-    const title = SECTION_TITLES[s.index] || '';
+    const title = curTitles()[s.index] || '';
     return `<label class="sec-tile" data-sec="${s.index}">
       <input type="checkbox" class="sec-checkbox" data-sec="${s.index}">
       <span class="sec-num">${n}</span>
@@ -731,7 +803,7 @@ function renderSectionGrid(){
       <span class="sec-range">${s.startId}-${s.endId}</span>
     </label>`;
   }).join('');
-  grid.addEventListener('change', onSectionChange);
+  if(!grid.dataset.bound){ grid.addEventListener('change', onSectionChange); grid.dataset.bound = '1'; }
 }
 function onSectionChange(e){
   if(!e.target.matches('.sec-checkbox')) return;
@@ -761,9 +833,10 @@ function buildPool(){
 }
 /* 鉄壁の公式セクション(50区分)のうち、指定idがどこに属するかを返す */
 function findOfficialSection(id){
-  for(let i=0;i<SECTION_STARTS.length;i++){
-    const start = SECTION_STARTS[i];
-    const end = (i+1<SECTION_STARTS.length ? SECTION_STARTS[i+1]-1 : wordData.length);
+  const starts = curStarts();
+  for(let i=0;i<starts.length;i++){
+    const start = starts[i];
+    const end = (i+1<starts.length ? starts[i+1]-1 : wordData.length);
     if(id>=start && id<=end) return i+1;
   }
   return null;
