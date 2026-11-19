@@ -490,6 +490,18 @@
     transition:opacity .3s ease;
   }
   .loading-overlay.hide{opacity:0; pointer-events:none;}
+  .tips-open-btn{display:block; width:100%; margin-bottom:14px; padding:13px 16px; font-size:.95rem; font-weight:800; border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-elevated); color:var(--text-main); cursor:pointer;}
+  .tips-overlay{position:fixed; inset:0; z-index:998; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; padding:16px;}
+  .tips-overlay.hide{display:none;}
+  .tips-card{background:var(--bg-elevated); color:var(--text-main); border-radius:var(--radius); max-width:560px; width:100%; max-height:86vh; display:flex; flex-direction:column; padding:18px;}
+  .tips-card h3{margin:0 0 10px; font-size:1.05rem;}
+  .tips-body{overflow-y:auto; -webkit-overflow-scrolling:touch; font-size:.88rem;}
+  .tips-body h4{margin:14px 0 6px; font-size:.95rem;}
+  .tips-body h4:first-child{margin-top:0;}
+  .tips-body ul{margin:0 0 6px; padding-left:1.2em;}
+  .tips-body li{margin:3px 0; line-height:1.55;}
+  .tips-body p{line-height:1.55; color:var(--text-sub); font-size:.82rem;}
+  .tips-close-btn{margin-top:12px; padding:11px; font-size:.95rem; font-weight:700; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg); color:var(--text-main); cursor:pointer;}
   .loading-spinner{
     width:38px; height:38px; border-radius:50%;
     border:4px solid var(--border); border-top-color:var(--accent);
@@ -516,6 +528,8 @@
       <h2 class="panel-title">テーマ</h2>
       <div class="theme-switcher" id="themeSwitcher"></div>
     </div>
+
+    <button type="button" class="tips-open-btn" id="tipsOpenBtn">📖 単語の覚え方のコツ</button>
 
     <div class="panel">
       <h2 class="panel-title">単語帳</h2>
@@ -622,6 +636,55 @@
   <div id="loadingOverlay" class="loading-overlay">
     <div class="loading-spinner"></div>
     <p class="loading-text" id="loadingText">単語データを読み込んでいます…</p>
+  </div>
+
+  <div id="tipsOverlay" class="tips-overlay hide">
+    <div class="tips-card">
+      <h3>📖 単語の覚え方のコツ</h3>
+      <div class="tips-body">
+        <h4>レベル別・必要な単語数の目安</h4>
+        <ul>
+          <li>中学卒業（英検3級）：約1,300〜2,100語</li>
+          <li>高校中級（英検準2級）：約2,600〜3,600語</li>
+          <li>高校卒業・共通テスト（英検2級）：約4,000〜5,100語</li>
+          <li>MARCH・中堅国公立：約5,000〜6,000語</li>
+          <li>早慶・東大・京大など難関大：約6,000〜8,000語</li>
+        </ul>
+        <p>※ぜんぶ累計の目安。いきなり全部を目指さず、今の目標の「1段上」を狙うのが続けるコツ。</p>
+        <h4>覚え方の原則</h4>
+        <ul>
+          <li><b>1語に時間をかけない</b>：1語1〜3秒で意味を確認する高速周回が基本。1日10語を完璧に、よりも1日100語を何度も。</li>
+          <li><b>眺めるな、思い出せ</b>：意味を隠して思い出す練習（想起）がいちばん効く。合格ラインは「見て1秒以内に意味が言える」こと。</li>
+          <li><b>間隔を空けて繰り返す</b>：復習は 直後 → 翌朝 → 3日後 → 1週間後 → 数週間後。忘れかけた頃に思い出すと定着する。</li>
+          <li><b>仕分けする</b>：知っている語は飛ばして、知らない語だけを重点的に回す。</li>
+          <li><b>音と一緒に</b>：発音を聞いて声に出す。耳・口・目を一緒に使うと残りやすいし、リスニングにも強くなる。</li>
+          <li><b>例文で覚える</b>：1語1訳の丸暗記より、文の中での使われ方ごと覚える方が本番で使える。</li>
+          <li><b>寝る前と翌朝</b>：寝る前に見て、朝もう一度。睡眠中に記憶が整理される。</li>
+          <li><b>書くよりテスト</b>：ノートに何度も書くのは効率が悪い。テスト形式で回す方が速い。</li>
+        </ul>
+        <h4>レベル別の進め方</h4>
+        <ul>
+          <li><b>基礎固め（中学〜高1）</b>：まずターゲット1200を1冊仕上げる。新しい語は1日50〜100語ペースで。</li>
+          <li><b>共通テストレベル</b>：累計4,000〜5,000語が目標。ターゲット1900 → 鉄壁の順に、基本語を「1秒で言える」まで。</li>
+          <li><b>難関大レベル</b>：累計6,000〜8,000語。鉄壁を完璧にした上で、長文の中で出会った未知語を拾っていく。</li>
+          <li><b>古文単語</b>：古文単語601は品詞ごとに分かれているので、意味を取り違えやすい形容詞・形容動詞から固めるのがおすすめ。</li>
+        </ul>
+        <h4>このアプリでの実践</h4>
+        <ul>
+          <li>「テスト」＝想起練習そのもの。まずテストで仕分けして、弱いセクションをカードで周回。</li>
+          <li>単語バトル（対戦アプリ）＝対戦しながら即答する練習。偏差値は「速く正確に思い出せたか」の指標。</li>
+          <li>発音ボタン＝聞いて、真似して声に出す。耳からも覚える。</li>
+        </ul>
+        <h4>1週間の回し方の例（100語）</h4>
+        <ul>
+          <li>1日目：新しい100語を通す。言えない語に印。</li>
+          <li>2〜5日目：同じ100語をテスト形式で周回。言える語を増やす。</li>
+          <li>6日目：総仕上げテスト。9割「1秒で言える」を目指す。</li>
+          <li>7日目：休み、または前週分の復習だけ。</li>
+        </ul>
+      </div>
+      <button type="button" class="tips-close-btn" id="tipsCloseBtn">閉じる</button>
+    </div>
   </div>
 
 </div>
@@ -963,6 +1026,8 @@ function speakCurrentWord(){
 }
 document.getElementById('speakBtnCard').addEventListener('click', speakCurrentWord);
 document.getElementById('speakBtnQuiz').addEventListener('click', speakCurrentWord);
+document.getElementById('tipsOpenBtn').addEventListener('click', ()=>{ document.getElementById('tipsOverlay').classList.remove('hide'); });
+document.getElementById('tipsCloseBtn').addEventListener('click', ()=>{ document.getElementById('tipsOverlay').classList.add('hide'); });
 
 /* ================= もう一度(encore) ================= */
 document.getElementById('encoreBtn').addEventListener('click', ()=>{
