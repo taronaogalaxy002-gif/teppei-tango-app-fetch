@@ -502,6 +502,9 @@
   .tips-body li{margin:3px 0; line-height:1.55;}
   .tips-body p{line-height:1.55; color:var(--text-sub); font-size:.82rem;}
   .tips-close-btn{margin-top:12px; padding:11px; font-size:.95rem; font-weight:700; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg); color:var(--text-main); cursor:pointer;}
+  .learned-btn{align-self:center; margin:0 0 12px; margin-left:8px; padding:8px 16px; border-radius:999px; border:1.5px solid var(--accent); cursor:pointer; font-family:var(--font-sans); font-weight:700; font-size:.9rem; color:var(--accent); background:transparent;}
+  .learned-btn.active{background:var(--accent); color:var(--text-inverse);}
+  .xlink-btn{display:block; width:100%; box-sizing:border-box; margin-bottom:14px; padding:13px 16px; font-size:.95rem; font-weight:800; text-align:center; text-decoration:none; border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-elevated); color:var(--text-main);}
   .loading-spinner{
     width:38px; height:38px; border-radius:50%;
     border:4px solid var(--border); border-top-color:var(--accent);
@@ -530,6 +533,7 @@
     </div>
 
     <button type="button" class="tips-open-btn" id="tipsOpenBtn">📖 単語の覚え方のコツ</button>
+    <a class="xlink-btn" href="https://taronaogalaxy002-gif.github.io/tango-combat/" target="_blank" rel="noopener">⚔️ 単語バトルで対戦する</a>
 
     <div class="panel">
       <h2 class="panel-title">単語帳</h2>
@@ -571,7 +575,7 @@
       <div class="progress" id="progressText">0 / 0</div>
     </header>
 
-    <button type="button" class="speak-btn" id="speakBtnCard">🔊 発音</button>
+    <button type="button" class="speak-btn" id="speakBtnCard">🔊 発音</button><button type="button" class="learned-btn" id="learnedBtnCard">✓ 覚えた</button>
 
     <div class="card-stage">
       <div class="card-wrap" id="cardWrap">
@@ -605,7 +609,7 @@
       <div class="progress" id="quizProgressText">0 / 0</div>
     </header>
 
-    <button type="button" class="speak-btn" id="speakBtnQuiz">🔊 発音</button>
+    <button type="button" class="speak-btn" id="speakBtnQuiz">🔊 発音</button><button type="button" class="learned-btn" id="learnedBtnQuiz">✓ 覚えた</button>
 
     <div class="quiz-body">
       <div class="quiz-timer" id="quizTimer">0.0秒</div>
@@ -743,7 +747,10 @@ async function loadWordData(){
   const overlay = document.getElementById('loadingOverlay');
   const textEl = document.getElementById('loadingText');
   try{
-    wordData = await fetchBookWords('teppeki');
+    const startKey = BOOK_URLS[saved.book] ? saved.book : 'teppeki';
+    curBook = startKey;
+    wordData = await fetchBookWords(startKey);
+    applyBookChrome(wordData);
     if(overlay) overlay.classList.add('hide');
     initApp();
   }catch(err){
@@ -764,17 +771,12 @@ async function setBook(key){
     const list = await fetchBookWords(key);
     if(seq !== bookSeq) return;
     curBook = key; wordData = list;
+    saved.book = key; persist();
+    loadLearned();
     SECTIONS = getSections();
-    state.selectedSections.clear();
     renderSectionGrid();
-    updateSelectedCount();
-    document.getElementById('appSubtitle').textContent = `全${list.length}語 収録`;
-    document.title = `単語帳 — 全${list.length}語`;
-    document.querySelectorAll('#bookToggle .dir-btn').forEach(b=>b.classList.toggle('active', b.dataset.book === key));
-    document.querySelectorAll('#directionToggle .dir-btn').forEach(b=>{
-      if(key === 'kobun') b.textContent = b.dataset.dir === 'ja-en' ? '現代語 → 古文' : '古文 → 現代語';
-      else b.textContent = b.dataset.dir === 'ja-en' ? '日本語 → 英語' : '英語 → 日本語';
-    });
+    applySections();
+    applyBookChrome(list);
     if(overlay) overlay.classList.add('hide');
   }catch(err){
     console.error(err);
@@ -859,6 +861,55 @@ const state = {
   flipped: false,
 };
 
+/* ================= 保存(設定・範囲・覚えたチェック) ================= */
+const SAVE_KEY = 'tango_fc_v1';
+let saved = {book:'teppeki', theme:null, direction:null, sections:{}, learned:{}};
+try{ const p = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); if(p && typeof p === 'object') saved = Object.assign(saved, p); }catch(e){}
+function persist(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(saved)); }catch(e){} }
+let learnedSet = new Set();
+function loadLearned(){ learnedSet = new Set(Array.isArray(saved.learned[curBook]) ? saved.learned[curBook] : []); }
+function isLearned(w){ return !!w && learnedSet.has(w.id); }
+function toggleLearned(w){
+  if(!w) return;
+  if(learnedSet.has(w.id)) learnedSet.delete(w.id); else learnedSet.add(w.id);
+  saved.learned[curBook] = Array.from(learnedSet);
+  persist(); updateLearnedBtns();
+}
+function currentWord(){
+  if(document.getElementById('screen-card').classList.contains('active')) return state.deck && state.deck[state.index];
+  if(document.getElementById('screen-quiz').classList.contains('active')) return quizState.deck && quizState.deck[quizState.index];
+  return null;
+}
+function updateLearnedBtns(){
+  const on = isLearned(currentWord());
+  ['learnedBtnCard','learnedBtnQuiz'].forEach(id=>{
+    const b = document.getElementById(id);
+    if(b){ b.classList.toggle('active', on); b.textContent = on ? '✓ 覚えた（出題率 半分）' : '✓ 覚えた'; }
+  });
+}
+function saveSections(){ saved.sections[curBook] = Array.from(state.selectedSections); persist(); }
+function applySections(){
+  const arr = Array.isArray(saved.sections[curBook]) ? saved.sections[curBook] : [];
+  state.selectedSections.clear();
+  document.querySelectorAll('.sec-checkbox').forEach(cb=>{
+    const idx = parseInt(cb.dataset.sec,10);
+    const on = arr.includes(idx);
+    cb.checked = on;
+    cb.closest('.sec-tile').classList.toggle('checked', on);
+    if(on) state.selectedSections.add(idx);
+  });
+  updateSelectedCount();
+}
+function applyBookChrome(list){
+  document.getElementById('appSubtitle').textContent = `全${list.length}語 収録`;
+  document.title = `単語帳 — 全${list.length}語`;
+  document.querySelectorAll('#bookToggle .dir-btn').forEach(b=>b.classList.toggle('active', b.dataset.book === curBook));
+  document.querySelectorAll('#directionToggle .dir-btn').forEach(b=>{
+    if(curBook === 'kobun') b.textContent = b.dataset.dir === 'ja-en' ? '現代語 → 古文' : '古文 → 現代語';
+    else b.textContent = b.dataset.dir === 'ja-en' ? '日本語 → 英語' : '英語 → 日本語';
+  });
+}
+
 /* ================= Sections ================= */
 function getSections(){
   const total = wordData.length;
@@ -891,6 +942,7 @@ function renderThemeSwitcher(){
 }
 function setTheme(themeId){
   state.theme = themeId;
+  saved.theme = themeId; persist();
   document.documentElement.setAttribute('data-theme', themeId);
   document.querySelectorAll('.theme-swatch').forEach(b=>{
     b.classList.toggle('active', b.dataset.themeId === themeId);
@@ -906,6 +958,7 @@ document.querySelectorAll('#bookToggle .dir-btn').forEach(btn=>{
 document.querySelectorAll('#directionToggle .dir-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     state.direction = btn.dataset.dir;
+    saved.direction = state.direction; persist();
     document.querySelectorAll('#directionToggle .dir-btn').forEach(b=>b.classList.toggle('active', b===btn));
   });
 });
@@ -931,6 +984,7 @@ function onSectionChange(e){
   const tile = e.target.closest('.sec-tile');
   if(e.target.checked){ state.selectedSections.add(idx); tile.classList.add('checked'); }
   else { state.selectedSections.delete(idx); tile.classList.remove('checked'); }
+  saveSections();
   updateSelectedCount();
 }
 function updateSelectedCount(){
@@ -949,7 +1003,9 @@ function buildPool(){
     const s = SECTIONS[i];
     pool = pool.concat(wordData.slice(s.startIdx, s.endIdx+1));
   });
-  return pool;
+  /* 「覚えた」チェック済みの単語は出題確率を半分にする(半分の確率で間引く) */
+  const thinned = pool.filter(w => !learnedSet.has(w.id) || Math.random() < 0.5);
+  return thinned.length ? thinned : pool;
 }
 /* 鉄壁の公式セクション(50区分)のうち、指定idがどこに属するかを返す */
 function findOfficialSection(id){
@@ -967,6 +1023,7 @@ document.getElementById('selectAllBtn').addEventListener('click', ()=>{
     cb.closest('.sec-tile').classList.add('checked');
     state.selectedSections.add(parseInt(cb.dataset.sec,10));
   });
+  saveSections();
   updateSelectedCount();
 });
 document.getElementById('deselectAllBtn').addEventListener('click', ()=>{
@@ -975,6 +1032,7 @@ document.getElementById('deselectAllBtn').addEventListener('click', ()=>{
     cb.closest('.sec-tile').classList.remove('checked');
   });
   state.selectedSections.clear();
+  saveSections();
   updateSelectedCount();
 });
 
@@ -1026,6 +1084,8 @@ function speakCurrentWord(){
 }
 document.getElementById('speakBtnCard').addEventListener('click', speakCurrentWord);
 document.getElementById('speakBtnQuiz').addEventListener('click', speakCurrentWord);
+document.getElementById('learnedBtnCard').addEventListener('click', ()=> toggleLearned(state.deck && state.deck[state.index]));
+document.getElementById('learnedBtnQuiz').addEventListener('click', ()=> toggleLearned(quizState.deck && quizState.deck[quizState.index]));
 document.getElementById('tipsOpenBtn').addEventListener('click', ()=>{ document.getElementById('tipsOverlay').classList.remove('hide'); });
 document.getElementById('tipsCloseBtn').addEventListener('click', ()=>{ document.getElementById('tipsOverlay').classList.add('hide'); });
 
@@ -1075,6 +1135,7 @@ function renderCard(){
   }
   related.innerHTML = html;
 
+  updateLearnedBtns();
   document.getElementById('progressText').textContent = `${state.index+1} / ${state.deck.length}`;
   document.getElementById('prevBtn').disabled = state.index === 0;
   document.getElementById('nextBtn').disabled = state.index === state.deck.length-1;
@@ -1136,6 +1197,7 @@ function renderQuizQuestion(){
   clearInterval(quizState.timerInterval);
   quizState.locked = false;
   const word = quizState.deck[quizState.index];
+  updateLearnedBtns();
   const answerField = state.direction === 'ja-en' ? 'en' : 'ja';
   const subField = state.direction === 'ja-en' ? 'ja' : 'en';
   const questionText = word[subField];
@@ -1357,7 +1419,13 @@ function initApp(){
   SECTIONS = getSections();
   renderThemeSwitcher();
   renderSectionGrid();
-  setTheme(state.theme);
+  setTheme(saved.theme && THEMES.some(t=>t.id===saved.theme) ? saved.theme : state.theme);
+  if(saved.direction === 'ja-en' || saved.direction === 'en-ja'){
+    state.direction = saved.direction;
+    document.querySelectorAll('#directionToggle .dir-btn').forEach(b=>b.classList.toggle('active', b.dataset.dir === state.direction));
+  }
+  loadLearned();
+  applySections();
 }
 loadWordData();
 </script>
