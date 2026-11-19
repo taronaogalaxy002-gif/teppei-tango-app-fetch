@@ -524,6 +524,7 @@
         <button type="button" class="dir-btn" data-book="target">ターゲット1900</button>
         <button type="button" class="dir-btn" data-book="target1200">ターゲット1200</button>
         <button type="button" class="dir-btn" data-book="target1000">ターゲット1000</button>
+        <button type="button" class="dir-btn" data-book="kobun">古文単語601</button>
       </div>
     </div>
 
@@ -649,8 +650,13 @@ const JUKUGO1000_DATA_URLS = [
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/jukugo1000_part1.json",
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/jukugo1000_part2.json"
 ];
-const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS, target1000: JUKUGO1000_DATA_URLS};
-const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000};
+/* 古文単語601(こぶんめくり重要度順)のデータ。en=古文単語、ja=現代語訳。品詞→重要度順に並べ替え済み */
+const KOBUN601_DATA_URLS = [
+  "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/kobun601_part1.json",
+  "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/kobun601_part2.json"
+];
+const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS, target1000: JUKUGO1000_DATA_URLS, kobun: KOBUN601_DATA_URLS};
+const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000, kobun: 601};
 let curBook = 'teppeki';
 const bookCache = {};
 
@@ -702,6 +708,10 @@ async function setBook(key){
     document.getElementById('appSubtitle').textContent = `全${list.length}語 収録`;
     document.title = `単語帳 — 全${list.length}語`;
     document.querySelectorAll('#bookToggle .dir-btn').forEach(b=>b.classList.toggle('active', b.dataset.book === key));
+    document.querySelectorAll('#directionToggle .dir-btn').forEach(b=>{
+      if(key === 'kobun') b.textContent = b.dataset.dir === 'ja-en' ? '現代語 → 古文' : '古文 → 現代語';
+      else b.textContent = b.dataset.dir === 'ja-en' ? '日本語 → 英語' : '英語 → 日本語';
+    });
     if(overlay) overlay.classList.add('hide');
   }catch(err){
     console.error(err);
@@ -749,11 +759,22 @@ const JUKUGO_SECTION_STARTS = [1,181,421,661,831];
 const JUKUGO_SECTION_TITLES = [
   "絶対覚えておきたい","グルーピングで覚える","形で覚える","文法・構文で覚える","ここで差がつく難熟語"
 ];
+/* 古文単語601: 品詞ごとに大まかに分け、各品詞の中は重要度順に30語ずつのセクション */
+const KOBUN_SECTION_STARTS = [1,31,61,91,121,151,158,188,218,248,278,308,310,340,370,400,430,435,465,495,507,537,564,584];
+const KOBUN_SECTION_TITLES = [
+  "名詞 1","名詞 2","名詞 3","名詞 4","名詞 5","名詞 6",
+  "形容詞 1","形容詞 2","形容詞 3","形容詞 4","形容詞 5","形容詞 6",
+  "動詞 1","動詞 2","動詞 3","動詞 4","動詞 5",
+  "副詞 1","副詞 2","副詞 3",
+  "形容動詞 1","形容動詞 2",
+  "連語","その他"
+];
 const BOOK_SECTIONS = {
   teppeki: {starts: SECTION_STARTS, titles: SECTION_TITLES},
   target: {starts: TARGET_SECTION_STARTS, titles: TARGET_SECTION_TITLES},
   target1200: {starts: TARGET1200_SECTION_STARTS, titles: TARGET1200_SECTION_TITLES},
-  target1000: {starts: JUKUGO_SECTION_STARTS, titles: JUKUGO_SECTION_TITLES}
+  target1000: {starts: JUKUGO_SECTION_STARTS, titles: JUKUGO_SECTION_TITLES},
+  kobun: {starts: KOBUN_SECTION_STARTS, titles: KOBUN_SECTION_TITLES}
 };
 const curStarts = () => BOOK_SECTIONS[curBook].starts;
 const curTitles = () => BOOK_SECTIONS[curBook].titles;
@@ -921,13 +942,13 @@ document.getElementById('startBtn').addEventListener('click', ()=>{
 });
 document.getElementById('backBtn').addEventListener('click', ()=> showScreen('settings'));
 
-/* 英語の発音を読み上げる(出題方向に問わず英語のみ) */
+/* 発音を読み上げる(英語の本は英語、古文単語は日本語で読みを再生) */
 function speakEn(text){
   try{
     if(!('speechSynthesis' in window) || !text) return;
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(String(text));
-    u.lang = 'en-US'; u.rate = 0.92;
+    u.lang = curBook === 'kobun' ? 'ja-JP' : 'en-US'; u.rate = 0.92;
     speechSynthesis.speak(u);
   }catch(e){}
 }
