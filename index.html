@@ -346,6 +346,13 @@
   .start-btn:disabled{opacity:.4; cursor:not-allowed;}
 
   /* ---------- Card screen ---------- */
+  .speak-btn{
+    align-self:center; margin:0 0 12px; border:none; cursor:pointer;
+    font-family:var(--font-sans); font-weight:700; font-size:.9rem;
+    color:var(--text-inverse); background:var(--accent);
+    border-radius:999px; padding:8px 22px;
+  }
+  .speak-btn:active{transform:scale(.97);}
   .card-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
   .icon-btn{
     border:none; background:transparent; color:var(--text-sub); font-family:var(--font-sans);
@@ -549,6 +556,8 @@
       <div class="progress" id="progressText">0 / 0</div>
     </header>
 
+    <button type="button" class="speak-btn" id="speakBtnCard">🔊 発音</button>
+
     <div class="card-stage">
       <div class="card-wrap" id="cardWrap">
         <div class="card" id="card">
@@ -580,6 +589,8 @@
       <div class="quiz-ring" id="quizRing"><span id="quizCorrectCount">0</span></div>
       <div class="progress" id="quizProgressText">0 / 0</div>
     </header>
+
+    <button type="button" class="speak-btn" id="speakBtnQuiz">🔊 発音</button>
 
     <div class="quiz-body">
       <div class="quiz-timer" id="quizTimer">0.0秒</div>
@@ -909,6 +920,28 @@ document.getElementById('startBtn').addEventListener('click', ()=>{
   renderCard();
 });
 document.getElementById('backBtn').addEventListener('click', ()=> showScreen('settings'));
+
+/* 英語の発音を読み上げる(出題方向に問わず英語のみ) */
+function speakEn(text){
+  try{
+    if(!('speechSynthesis' in window) || !text) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(String(text));
+    u.lang = 'en-US'; u.rate = 0.92;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function speakCurrentWord(){
+  let w = null;
+  if(document.getElementById('screen-card').classList.contains('active')){
+    w = state.deck && state.deck[state.index];
+  } else if(document.getElementById('screen-quiz').classList.contains('active')){
+    w = quizState.deck && quizState.deck[quizState.index];
+  }
+  if(w) speakEn(w.en);
+}
+document.getElementById('speakBtnCard').addEventListener('click', speakCurrentWord);
+document.getElementById('speakBtnQuiz').addEventListener('click', speakCurrentWord);
 
 /* ================= もう一度(encore) ================= */
 document.getElementById('encoreBtn').addEventListener('click', ()=>{
