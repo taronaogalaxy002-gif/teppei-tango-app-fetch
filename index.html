@@ -543,6 +543,7 @@
         <button type="button" class="dir-btn" data-book="target1200">ターゲット1200</button>
         <button type="button" class="dir-btn" data-book="target1000">ターゲット1000</button>
         <button type="button" class="dir-btn" data-book="kobun">古文単語601</button>
+        <button type="button" class="dir-btn" data-book="leap">LEAP</button>
       </div>
     </div>
 
@@ -722,8 +723,13 @@ const KOBUN601_DATA_URLS = [
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/kobun601_part1.json",
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/kobun601_part2.json"
 ];
-const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS, target1000: JUKUGO1000_DATA_URLS, kobun: KOBUN601_DATA_URLS};
-const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000, kobun: 601};
+/* LEAP(改訂版 必携英単語LEAP)のデータ。全2300語 */
+const LEAP_DATA_URLS = [
+  "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/leap_part1.json",
+  "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/leap_part2.json"
+];
+const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS, target1000: JUKUGO1000_DATA_URLS, kobun: KOBUN601_DATA_URLS, leap: LEAP_DATA_URLS};
+const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000, kobun: 601, leap: 2300};
 let curBook = 'teppeki';
 const bookCache = {};
 
@@ -834,12 +840,19 @@ const KOBUN_SECTION_TITLES = [
   "形容動詞 1","形容動詞 2",
   "連語","その他"
 ];
+/* LEAP改訂版: 100語ごとの23セクション */
+const LEAP_SECTION_STARTS = [1,101,201,301,401,501,601,701,801,901,1001,1101,1201,1301,1401,1501,1601,1701,1801,1901,2001,2101,2201];
+const LEAP_SECTION_TITLES = [
+  "単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語",
+  "単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語"
+];
 const BOOK_SECTIONS = {
   teppeki: {starts: SECTION_STARTS, titles: SECTION_TITLES},
   target: {starts: TARGET_SECTION_STARTS, titles: TARGET_SECTION_TITLES},
   target1200: {starts: TARGET1200_SECTION_STARTS, titles: TARGET1200_SECTION_TITLES},
   target1000: {starts: JUKUGO_SECTION_STARTS, titles: JUKUGO_SECTION_TITLES},
-  kobun: {starts: KOBUN_SECTION_STARTS, titles: KOBUN_SECTION_TITLES}
+  kobun: {starts: KOBUN_SECTION_STARTS, titles: KOBUN_SECTION_TITLES},
+  leap: {starts: LEAP_SECTION_STARTS, titles: LEAP_SECTION_TITLES}
 };
 const curStarts = () => BOOK_SECTIONS[curBook].starts;
 const curTitles = () => BOOK_SECTIONS[curBook].titles;
