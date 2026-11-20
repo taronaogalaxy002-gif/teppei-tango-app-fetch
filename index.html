@@ -505,6 +505,19 @@
   .learned-btn{align-self:center; margin:0 0 12px; margin-left:8px; padding:8px 16px; border-radius:999px; border:1.5px solid var(--accent); cursor:pointer; font-family:var(--font-sans); font-weight:700; font-size:.9rem; color:var(--accent); background:transparent;}
   .learned-btn.active{background:var(--accent); color:var(--text-inverse);}
   .xlink-btn{display:block; width:100%; box-sizing:border-box; margin-bottom:14px; padding:13px 16px; font-size:.95rem; font-weight:800; text-align:center; text-decoration:none; border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-elevated); color:var(--text-main);}
+  .lv-wrap{margin-top:14px; border-top:1px dashed var(--border); padding-top:12px;}
+  .lv-title{font-size:.85rem; font-weight:700; margin:0 0 9px; color:var(--text-main);}
+  .lv-row{margin-bottom:9px;}
+  .lv-name{font-size:.78rem; font-weight:700; color:var(--text-main); margin-bottom:3px;}
+  .lv-name span{font-weight:600; color:var(--text-sub); font-size:.7rem;}
+  .lv-track{position:relative; height:20px; border:1px solid var(--border); border-radius:6px; background:var(--bg); overflow:hidden;}
+  .lv-grid{position:absolute; inset:0; display:flex;}
+  .lv-grid i{flex:1; border-left:1px solid var(--border);}
+  .lv-grid i:first-child{border-left:none;}
+  .lv-bar{position:absolute; top:2px; bottom:2px; border-radius:4px; background:var(--accent); background:color-mix(in srgb, var(--accent) var(--lv,80%), transparent); color:#fff; font-size:.62rem; font-weight:700; display:flex; align-items:center; padding:0 6px; white-space:nowrap; overflow:hidden; box-sizing:border-box;}
+  .lv-axis{display:flex; margin-top:3px;}
+  .lv-axis span{flex:1; text-align:center; font-size:.58rem; color:var(--text-sub); line-height:1.35;}
+  .lv-note{font-size:.66rem; color:var(--text-sub); line-height:1.55; margin:8px 0 0;}
   .loading-spinner{
     width:38px; height:38px; border-radius:50%;
     border:4px solid var(--border); border-top-color:var(--accent);
@@ -544,6 +557,31 @@
         <button type="button" class="dir-btn" data-book="target1000">ターゲット1000</button>
         <button type="button" class="dir-btn" data-book="kobun">古文単語601</button>
         <button type="button" class="dir-btn" data-book="leap">LEAP</button>
+      </div>
+      <div class="lv-wrap">
+        <h3 class="lv-title">📊 レベルマップ</h3>
+        <div class="lv-row">
+          <div class="lv-name">ターゲット1200 <span>旺文社</span></div>
+          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:0%; width:33.33%; --lv:40%;">中学〜高校必修</div></div>
+        </div>
+        <div class="lv-row">
+          <div class="lv-name">ターゲット1900 <span>旺文社</span></div>
+          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:33.33%; width:50%; --lv:75%;">共通テスト〜難関私大</div></div>
+        </div>
+        <div class="lv-row">
+          <div class="lv-name">熟語ターゲット1000 <span>旺文社・熟語専用</span></div>
+          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:33.33%; width:50%; --lv:58%;">共通テスト〜難関（難熟語まで）</div></div>
+        </div>
+        <div class="lv-row">
+          <div class="lv-name">LEAP <span>数研出版</span></div>
+          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:33.33%; width:50%; --lv:90%;">共通テスト〜難関大</div><div class="lv-bar" style="left:83.33%; width:16.67%; --lv:45%;">＋α</div></div>
+        </div>
+        <div class="lv-row">
+          <div class="lv-name">鉄壁 <span>KADOKAWA・鉄緑会</span></div>
+          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:66.66%; width:33.34%; --lv:100%;">難関〜最難関（東大・京大）</div></div>
+        </div>
+        <div class="lv-axis"><span>中学</span><span>高校基礎</span><span>共通テスト</span><span>中堅私大</span><span>難関大</span><span>最難関</span></div>
+        <p class="lv-note">※ バーの位置は各出版社の公式の対象レベル表記（旺文社のシリーズ対応レベル、数研出版・KADOKAWAの商品説明）をもとにした目安。LEAPの「＋α」300語は最難関国公立・私大対策。実際の収録語には前後のレベルの語も混ざります。古文単語601は除く。</p>
       </div>
     </div>
 
