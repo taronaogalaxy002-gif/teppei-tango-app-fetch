@@ -1151,10 +1151,23 @@ function shuffle(arr){
 }
 
 /* ================= Screen navigation ================= */
-function showScreen(name){
+function showScreenRaw(name){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
 }
+/* ブラウザ・スマホの「戻る」ボタン対応: 設定以外の画面へ進むときに履歴を1つ積み、戻る操作では設定画面に戻る */
+let navPushed = false;
+try{ history.replaceState({scr:'settings'}, ''); }catch(e){}
+function showScreen(name){
+  if(name !== 'settings' && !navPushed){
+    try{ history.pushState({scr:name}, ''); navPushed = true; }catch(e){}
+  }
+  showScreenRaw(name);
+}
+window.addEventListener('popstate', ()=>{
+  navPushed = false;
+  showScreenRaw('settings');
+});
 
 /* ================= Start ================= */
 document.getElementById('startBtn').addEventListener('click', ()=>{
