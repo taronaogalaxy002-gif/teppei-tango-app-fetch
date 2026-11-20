@@ -522,6 +522,9 @@
   .lv-bar{position:absolute; top:2px; bottom:2px; border-radius:4px; background:var(--accent); background:color-mix(in srgb, var(--accent) var(--lv,80%), transparent); color:#fff; font-size:.62rem; font-weight:700; display:flex; align-items:center; padding:0 6px; white-space:nowrap; overflow:hidden; box-sizing:border-box;}
   .lv-axis{display:flex; margin-top:3px;}
   .lv-axis span{flex:1; text-align:center; font-size:.58rem; color:var(--text-sub); line-height:1.35;}
+  .lv-axis2{display:flex; margin-top:0;}
+  .lv-axis2 span{flex:1; text-align:center; font-size:.54rem; color:var(--text-sub); opacity:.8; line-height:1.3;}
+  .lv-sub{font-size:.66rem; color:var(--text-sub); margin-top:2px; line-height:1.45;}
   .lv-note{font-size:.66rem; color:var(--text-sub); line-height:1.55; margin:8px 0 0;}
   .loading-spinner{
     width:38px; height:38px; border-radius:50%;
@@ -568,41 +571,50 @@
       </div>
       <p class="lv-note">※ パス単1級・リンガメタリカ・単熟語EXは、公開されているデータが本の一部のみのため、収録が足りていません（パス単1級は全2,400語のうち1,869語、リンガメタリカは497フレーズ、単熟語EXは171語）。データは有志の転記をもとに、明らかな誤字を一部修正しています。</p>
       <div class="lv-wrap">
-        <h3 class="lv-title">📊 レベルマップ</h3>
+        <h3 class="lv-title">📊 レベルマップ（詳しい版）</h3>
         <div class="lv-row">
-          <div class="lv-name">ターゲット1200 <span>旺文社</span></div>
-          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:0%; width:28.57%; --lv:40%;">中学〜高校必修</div></div>
+          <div class="lv-name">ターゲット1200 <span>旺文社｜全1,700語（単語1,400＋熟語300）</span></div>
+          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:0%; width:25%; --lv:40%;">中学〜高校必修</div></div>
+          <div class="lv-sub">中学〜高校の必修語が中心。いちばん下の土台になる本。</div>
         </div>
         <div class="lv-row">
-          <div class="lv-name">ターゲット1900 <span>旺文社</span></div>
-          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:28.57%; width:42.86%; --lv:75%;">共通テスト〜難関私大</div></div>
+          <div class="lv-name">ターゲット1900 <span>旺文社｜全1,900語</span></div>
+          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:25%; width:37.5%; --lv:75%;">共通テスト〜難関大</div></div>
+          <div class="lv-sub">中心は共通テスト〜中堅私大。LEAPより少し高い所から始まる。</div>
         </div>
         <div class="lv-row">
-          <div class="lv-name">熟語ターゲット1000 <span>旺文社・熟語専用</span></div>
-          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:28.57%; width:42.86%; --lv:58%;">共通テスト〜難関（難熟語まで）</div></div>
+          <div class="lv-name">熟語ターゲット1000 <span>旺文社・熟語専用｜全1,000熟語</span></div>
+          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:22.5%; width:37.5%; --lv:58%;">共通テスト〜難熟語</div></div>
+          <div class="lv-sub">1900より少し下（高校基礎の終わり）から始まる。単語ではなく熟語だけの本なので帯の意味が少し違う。</div>
         </div>
         <div class="lv-row">
-          <div class="lv-name">LEAP <span>数研出版</span></div>
-          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:28.57%; width:42.86%; --lv:90%;">共通テスト〜難関大</div><div class="lv-bar" style="left:71.43%; width:14.29%; --lv:45%;">＋α</div></div>
+          <div class="lv-name">LEAP <span>数研出版｜全2,300語（基本2,000＋＋α300）</span></div>
+          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:21.25%; width:43.75%; --lv:90%;">共通テスト〜難関大</div><div class="lv-bar" style="left:65%; width:10%; --lv:45%;">＋α</div></div>
+          <div class="lv-sub">1900より少し下から始まって少し上まで伸びる。＋αの300語だけが最難関に届く。</div>
         </div>
         <div class="lv-row">
-          <div class="lv-name">鉄壁 <span>KADOKAWA・鉄緑会</span></div>
-          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:57.14%; width:28.57%; --lv:100%;">難関〜最難関（東大・京大）</div></div>
+          <div class="lv-name">鉄壁 <span>KADOKAWA・鉄緑会｜全2,176語・CEFR B2〜C1</span></div>
+          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:57.5%; width:21.25%; --lv:100%;">難関〜最難関</div></div>
+          <div class="lv-sub">この帯では中心がいちばん高い。最難関の語が厚く、英検準1級の帯にも少し入る。</div>
         </div>
         <div class="lv-row">
-          <div class="lv-name">リンガメタリカ <span>Z会 ※断片のみ収録</span></div>
-          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:57.14%; width:28.57%; --lv:85%;">難関〜最難関</div></div>
+          <div class="lv-name">リンガメタリカ <span>Z会｜本は全1,900語・アプリ収録497 ※断片のみ</span></div>
+          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:55%; width:20%; --lv:85%;">難関〜最難関</div></div>
+          <div class="lv-sub">鉄壁より少し下から始まり、上限も少し低い。話題別の専門フレーズが中心。</div>
         </div>
         <div class="lv-row">
-          <div class="lv-name">単熟語EX <span>ジャパンタイムズ出版・英検準1級 ※断片のみ収録</span></div>
-          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:57.14%; width:28.57%; --lv:80%;">準1級〜最難関</div></div>
+          <div class="lv-name">単熟語EX <span>ジャパンタイムズ出版｜本は全2,412語・アプリ収録171 ※断片のみ</span></div>
+          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:65%; width:21.25%; --lv:80%;">最難関〜英検準1級</div></div>
+          <div class="lv-sub">中心は英検準1級。鉄壁・リンガより右寄り（大学入試より英検寄り）。</div>
         </div>
         <div class="lv-row">
-          <div class="lv-name">パス単1級 <span>旺文社・英検1級 ※一部欠落</span></div>
-          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:71.43%; width:28.57%; --lv:100%;">最難関〜英検1級</div></div>
+          <div class="lv-name">パス単1級 <span>旺文社｜本は全2,400語・アプリ収録1,869 ※一部欠落</span></div>
+          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:72.5%; width:27.5%; --lv:100%;">準1級上位〜英検1級</div></div>
+          <div class="lv-sub">いちばん右。EXよりさらに上で、英検1級の語が中心。</div>
         </div>
-        <div class="lv-axis"><span>中学</span><span>高校基礎</span><span>共通テスト</span><span>中堅私大</span><span>難関大</span><span>最難関</span><span>英検1級</span></div>
-        <p class="lv-note">※ バーの位置は各出版社の公式の対象レベル表記（旺文社のシリーズ対応レベル、数研出版・KADOKAWAの商品説明）をもとにした目安。LEAPの「＋α」300語は最難関国公立・私大対策。実際の収録語には前後のレベルの語も混ざります。古文単語601は除く。パス単1級・リンガメタリカ・単熟語EXは収録データが本の一部のみ（詳細は上の注記）。</p>
+        <div class="lv-axis"><span>中学</span><span>高校基礎</span><span>共通テスト</span><span>中堅私大</span><span>難関大</span><span>最難関</span><span>英検準1級</span><span>英検1級</span></div>
+        <div class="lv-axis2"><span>〜2,000語</span><span>〜3,500語</span><span>〜5,000語</span><span>〜6,000語</span><span>〜7,000語</span><span>〜8,000語</span><span>〜9,000語</span><span>10,000語〜</span></div>
+        <p class="lv-note">※ バーの位置は各出版社の公式の対象レベル表記（旺文社のシリーズ対応レベル、数研出版・KADOKAWAの商品説明）とCEFRをもとにした目安。同じ帯の中での細かいズレは、収録語の傾向からの推定です。下段の語数は「そのレベルに届くまでの累計語彙数」の目安。実際の収録語には前後のレベルの語も混ざります。古文単語601は除く。</p>
       </div>
     </div>
 
