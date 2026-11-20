@@ -337,6 +337,9 @@
   .sec-tile.checked{background:var(--accent); border-color:var(--accent);}
   .sec-tile.checked .sec-num{background:var(--btn-text); border-color:var(--btn-text); color:var(--accent);}
   .sec-tile.checked .sec-title, .sec-tile.checked .sec-range{color:var(--btn-text);}
+  .sec-tile .sec-note{display:block; font-size:.62rem; font-weight:600; color:var(--text-sub); margin-top:2px;}
+  .sec-tile.sec-empty{opacity:.45; cursor:default;}
+  .sec-tile.sec-empty .sec-checkbox{cursor:default;}
 
   .start-btn{
     margin-top:16px; position:sticky; bottom:12px;
@@ -917,22 +920,33 @@ const LEAP_SECTION_TITLES = [
   "単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語",
   "単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語"
 ];
-/* パス単1級: 収集できたセクションのみ(Section 2・7・10と熟語編23・24は公開データなし)。各100語、熟語編22のみ70語 */
-const PASS1_SECTION_STARTS = [1,101,201,301,401,501,601,701,801,901,1001,1100,1200,1300,1400,1500,1600,1700,1800];
+/* パス単1級: 本の全24セクションを表示。Section 2・7・10と熟語編23・24は公開データがなく選択不可(開始位置を次のセクションに重ねて空セクションにする)。熟語編22は70語のみ */
+const PASS1_SECTION_STARTS = [1,101,101,201,301,401,501,501,601,701,701,801,901,1001,1100,1200,1300,1400,1500,1600,1700,1800,1870,1870];
 const PASS1_SECTION_TITLES = [
-  "Section 1","Section 3","Section 4","Section 5","Section 6","Section 8","Section 9","Section 11",
-  "Section 12","Section 13","Section 14","Section 15","Section 16","Section 17","Section 18","Section 19",
-  "Section 20","Section 21","熟語編 Section 22"
+  "Section 1","Section 2","Section 3","Section 4","Section 5","Section 6","Section 7","Section 8",
+  "Section 9","Section 10","Section 11","Section 12","Section 13","Section 14","Section 15","Section 16",
+  "Section 17","Section 18","Section 19","Section 20","Section 21","熟語編 Section 22","熟語編 Section 23","熟語編 Section 24"
 ];
-/* リンガメタリカ: 出典リスト(章)ごとのセクション */
-const LINGUA_SECTION_STARTS = [1,60,138,258,435,478];
+const PASS1_SECTION_NOTES = [
+  "","","","","","","","","","","","","","","","","","","","","","※一部のみ（70語）","",""
+];
+/* リンガメタリカ(2006年版・全11章): 章タイトルは本の目次どおり。データのある章も断片のみ収録。第2・4・5・7・8・9・10章はデータなし(選択不可)。コンクール2は出典リスト名のまま */
+const LINGUA_SECTION_STARTS = [1,60,60,138,138,138,258,435,435,435,435,435,478];
 const LINGUA_SECTION_TITLES = [
-  "第一章","第3章","第六章","コンクール2","第11章 関連語句","第11章 テロリズム"
+  "第1章 グローバル化","第2章 経済","第3章 社会問題","第4章 環境問題","第5章 科学","第6章 医学・生命倫理（1）","コンクール2",
+  "第7章 医学・生命倫理（2）","第8章 言語論・心理学","第9章 インターネット","第10章 差別問題",
+  "第11章 テロ・死刑論・哲学（関連語句）","第11章 テロ・死刑論・哲学（テロリズム）"
 ];
-/* 単熟語EX: 100語ごとの2セクション */
+const LINGUA_SECTION_NOTES = [
+  "※一部のみ","","※一部のみ","","","※一部のみ","※一部のみ","","","","","※一部のみ","※一部のみ"
+];
+/* 単熟語EX: 100語ごとの2セクション(本は全20 Unit構成だが、収録できた171語のUnit境界は特定できないためUnit表示はしない) */
 const EX_SECTION_STARTS = [1,101];
 const EX_SECTION_TITLES = [
   "単語","単語"
+];
+const EX_SECTION_NOTES = [
+  "※一部のみ","※一部のみ"
 ];
 const BOOK_SECTIONS = {
   teppeki: {starts: SECTION_STARTS, titles: SECTION_TITLES},
@@ -941,12 +955,13 @@ const BOOK_SECTIONS = {
   target1000: {starts: JUKUGO_SECTION_STARTS, titles: JUKUGO_SECTION_TITLES},
   kobun: {starts: KOBUN_SECTION_STARTS, titles: KOBUN_SECTION_TITLES},
   leap: {starts: LEAP_SECTION_STARTS, titles: LEAP_SECTION_TITLES},
-  pass1: {starts: PASS1_SECTION_STARTS, titles: PASS1_SECTION_TITLES},
-  lingua: {starts: LINGUA_SECTION_STARTS, titles: LINGUA_SECTION_TITLES},
-  ex: {starts: EX_SECTION_STARTS, titles: EX_SECTION_TITLES}
+  pass1: {starts: PASS1_SECTION_STARTS, titles: PASS1_SECTION_TITLES, notes: PASS1_SECTION_NOTES},
+  lingua: {starts: LINGUA_SECTION_STARTS, titles: LINGUA_SECTION_TITLES, notes: LINGUA_SECTION_NOTES},
+  ex: {starts: EX_SECTION_STARTS, titles: EX_SECTION_TITLES, notes: EX_SECTION_NOTES}
 };
 const curStarts = () => BOOK_SECTIONS[curBook].starts;
 const curTitles = () => BOOK_SECTIONS[curBook].titles;
+const curNotes = () => BOOK_SECTIONS[curBook].notes || [];
 const THEMES = [
   {id:'teppeki', label:'鉄壁',   colors:['#0a0a0a','#b02420','#af8e4c']},
   {id:'target',  label:'Target', colors:['#233e64','#bfa97e','#ffffff']},
@@ -997,7 +1012,7 @@ function applySections(){
   state.selectedSections.clear();
   document.querySelectorAll('.sec-checkbox').forEach(cb=>{
     const idx = parseInt(cb.dataset.sec,10);
-    const on = arr.includes(idx);
+    const on = arr.includes(idx) && !(SECTIONS[idx] && SECTIONS[idx].empty);
     cb.checked = on;
     cb.closest('.sec-tile').classList.toggle('checked', on);
     if(on) state.selectedSections.add(idx);
@@ -1022,9 +1037,11 @@ function getSections(){
   for(let i=0;i<starts.length;i++){
     const startIdx = starts[i]-1;
     const endIdx = (i+1 < starts.length ? starts[i+1]-1 : total) - 1;
+    const empty = startIdx > endIdx || startIdx >= total;
     sections.push({
-      index:i, startIdx, endIdx,
-      startId: wordData[startIdx].id, endId: wordData[endIdx].id,
+      index:i, startIdx, endIdx, empty,
+      startId: empty ? null : wordData[startIdx].id,
+      endId: empty ? null : wordData[endIdx].id,
     });
   }
   return sections;
@@ -1073,11 +1090,12 @@ function renderSectionGrid(){
   grid.innerHTML = SECTIONS.map(s=>{
     const n = s.index+1;
     const title = curTitles()[s.index] || '';
-    return `<label class="sec-tile" data-sec="${s.index}">
-      <input type="checkbox" class="sec-checkbox" data-sec="${s.index}">
+    const note = curNotes()[s.index] || '';
+    return `<label class="sec-tile${s.empty ? ' sec-empty' : ''}" data-sec="${s.index}">
+      <input type="checkbox" class="sec-checkbox" data-sec="${s.index}"${s.empty ? ' disabled' : ''}>
       <span class="sec-num">${n}</span>
-      <span class="sec-title">${title}</span>
-      <span class="sec-range">${s.startId}-${s.endId}</span>
+      <span class="sec-title">${title}${note ? `<span class="sec-note">${note}</span>` : ''}</span>
+      <span class="sec-range">${s.empty ? 'データなし' : s.startId + '-' + s.endId}</span>
     </label>`;
   }).join('');
   if(!grid.dataset.bound){ grid.addEventListener('change', onSectionChange); grid.dataset.bound = '1'; }
@@ -1123,6 +1141,7 @@ function findOfficialSection(id){
 }
 document.getElementById('selectAllBtn').addEventListener('click', ()=>{
   document.querySelectorAll('.sec-checkbox').forEach(cb=>{
+    if(cb.disabled) return;
     cb.checked = true;
     cb.closest('.sec-tile').classList.add('checked');
     state.selectedSections.add(parseInt(cb.dataset.sec,10));
