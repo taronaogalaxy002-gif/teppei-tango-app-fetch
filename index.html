@@ -307,7 +307,7 @@
   }
   .dir-btn.active{background:var(--accent); color:var(--btn-text);}
   #bookToggle{flex-wrap:wrap;}
-  #bookToggle .dir-btn{flex:1 1 28%;}
+  #bookToggle .dir-btn{flex:1 1 28%; max-width:calc((100% - 8px) / 3);}
 
   .bulk-buttons{display:flex; gap:6px; flex:0 0 auto;}
   .bulk-buttons button{
@@ -561,6 +561,7 @@
       <div class="direction-toggle" id="bookToggle">
         <button type="button" class="dir-btn active" data-book="teppeki">鉄壁</button>
         <button type="button" class="dir-btn" data-book="target">ターゲット1900</button>
+        <button type="button" class="dir-btn" data-book="systan">シス単</button>
         <button type="button" class="dir-btn" data-book="target1200">ターゲット1200</button>
         <button type="button" class="dir-btn" data-book="target1000">ターゲット1000</button>
         <button type="button" class="dir-btn" data-book="kobun">古文単語601</button>
@@ -569,7 +570,7 @@
         <button type="button" class="dir-btn" data-book="lingua">リンガメタリカ</button>
         <button type="button" class="dir-btn" data-book="ex">単熟語EX</button>
       </div>
-      <p class="lv-note">※ パス単1級は単語編2,100語を全収録（Section 2・7・10は別の公開データで補完したため、意味の表記が少し簡潔です）、熟語編は300語のうち69語のみです。単熟語EXは全2,412語を収録しています（ブログ掲載の第2版リストより）。リンガメタリカは、公開されているデータが本の一部のみのため、収録が足りていません（497フレーズ）。データは有志の転記をもとに、明らかな誤字を一部修正しています。</p>
+      <p class="lv-note">※ パス単1級は単語編2,100語を全収録（Section 2・7・10は別の公開データで補完したため、意味の表記が少し簡潔です）、熟語編は300語のうち69語のみです。単熟語EXは全2,412語を収録しています（ブログ掲載の第2版リストより）。シス単は全2,027語を収録しています（ブログ掲載の5訂版リストより）。リンガメタリカは、公開されているデータが本の一部のみのため、収録が足りていません（497フレーズ）。データは有志の転記をもとに、明らかな誤字を一部修正しています。</p>
       <div class="lv-wrap">
         <h3 class="lv-title">📊 レベルマップ（詳しい版）</h3>
         <div class="lv-row">
@@ -581,6 +582,11 @@
           <div class="lv-name">ターゲット1900 <span>旺文社｜全1,900語</span></div>
           <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:25%; width:37.5%; --lv:75%;">共通テスト〜難関大</div></div>
           <div class="lv-sub">中心は共通テスト〜中堅私大。LEAPより少し高い所から始まる。</div>
+        </div>
+        <div class="lv-row">
+          <div class="lv-name">シス単 <span>駿台文庫｜全2,027語</span></div>
+          <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:25%; width:37.5%; --lv:70%;">共通テスト〜難関大</div></div>
+          <div class="lv-sub">ターゲット1900とほぼ同格。最後のFinalステージだけ難関大レベルまで上がる。</div>
         </div>
         <div class="lv-row">
           <div class="lv-name">熟語ターゲット1000 <span>旺文社・熟語専用｜全1,000熟語</span></div>
@@ -814,8 +820,13 @@ const EX_DATA_URLS = [
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/ex_part1.json",
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/ex_part2.json"
 ];
-const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS, target1000: JUKUGO1000_DATA_URLS, kobun: KOBUN601_DATA_URLS, leap: LEAP_DATA_URLS, pass1: PASS1_DATA_URLS, lingua: LINGUA_DATA_URLS, ex: EX_DATA_URLS};
-const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000, kobun: 601, leap: 2300, pass1: 2169, lingua: 497, ex: 2412};
+/* シス単(システム英単語 5訂版・駿台文庫)のデータ。全2027語(出典ブログの5訂版リストと照合済み) */
+const SYSTAN_DATA_URLS = [
+  "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/systan_part1.json",
+  "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/systan_part2.json"
+];
+const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS, target1000: JUKUGO1000_DATA_URLS, kobun: KOBUN601_DATA_URLS, leap: LEAP_DATA_URLS, pass1: PASS1_DATA_URLS, lingua: LINGUA_DATA_URLS, ex: EX_DATA_URLS, systan: SYSTAN_DATA_URLS};
+const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000, kobun: 601, leap: 2300, pass1: 2169, lingua: 497, ex: 2412, systan: 2027};
 let curBook = 'teppeki';
 const bookCache = {};
 
@@ -959,6 +970,12 @@ const EX_SECTION_TITLES = [
   "熟語","熟語","熟語","熟語",
   "テクニカルターム","テクニカルターム","テクニカルターム","テクニカルターム"
 ];
+/* シス単(システム英単語 5訂版): 本はStage制だが公開リストにStage境界の情報がないため、LEAPと同様に100語ごとの21セクション(最後は27語) */
+const SYSTAN_SECTION_STARTS = [1,101,201,301,401,501,601,701,801,901,1001,1101,1201,1301,1401,1501,1601,1701,1801,1901,2001];
+const SYSTAN_SECTION_TITLES = [
+  "単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語",
+  "単語","単語","単語","単語","単語","単語","単語","単語","単語","単語"
+];
 const BOOK_SECTIONS = {
   teppeki: {starts: SECTION_STARTS, titles: SECTION_TITLES},
   target: {starts: TARGET_SECTION_STARTS, titles: TARGET_SECTION_TITLES},
@@ -968,7 +985,8 @@ const BOOK_SECTIONS = {
   leap: {starts: LEAP_SECTION_STARTS, titles: LEAP_SECTION_TITLES},
   pass1: {starts: PASS1_SECTION_STARTS, titles: PASS1_SECTION_TITLES, notes: PASS1_SECTION_NOTES},
   lingua: {starts: LINGUA_SECTION_STARTS, titles: LINGUA_SECTION_TITLES, notes: LINGUA_SECTION_NOTES},
-  ex: {starts: EX_SECTION_STARTS, titles: EX_SECTION_TITLES}
+  ex: {starts: EX_SECTION_STARTS, titles: EX_SECTION_TITLES},
+  systan: {starts: SYSTAN_SECTION_STARTS, titles: SYSTAN_SECTION_TITLES}
 };
 const curStarts = () => BOOK_SECTIONS[curBook].starts;
 const curTitles = () => BOOK_SECTIONS[curBook].titles;
