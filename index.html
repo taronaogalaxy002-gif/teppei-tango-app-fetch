@@ -569,7 +569,7 @@
         <button type="button" class="dir-btn" data-book="lingua">リンガメタリカ</button>
         <button type="button" class="dir-btn" data-book="ex">単熟語EX</button>
       </div>
-      <p class="lv-note">※ パス単1級・リンガメタリカ・単熟語EXは、公開されているデータが本の一部のみのため、収録が足りていません（パス単1級は全2,400語のうち1,869語、リンガメタリカは497フレーズ、単熟語EXは171語）。データは有志の転記をもとに、明らかな誤字を一部修正しています。</p>
+      <p class="lv-note">※ パス単1級は単語編2,100語を全収録（Section 2・7・10は別の公開データで補完したため、意味の表記が少し簡潔です）、熟語編は300語のうち69語のみです。単熟語EXは全2,412語を収録しています（ブログ掲載の第2版リストより）。リンガメタリカは、公開されているデータが本の一部のみのため、収録が足りていません（497フレーズ）。データは有志の転記をもとに、明らかな誤字を一部修正しています。</p>
       <div class="lv-wrap">
         <h3 class="lv-title">📊 レベルマップ（詳しい版）</h3>
         <div class="lv-row">
@@ -603,12 +603,12 @@
           <div class="lv-sub">鉄壁より少し下から始まり、上限も少し低い。話題別の専門フレーズが中心。</div>
         </div>
         <div class="lv-row">
-          <div class="lv-name">単熟語EX <span>ジャパンタイムズ出版｜本は全2,412語・アプリ収録171 ※断片のみ</span></div>
+          <div class="lv-name">単熟語EX <span>ジャパンタイムズ出版｜全2,412語</span></div>
           <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:65%; width:21.25%; --lv:80%;">最難関〜英検準1級</div></div>
           <div class="lv-sub">中心は英検準1級。鉄壁・リンガより右寄り（大学入試より英検寄り）。</div>
         </div>
         <div class="lv-row">
-          <div class="lv-name">パス単1級 <span>旺文社｜本は全2,400語・アプリ収録1,869 ※一部欠落</span></div>
+          <div class="lv-name">パス単1級 <span>旺文社｜本は全2,400語・アプリ収録2,169 ※熟語編は一部のみ</span></div>
           <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:72.5%; width:27.5%; --lv:100%;">準1級上位〜英検1級</div></div>
           <div class="lv-sub">いちばん右。EXよりさらに上で、英検1級の語が中心。</div>
         </div>
@@ -799,7 +799,7 @@ const LEAP_DATA_URLS = [
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/leap_part1.json",
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/leap_part2.json"
 ];
-/* パス単1級(でる順パス単 英検1級 5訂版)のデータ。iVocaの有志転記から収集した1869語(本の全2400語のうち、Section 2・7・10と熟語編の一部が欠落) */
+/* パス単1級(でる順パス単 英検1級 5訂版)のデータ。単語編2100語は全収録(Section 2・7・10は別の公開データ=語源集から補完)、熟語編は300語のうち69語のみ */
 const PASS1_DATA_URLS = [
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/pass1_part1.json",
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/pass1_part2.json"
@@ -815,7 +815,7 @@ const EX_DATA_URLS = [
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/ex_part2.json"
 ];
 const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS, target1000: JUKUGO1000_DATA_URLS, kobun: KOBUN601_DATA_URLS, leap: LEAP_DATA_URLS, pass1: PASS1_DATA_URLS, lingua: LINGUA_DATA_URLS, ex: EX_DATA_URLS};
-const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000, kobun: 601, leap: 2300, pass1: 1869, lingua: 497, ex: 171};
+const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000, kobun: 601, leap: 2300, pass1: 2169, lingua: 497, ex: 2412};
 let curBook = 'teppeki';
 const bookCache = {};
 
@@ -932,15 +932,15 @@ const LEAP_SECTION_TITLES = [
   "単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語",
   "単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語"
 ];
-/* パス単1級: 本の全24セクションを表示。Section 2・7・10と熟語編23・24は公開データがなく選択不可(開始位置を次のセクションに重ねて空セクションにする)。熟語編22は70語のみ */
-const PASS1_SECTION_STARTS = [1,101,101,201,301,401,501,501,601,701,701,801,901,1001,1100,1200,1300,1400,1500,1600,1700,1800,1870,1870];
+/* パス単1級: 本の全24セクションを表示。単語編(Section 1〜21)は全収録。熟語編23・24は公開データがなく選択不可(開始位置を末尾に重ねて空セクションにする)。熟語編22は69語のみ */
+const PASS1_SECTION_STARTS = [1,101,201,301,401,501,601,701,801,901,1001,1101,1201,1301,1401,1501,1601,1701,1801,1901,2001,2101,2170,2170];
 const PASS1_SECTION_TITLES = [
   "Section 1","Section 2","Section 3","Section 4","Section 5","Section 6","Section 7","Section 8",
   "Section 9","Section 10","Section 11","Section 12","Section 13","Section 14","Section 15","Section 16",
   "Section 17","Section 18","Section 19","Section 20","Section 21","熟語編 Section 22","熟語編 Section 23","熟語編 Section 24"
 ];
 const PASS1_SECTION_NOTES = [
-  "","","","","","","","","","","","","","","","","","","","","","※一部のみ（70語）","",""
+  "","※補完データ","","","","","※補完データ","","","※補完データ","","","","","","","","","","","","※一部のみ（69語）","",""
 ];
 /* リンガメタリカ(2006年版・全11章): 章タイトルは本の目次どおり。データのある章も断片のみ収録。第2・4・5・7・8・9・10章はデータなし(選択不可)。コンクール2は出典リスト名のまま */
 const LINGUA_SECTION_STARTS = [1,60,60,138,138,138,258,435,435,435,435,435,478];
@@ -952,13 +952,12 @@ const LINGUA_SECTION_TITLES = [
 const LINGUA_SECTION_NOTES = [
   "※一部のみ","","※一部のみ","","","※一部のみ","※一部のみ","","","","","※一部のみ","※一部のみ"
 ];
-/* 単熟語EX: 100語ごとの2セクション(本は全20 Unit構成だが、収録できた171語のUnit境界は特定できないためUnit表示はしない) */
-const EX_SECTION_STARTS = [1,101];
+/* 単熟語EX(第2版): 全2412語を本の構成どおり3パートに分けた25セクション。単語編Unit1-14=No.1-1680(100語ずつ+最後は80語)、熟語編Unit15-17=No.1681-2016、テクニカルターム編Unit18-20=No.2017-2412。Unit単位の境界は公開情報がないため100語区切り */
+const EX_SECTION_STARTS = [1,101,201,301,401,501,601,701,801,901,1001,1101,1201,1301,1401,1501,1601,1681,1781,1881,1981,2017,2117,2217,2317];
 const EX_SECTION_TITLES = [
-  "単語","単語"
-];
-const EX_SECTION_NOTES = [
-  "※一部のみ","※一部のみ"
+  "単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語",
+  "熟語","熟語","熟語","熟語",
+  "テクニカルターム","テクニカルターム","テクニカルターム","テクニカルターム"
 ];
 const BOOK_SECTIONS = {
   teppeki: {starts: SECTION_STARTS, titles: SECTION_TITLES},
@@ -969,7 +968,7 @@ const BOOK_SECTIONS = {
   leap: {starts: LEAP_SECTION_STARTS, titles: LEAP_SECTION_TITLES},
   pass1: {starts: PASS1_SECTION_STARTS, titles: PASS1_SECTION_TITLES, notes: PASS1_SECTION_NOTES},
   lingua: {starts: LINGUA_SECTION_STARTS, titles: LINGUA_SECTION_TITLES, notes: LINGUA_SECTION_NOTES},
-  ex: {starts: EX_SECTION_STARTS, titles: EX_SECTION_TITLES, notes: EX_SECTION_NOTES}
+  ex: {starts: EX_SECTION_STARTS, titles: EX_SECTION_TITLES}
 };
 const curStarts = () => BOOK_SECTIONS[curBook].starts;
 const curTitles = () => BOOK_SECTIONS[curBook].titles;
