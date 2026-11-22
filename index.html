@@ -365,6 +365,12 @@
   }
   .icon-btn:active{opacity:.6;}
   .progress{font-family:var(--font-sans); font-weight:700; font-size:.9rem; color:var(--text-main); background:var(--bg-elevated); border:1px solid var(--border); padding:6px 12px; border-radius:20px;}
+  .header-right{display:flex; align-items:center; gap:8px;}
+  .auto-ctl{display:flex; align-items:center; gap:4px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:20px; padding:3px 8px;}
+  .auto-play-btn{border:none; background:transparent; color:var(--text-main); font-size:.72rem; line-height:1; padding:3px 2px; cursor:pointer;}
+  .auto-play-btn:active{opacity:.6;}
+  .auto-speed{width:58px; height:14px; margin:0; accent-color:var(--accent, #d16a8c);}
+  .auto-speed-val{font-family:var(--font-sans); font-size:.62rem; color:var(--text-sub); min-width:24px; text-align:right;}
 
   .card-stage{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; overflow:hidden; perspective:1700px;}
   .card-wrap{
@@ -650,7 +656,14 @@
   <section id="screen-card" class="screen">
     <header class="card-header">
       <button type="button" class="icon-btn" id="backBtn">← 設定に戻る</button>
-      <div class="progress" id="progressText">0 / 0</div>
+      <div class="header-right">
+        <div class="auto-ctl">
+          <button type="button" class="auto-play-btn" id="autoPlayBtn" title="自動めくり">▶</button>
+          <input type="range" class="auto-speed" id="autoSpeed" min="1" max="8" step="0.5" value="3">
+          <span class="auto-speed-val" id="autoSpeedVal">3秒</span>
+        </div>
+        <div class="progress" id="progressText">0 / 0</div>
+      </div>
     </header>
 
     <button type="button" class="speak-btn" id="speakBtnCard">🔊 発音</button><button type="button" class="learned-btn" id="learnedBtnCard">✓ 覚えた</button>
@@ -1200,6 +1213,7 @@ function shuffle(arr){
 
 /* ================= Screen navigation ================= */
 function showScreenRaw(name){
+  if(name !== 'card') stopAuto();
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
 }
@@ -1219,6 +1233,7 @@ window.addEventListener('popstate', ()=>{
 
 /* ================= Start ================= */
 document.getElementById('startBtn').addEventListener('click', ()=>{
+  stopAuto();
   state.deck = shuffle(buildPool());
   state.index = 0;
   state.flipped = false;
@@ -1310,6 +1325,7 @@ function toggleFlip(){
   const card = document.getElementById('card');
   state.flipped = !state.flipped;
   card.classList.toggle('flipped', state.flipped);
+  if(auto.playing) autoSchedule();
 }
 
 /* ================= Prev / Next ================= */
@@ -1318,15 +1334,61 @@ function goNext(){
     state.index++;
     renderCard();
   }
+  if(auto.playing) autoSchedule();
 }
 function goPrev(){
   if(state.index > 0){
     state.index--;
     renderCard();
   }
+  if(auto.playing) autoSchedule();
 }
 document.getElementById('nextBtn').addEventListener('click', goNext);
 document.getElementById('prevBtn').addEventListener('click', goPrev);
+
+/* ================= 自動めくり ================= */
+const auto = { playing:false, timer:null, speed: (typeof saved.autoSpeed === 'number' && saved.autoSpeed >= 1 && saved.autoSpeed <= 8) ? saved.autoSpeed : 3 };
+function autoSchedule(){
+  clearTimeout(auto.timer);
+  if(!auto.playing) return;
+  auto.timer = setTimeout(autoTick, auto.speed * 1000);
+}
+function autoTick(){
+  if(!auto.playing) return;
+  if(!document.getElementById('screen-card').classList.contains('active')){ stopAuto(); return; }
+  if(!state.flipped){
+    toggleFlip();
+  } else if(state.index < state.deck.length - 1){
+    goNext();
+  } else {
+    state.index = 0;
+    renderCard();
+  }
+  autoSchedule();
+}
+function startAuto(){
+  if(!state.deck || !state.deck.length) return;
+  auto.playing = true;
+  document.getElementById('autoPlayBtn').textContent = '⏸';
+  autoSchedule();
+}
+function stopAuto(){
+  auto.playing = false;
+  clearTimeout(auto.timer);
+  const b = document.getElementById('autoPlayBtn');
+  if(b) b.textContent = '▶';
+}
+document.getElementById('autoPlayBtn').addEventListener('click', ()=>{ auto.playing ? stopAuto() : startAuto(); });
+const autoSpeedEl = document.getElementById('autoSpeed');
+autoSpeedEl.value = auto.speed;
+document.getElementById('autoSpeedVal').textContent = `${auto.speed}秒`;
+autoSpeedEl.addEventListener('input', ()=>{
+  auto.speed = parseFloat(autoSpeedEl.value);
+  saved.autoSpeed = auto.speed;
+  persist();
+  document.getElementById('autoSpeedVal').textContent = `${auto.speed}秒`;
+  if(auto.playing) autoSchedule();
+});
 
 /* ================= Test (Quiz) Mode ================= */
 const quizState = {
