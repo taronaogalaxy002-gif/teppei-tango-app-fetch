@@ -1800,7 +1800,7 @@ const Diag = {
     }
     return shuffle(qs);
   },
-  stop(){ clearInterval(Diag.timer); clearTimeout(Diag.revealTimer); clearTimeout(Diag.nextTimer); Diag.token++; },
+  stop(){ cancelAnimationFrame(Diag.timer); clearTimeout(Diag.revealTimer); clearTimeout(Diag.nextTimer); Diag.token++; },
   showIntro(){
     Diag.stop();
     document.getElementById('dgProg').textContent = '';
@@ -1810,6 +1810,7 @@ const Diag = {
       '<li>1問の制限時間は<b>5秒</b>。選択肢は問題の<b>1秒後</b>に表示</li>' +
       '<li>正解率と回答の速さから、推定語彙数とレベルを診断</li>' +
       '<li>たまに正解が選択肢にない問題もあるよ（「1〜4に正解なし」が正解）</li>' +
+      '<li><b>分からない問題は「分からない」を選んでね</b>。当てずっぽうで答えるより、その方が診断の精度が上がるよ</li>' +
       '<li>1回の診断は運や調子でブレるから、<b>何回もやると平均で精度が上がる</b>よ。レベルマップには過去の平均の位置が表示される</li></ul>' +
       '<button type="button" class="start-btn" id="dgStart">診断スタート</button></div>';
     document.getElementById('dgStart').addEventListener('click', Diag.start);
@@ -1847,24 +1848,28 @@ const Diag = {
       box.innerHTML = q.choices.map((c, i) =>
         '<button type="button" class="dg-choice" data-i="' + i + '"><span class="n">' + (i + 1) + '</span><span>' + escA(c.ja) + '</span></button>'
       ).join('') +
-      '<button type="button" class="dg-choice none" data-i="-1"><span class="n">5</span><span>1〜4に正解なし</span></button>';
+      '<button type="button" class="dg-choice none" data-i="-1"><span class="n">5</span><span>1〜4に正解なし</span></button>' +
+      '<button type="button" class="dg-choice none" data-i="-3"><span class="n">6</span><span>分からない</span></button>';
       box.querySelectorAll('.dg-choice').forEach(b => b.addEventListener('click', () => Diag.answer(parseInt(b.dataset.i, 10))));
       Diag.t0 = Date.now();
-      Diag.timer = setInterval(() => {
+      const tick = () => {
+        if(token !== Diag.token || Diag.locked) return;
         const left = DG_LIMIT_MS - (Date.now() - Diag.t0);
         const bar = document.getElementById('dgBar');
         const tim = document.getElementById('dgTime');
         if(bar) bar.style.width = Math.max(0, left / DG_LIMIT_MS * 100) + '%';
         if(tim) tim.textContent = Math.max(0, left / 1000).toFixed(1);
-        if(left <= 0) Diag.timeout();
-      }, 50);
+        if(left <= 0){ Diag.timeout(); return; }
+        Diag.timer = requestAnimationFrame(tick);
+      };
+      Diag.timer = requestAnimationFrame(tick);
     }, DG_DELAY_MS);
   },
   answer(i){
     if(Diag.locked) return;
     const q = Diag.qs[Diag.idx];
     const ms = Date.now() - Diag.t0;
-    const correct = i === -1 ? q.noneCorrect : !!(q.choices[i] && q.choices[i].correct);
+    const correct = i === -1 ? q.noneCorrect : i === -3 ? false : !!(q.choices[i] && q.choices[i].correct);
     Diag.finishQ(i, correct, Math.min(ms, DG_LIMIT_MS));
   },
   timeout(){
@@ -1873,7 +1878,7 @@ const Diag = {
   },
   finishQ(picked, correct, ms){
     Diag.locked = true;
-    clearInterval(Diag.timer);
+    cancelAnimationFrame(Diag.timer);
     const q = Diag.qs[Diag.idx];
     q.result = { correct, ms };
     document.querySelectorAll('#dgChoices .dg-choice').forEach(b => {
