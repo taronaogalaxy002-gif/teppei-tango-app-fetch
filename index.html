@@ -461,7 +461,7 @@
     background:var(--bg-elevated); border:1px solid var(--border); border-radius:18px;
     padding:26px 18px; margin-bottom:16px; box-shadow:var(--shadow);
   }
-  .quiz-choices{display:flex; flex-direction:column; gap:8px;}
+  .quiz-choices{display:flex; flex-direction:column; gap:8px; flex:1; min-height:0; overflow-y:auto;}
   .quiz-choices.waiting .quiz-choice{opacity:0; pointer-events:none;}
   .quiz-choice{transition:opacity .15s ease;}
   #actBtn{position:fixed; top:calc(10px + env(safe-area-inset-top)); right:12px; z-index:900; width:44px; height:44px; border-radius:50%; border:1.5px solid var(--border); background:var(--bg-elevated); color:var(--text-main); font-size:1.15rem; box-shadow:0 2px 10px rgba(0,0,0,.25); cursor:pointer;}
@@ -531,7 +531,10 @@
     margin-top:8px; background:transparent; color:var(--text-sub); border:1.3px dashed var(--border);
     border-radius:12px; padding:10px; font-size:.78rem; font-weight:700; font-family:var(--font-sans); cursor:pointer;
   }
-  .quiz-reveal{display:none; flex-direction:column; margin-top:16px; padding-top:16px; border-top:1px dashed var(--border);}
+  .quiz-reveal{display:none; flex-direction:column; margin-top:16px; padding-top:16px; border-top:1px dashed var(--border); min-height:0;}
+  .quiz-reveal-scroll{overflow-y:auto; min-height:0;}
+  #screen-quiz.lock, #screen-diag.lock{flex:none; height:100vh; height:100dvh; box-sizing:border-box;}
+  #dgBody{flex:1; min-height:0; overflow-y:auto;}
   .quiz-reveal.show{display:flex;}
   .quiz-reveal-label{font-size:.72rem; font-weight:800; margin-bottom:8px;}
   .quiz-reveal-label.ok{color:var(--badge-syn-text);}
@@ -583,6 +586,12 @@
   .lv-axis2 span{flex:1; text-align:center; font-size:.54rem; color:var(--text-sub); opacity:.8; line-height:1.3;}
   .lv-sub{font-size:.66rem; color:var(--text-sub); margin-top:2px; line-height:1.45;}
   .lv-note{font-size:.66rem; color:var(--text-sub); line-height:1.55; margin:8px 0 0;}
+  .lv-map{position:relative;}
+  .lv-avg-line{position:absolute; top:0; bottom:0; width:0; border-left:2px dashed #e5484d; z-index:5; pointer-events:none;}
+  .lv-avg-tag{position:absolute; top:-1px; left:0; transform:translateX(-50%); background:#e5484d; color:#fff; font-size:.56rem; font-weight:700; padding:1px 6px; border-radius:99px; white-space:nowrap;}
+  .lv-row.rec .lv-bar{background:#e5484d; color:#fff;}
+  .lv-row.rec .lv-name{color:#e5484d;}
+  .lv-name span.lv-rec-badge{display:inline-block; background:#e5484d; color:#fff; font-size:.6rem; font-weight:700; padding:1px 7px; border-radius:99px; margin-left:6px;}
   .loading-spinner{
     width:38px; height:38px; border-radius:50%;
     border:4px solid var(--border); border-top-color:var(--accent);
@@ -643,6 +652,8 @@
       <p class="lv-note">※ パス単1級は単語編2,100語を全収録（Section 2・7・10は別の公開データで補完したため、意味の表記が少し簡潔です）、熟語編は300語のうち69語のみです。単熟語EXは全2,412語を収録しています（ブログ掲載の第2版リストより）。シス単は全2,027語を収録しています（ブログ掲載の5訂版リストより）。リンガメタリカは、公開されているデータが本の一部のみのため、収録が足りていません（497フレーズ）。データは有志の転記をもとに、明らかな誤字を一部修正しています。</p>
       <div class="lv-wrap">
         <h3 class="lv-title">📊 レベルマップ（詳しい版）</h3>
+        <div class="lv-map" id="lvMap">
+        <div class="lv-avg-line" id="lvAvgLine" hidden><span class="lv-avg-tag" id="lvAvgTag"></span></div>
         <div class="lv-row">
           <div class="lv-name">ターゲット1200 <span>旺文社｜全1,700語（単語1,400＋熟語300）</span></div>
           <div class="lv-track"><div class="lv-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="lv-bar" style="left:0%; width:25%; --lv:40%;">中学〜高校必修</div></div>
@@ -690,6 +701,8 @@
         </div>
         <div class="lv-axis"><span>中学</span><span>高校基礎</span><span>共通テスト</span><span>中堅私大</span><span>難関大</span><span>最難関</span><span>英検準1級</span><span>英検1級</span></div>
         <div class="lv-axis2"><span>〜2,000語</span><span>〜3,500語</span><span>〜5,000語</span><span>〜6,000語</span><span>〜7,000語</span><span>〜8,000語</span><span>〜9,000語</span><span>10,000語〜</span></div>
+        </div>
+        <p class="lv-note" id="lvAvgNote"></p>
         <p class="lv-note">※ バーの位置は各出版社の公式の対象レベル表記（旺文社のシリーズ対応レベル、数研出版・KADOKAWAの商品説明）とCEFRをもとにした目安。同じ帯の中での細かいズレは、収録語の傾向からの推定です。下段の語数は「そのレベルに届くまでの累計語彙数」の目安。実際の収録語には前後のレベルの語も混ざります。古文単語601は除く。</p>
       </div>
     </div>
@@ -723,6 +736,7 @@
       <div class="header-right">
         <div class="auto-ctl">
           <button type="button" class="auto-play-btn" id="autoPlayBtn" title="自動めくり">▶</button>
+          <button type="button" class="auto-play-btn" id="autoSoundBtn" title="自動めくり中の発音オン/オフ">🔊</button>
           <input type="range" class="auto-speed" id="autoSpeed" min="1" max="8" step="0.5" value="3">
           <span class="auto-speed-val" id="autoSpeedVal">3秒</span>
         </div>
@@ -774,10 +788,12 @@
       <button type="button" class="quiz-skip" id="quizSkipBtn">skip(わからない)</button>
 
       <div class="quiz-reveal" id="quizReveal">
-        <div class="quiz-reveal-label" id="quizRevealLabel"></div>
-        <div class="card-text" id="quizRevealAnswer"></div>
-        <div class="related-area" id="quizRelatedArea"></div>
-        <div class="quiz-reveal-time" id="quizRevealTime"></div>
+        <div class="quiz-reveal-scroll">
+          <div class="quiz-reveal-label" id="quizRevealLabel"></div>
+          <div class="card-text" id="quizRevealAnswer"></div>
+          <div class="related-area" id="quizRelatedArea"></div>
+          <div class="quiz-reveal-time" id="quizRevealTime"></div>
+        </div>
         <button type="button" class="start-btn" id="quizNextBtn">次へ →</button>
       </div>
     </div>
@@ -1299,6 +1315,7 @@ function showScreenRaw(name){
   if(name !== 'card' && window.__actFlush) window.__actFlush();
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
+  ['quiz','diag'].forEach(n => { const s = document.getElementById('screen-' + n); if(s) s.classList.toggle('lock', n === name); });
 }
 /* ブラウザ・スマホの「戻る」ボタン対応: 設定以外の画面へ進むときに履歴を1つ積み、戻る操作では設定画面に戻る */
 let navPushed = false;
@@ -1431,7 +1448,8 @@ document.getElementById('nextBtn').addEventListener('click', goNext);
 document.getElementById('prevBtn').addEventListener('click', goPrev);
 
 /* ================= 自動めくり ================= */
-const auto = { playing:false, timer:null, speed: (typeof saved.autoSpeed === 'number' && saved.autoSpeed >= 1 && saved.autoSpeed <= 8) ? saved.autoSpeed : 3 };
+const auto = { playing:false, timer:null, speed: (typeof saved.autoSpeed === 'number' && saved.autoSpeed >= 1 && saved.autoSpeed <= 8) ? saved.autoSpeed : 3, sound: saved.autoSound !== false };
+function autoSpeak(){ if(auto.playing && auto.sound) speakCurrentWord(); }
 function autoSchedule(){
   clearTimeout(auto.timer);
   if(!auto.playing) return;
@@ -1444,9 +1462,11 @@ function autoTick(){
     toggleFlip();
   } else if(state.index < state.deck.length - 1){
     goNext();
+    autoSpeak();
   } else {
     state.index = 0;
     renderCard();
+    autoSpeak();
   }
   autoSchedule();
 }
@@ -1455,6 +1475,7 @@ function startAuto(){
   auto.playing = true;
   document.getElementById('autoPlayBtn').textContent = '⏸';
   autoSchedule();
+  autoSpeak();
 }
 function stopAuto(){
   auto.playing = false;
@@ -1473,6 +1494,16 @@ autoSpeedEl.addEventListener('input', ()=>{
   document.getElementById('autoSpeedVal').textContent = `${auto.speed}秒`;
   if(auto.playing) autoSchedule();
 });
+const autoSoundBtn = document.getElementById('autoSoundBtn');
+function paintAutoSound(){ if(!autoSoundBtn) return; autoSoundBtn.textContent = auto.sound ? '🔊' : '🔇'; autoSoundBtn.style.opacity = auto.sound ? '1' : '.5'; }
+if(autoSoundBtn) autoSoundBtn.addEventListener('click', ()=>{
+  auto.sound = !auto.sound;
+  saved.autoSound = auto.sound;
+  persist();
+  paintAutoSound();
+  if(auto.sound) autoSpeak();
+});
+paintAutoSound();
 
 /* ================= Test (Quiz) Mode ================= */
 const quizState = {
@@ -1752,9 +1783,60 @@ function updateDiagSummary(){
   const el = document.getElementById('diagSummary');
   if(!el) return;
   const h = Array.isArray(saved.diagHistory) ? saved.diagHistory : [];
-  if(!h.length){ el.textContent = ''; return; }
+  if(!h.length){ el.textContent = ''; updateLvAvg(0, 0); return; }
   const a = Math.round(h.reduce((x, y) => x + y, 0) / h.length / 10) * 10;
   el.textContent = 'あなたの平均：約 ' + a.toLocaleString() + ' 語（診断' + h.length + '回）';
+  updateLvAvg(a, h.length);
+}
+/* レベルマップ: 帯ごとの累計語彙数 → マップ上の%位置(帯ごとに線形) */
+const LV_VOCAB_SEG = [[0,2000,0],[2000,3500,12.5],[3500,5000,25],[5000,6000,37.5],[6000,7000,50],[7000,8000,62.5],[8000,9000,75],[9000,12000,87.5]];
+function lvVocabToPct(v){
+  if(v <= 0) return 0;
+  for(let i = LV_VOCAB_SEG.length - 1; i >= 0; i--){
+    const v0 = LV_VOCAB_SEG[i][0], v1 = LV_VOCAB_SEG[i][1], p0 = LV_VOCAB_SEG[i][2];
+    if(v >= v0){
+      const p1 = (i + 1 < LV_VOCAB_SEG.length) ? LV_VOCAB_SEG[i + 1][2] : 100;
+      return Math.min(100, p0 + (Math.min(v, v1) - v0) / (v1 - v0) * (p1 - p0));
+    }
+  }
+  return 0;
+}
+/* おすすめ判定: 帯に沿った本の梯子。線がその本の担当範囲の7割を超えたら1つ上を勧める */
+const LV_SEGMENTS = [
+  { from:0, to:25, row:0, name:'ターゲット1200' },
+  { from:25, to:50, row:1, name:'ターゲット1900' },
+  { from:50, to:75, row:5, name:'鉄壁' },
+  { from:75, to:87.5, row:7, name:'単熟語EX' },
+  { from:87.5, to:100.01, row:8, name:'パス単1級' },
+];
+function updateLvAvg(avg, count){
+  const line = document.getElementById('lvAvgLine');
+  const tag = document.getElementById('lvAvgTag');
+  const note = document.getElementById('lvAvgNote');
+  const rows = document.querySelectorAll('#lvMap .lv-row');
+  rows.forEach(r => { r.classList.remove('rec'); const b = r.querySelector('.lv-rec-badge'); if(b) b.remove(); });
+  if(!avg || !rows.length){ if(line) line.hidden = true; if(note) note.textContent = ''; return; }
+  const pct = lvVocabToPct(avg);
+  if(line && tag){
+    line.hidden = false;
+    line.style.left = pct.toFixed(1) + '%';
+    tag.textContent = '平均 約' + avg.toLocaleString() + '語';
+    tag.style.transform = pct < 12 ? 'translateX(-8%)' : (pct > 88 ? 'translateX(-92%)' : 'translateX(-50%)');
+  }
+  let seg = LV_SEGMENTS.find(s => pct >= s.from && pct < s.to) || LV_SEGMENTS[LV_SEGMENTS.length - 1];
+  let rec = seg, advanced = false;
+  const prog = (pct - seg.from) / (seg.to - seg.from);
+  if(prog >= 0.7){
+    const idx = LV_SEGMENTS.indexOf(seg);
+    if(idx + 1 < LV_SEGMENTS.length){ rec = LV_SEGMENTS[idx + 1]; advanced = true; }
+  }
+  const row = rows[rec.row];
+  if(row){
+    row.classList.add('rec');
+    const nameEl = row.querySelector('.lv-name');
+    if(nameEl){ const b = document.createElement('span'); b.className = 'lv-rec-badge'; b.textContent = 'おすすめ'; nameEl.appendChild(b); }
+  }
+  if(note) note.textContent = '📍 赤い点線が診断の平均（' + count + '回分）の位置。' + (advanced ? '今の本の終盤まで来ているから、1つ上の『' + rec.name + '』がおすすめ。' : 'いまのおすすめは『' + rec.name + '』だよ。');
 }
 const DG_BANDS = [
   { key:'chus',   label:'中学',       width:1500, n:4 },
