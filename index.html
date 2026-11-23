@@ -614,6 +614,9 @@
       <p class="subtitle" id="appSubtitle">全2176語 収録</p>
     </header>
 
+    <button type="button" class="start-btn" id="diagBtn">📊 語彙力診断（25問）</button>
+    <p class="hint" id="diagSummary" style="text-align:center; margin:6px 0 2px;"></p>
+
     <div class="panel">
       <h2 class="panel-title">テーマ</h2>
       <div class="theme-switcher" id="themeSwitcher"></div>
@@ -711,7 +714,6 @@
 
     <button type="button" class="start-btn" id="startBtn" disabled>スタート</button>
     <button type="button" class="test-btn" id="testBtn" disabled>テスト</button>
-    <button type="button" class="test-btn" id="diagBtn">📊 語彙力診断（25問）</button>
   </section>
 
   <section id="screen-card" class="screen">
@@ -1732,8 +1734,17 @@ function initApp(){
   }
   loadLearned();
   applySections();
+  updateDiagSummary();
 }
 /* ================= 語彙力診断 ================= */
+function updateDiagSummary(){
+  const el = document.getElementById('diagSummary');
+  if(!el) return;
+  const h = Array.isArray(saved.diagHistory) ? saved.diagHistory : [];
+  if(!h.length){ el.textContent = ''; return; }
+  const a = Math.round(h.reduce((x, y) => x + y, 0) / h.length / 10) * 10;
+  el.textContent = 'あなたの平均：約 ' + a.toLocaleString() + ' 語（診断' + h.length + '回）';
+}
 const DG_BANDS = [
   { key:'chus',   label:'中学',       width:1500, n:4 },
   { key:'kiso',   label:'高校基礎',   width:1500, n:4 },
@@ -1798,7 +1809,8 @@ const Diag = {
       '<ul class="dg-rules"><li>いろんな単語帳からランダムに<b>25問</b>出題（英→日）</li>' +
       '<li>1問の制限時間は<b>5秒</b>。選択肢は問題の<b>1秒後</b>に表示</li>' +
       '<li>正解率と回答の速さから、推定語彙数とレベルを診断</li>' +
-      '<li>たまに正解が選択肢にない問題もあるよ（「1〜4に正解なし」が正解）</li></ul>' +
+      '<li>たまに正解が選択肢にない問題もあるよ（「1〜4に正解なし」が正解）</li>' +
+      '<li>1回の診断は運や調子でブレるから、<b>何回もやると平均で精度が上がる</b>よ。レベルマップには過去の平均の位置が表示される</li></ul>' +
       '<button type="button" class="start-btn" id="dgStart">診断スタート</button></div>';
     document.getElementById('dgStart').addEventListener('click', Diag.start);
   },
@@ -1900,12 +1912,20 @@ const Diag = {
     });
     est = Math.round(est / 10) * 10;
     const level = DG_LEVELS.find(l => est <= l.to) || DG_LEVELS[DG_LEVELS.length - 1];
-    const avg = Diag.qs.length ? (totalMs / Diag.qs.length / 1000).toFixed(1) : '0.0';
+    const avgSec = Diag.qs.length ? (totalMs / Diag.qs.length / 1000).toFixed(1) : '0.0';
+    if(!Array.isArray(saved.diagHistory)) saved.diagHistory = [];
+    saved.diagHistory.push(est);
+    if(saved.diagHistory.length > 50) saved.diagHistory = saved.diagHistory.slice(-50);
+    persist();
+    const histN = saved.diagHistory.length;
+    const avgEst = Math.round(saved.diagHistory.reduce((a, b) => a + b, 0) / histN / 10) * 10;
+    const avgLevel = DG_LEVELS.find(l => avgEst <= l.to) || DG_LEVELS[DG_LEVELS.length - 1];
+    updateDiagSummary();
     const mapRows = DG_MAP.map((r, i) => {
       const from = i === 0 ? 0 : DG_MAP[i - 1].to;
-      const mine = est <= r.to && (i === 0 || est > from);
+      const mine = avgEst <= r.to && (i === 0 || avgEst > from);
       const cum = r.to === Infinity ? '10,000語〜' : '〜' + r.to.toLocaleString() + '語';
-      return '<div class="dg-map-row' + (mine ? ' mine' : '') + '"><span class="dg-map-name">' + r.name + '</span><span class="dg-map-cum">' + cum + '</span>' + (mine ? '<span class="dg-map-you">← あなたはここ</span>' : '') + '</div>';
+      return '<div class="dg-map-row' + (mine ? ' mine' : '') + '"><span class="dg-map-name">' + r.name + '</span><span class="dg-map-cum">' + cum + '</span>' + (mine ? '<span class="dg-map-you">← あなたの平均はここ</span>' : '') + '</div>';
     }).join('');
     const bandHtml = bandRows.map(b =>
       '<div class="dg-band-row"><span class="dg-band-name">' + b.label + '</span><div class="dg-band-bar"><div class="dg-band-fill" style="width:' + Math.round(b.adj * 100) + '%"></div></div><span class="dg-band-pct">正解' + b.pct + '%</span></div>'
@@ -1914,12 +1934,13 @@ const Diag = {
       '<div class="panel"><h2 class="panel-title">診断結果</h2>' +
       '<div class="dg-est-label">推定語彙数</div><div class="dg-est">約 ' + est.toLocaleString() + ' 語</div>' +
       '<div class="dg-level">' + level.name + '</div>' +
-      '<div class="dg-avg">' + Diag.qs.length + '問中 ' + totalCorrect + '問正解 ／ 平均回答時間 ' + avg + '秒</div>' +
-      '<div class="dg-axis"><div class="dg-axis-fill" style="width:' + Math.min(100, est / 12000 * 100) + '%"></div><div class="dg-axis-dot" style="left:' + Math.min(100, est / 12000 * 100) + '%"></div></div>' +
+      '<div class="dg-avg">' + Diag.qs.length + '問中 ' + totalCorrect + '問正解 ／ 平均回答時間 ' + avgSec + '秒</div>' +
+      '<div class="dg-avg">過去' + histN + '回の平均：約 ' + avgEst.toLocaleString() + ' 語（' + avgLevel.name + '）</div>' +
+      '<div class="dg-axis"><div class="dg-axis-fill" style="width:' + Math.min(100, avgEst / 12000 * 100) + '%"></div><div class="dg-axis-dot" style="left:' + Math.min(100, avgEst / 12000 * 100) + '%"></div></div>' +
       '<div class="dg-axis-labels"><span>0</span><span>6,000</span><span>12,000語</span></div>' +
       mapRows +
       '<h3 class="act-h">レベル帯ごとの結果</h3>' + bandHtml +
-      '<p class="act-note">※ 推定は目安です。正解は回答速度で重み付けし、5択の当て推量（20%）を差し引いて計算しています。バーの長さはそのレベル帯への到達度の推定です。</p>' +
+      '<p class="act-note">※ 推定は目安です。正解は回答速度で重み付けし、5択の当て推量（20%）を差し引いて計算しています。バーの長さはそのレベル帯への到達度の推定です。<br>※ 診断は1回だと運や調子でブレます。何回もやって平均を見ると精度が上がるので、レベルマップの位置は過去の平均で表示しています。</p>' +
       '<div class="dg-btn-col"><button type="button" class="start-btn" id="dgAgain">もう一度診断</button>' +
       '<button type="button" class="test-btn" id="dgHome">設定に戻る</button></div></div>';
     document.getElementById('dgAgain').addEventListener('click', Diag.start);
