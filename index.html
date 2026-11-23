@@ -569,6 +569,8 @@
   .tips-close-btn{margin-top:12px; padding:11px; font-size:.95rem; font-weight:700; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg); color:var(--text-main); cursor:pointer;}
   .learned-btn{align-self:center; margin:0 0 12px; margin-left:8px; padding:8px 16px; border-radius:999px; border:1.5px solid var(--accent); cursor:pointer; font-family:var(--font-sans); font-weight:700; font-size:.9rem; color:var(--accent); background:transparent;}
   .learned-btn.active{background:var(--accent); color:var(--text-inverse);}
+  .weak-btn{border-color:#e5484d; color:#e5484d;}
+  .weak-btn.active{background:#e5484d; color:#fff;}
   .xlink-btn{display:block; width:100%; box-sizing:border-box; margin-bottom:14px; padding:13px 16px; font-size:.95rem; font-weight:800; text-align:center; text-decoration:none; border:1px solid var(--border); border-radius:var(--radius); background:var(--bg-elevated); color:var(--text-main);}
   .lv-wrap{margin-top:14px; border-top:1px dashed var(--border); padding-top:12px;}
   .lv-title{font-size:.85rem; font-weight:700; margin:0 0 9px; color:var(--text-main);}
@@ -648,6 +650,7 @@
         <button type="button" class="dir-btn" data-book="lingua">リンガメタリカ</button>
         <button type="button" class="dir-btn" data-book="ex">単熟語EX</button>
         <button type="button" class="dir-btn" data-book="polysemy">多義語</button>
+        <button type="button" class="dir-btn" data-book="weak">苦手</button>
       </div>
       <p class="lv-note">※ パス単1級は単語編2,100語を全収録（Section 2・7・10は別の公開データで補完したため、意味の表記が少し簡潔です）、熟語編は300語のうち69語のみです。単熟語EXは全2,412語を収録しています（ブログ掲載の第2版リストより）。シス単は全2,027語を収録しています（ブログ掲載の5訂版リストより）。リンガメタリカは、公開されているデータが本の一部のみのため、収録が足りていません（497フレーズ）。データは有志の転記をもとに、明らかな誤字を一部修正しています。</p>
       <div class="lv-wrap">
@@ -744,7 +747,7 @@
       </div>
     </header>
 
-    <button type="button" class="speak-btn" id="speakBtnCard">🔊 発音</button><button type="button" class="learned-btn" id="learnedBtnCard">✓ 覚えた</button>
+    <button type="button" class="speak-btn" id="speakBtnCard">🔊 発音</button><button type="button" class="learned-btn" id="learnedBtnCard">✓ 覚えた</button><button type="button" class="learned-btn weak-btn" id="weakBtnCard">⚠ 苦手</button>
 
     <div class="card-stage">
       <div class="card-wrap" id="cardWrap">
@@ -778,7 +781,7 @@
       <div class="progress" id="quizProgressText">0 / 0</div>
     </header>
 
-    <button type="button" class="speak-btn" id="speakBtnQuiz">🔊 発音</button><button type="button" class="learned-btn" id="learnedBtnQuiz">✓ 覚えた</button>
+    <button type="button" class="speak-btn" id="speakBtnQuiz">🔊 発音</button><button type="button" class="learned-btn" id="learnedBtnQuiz">✓ 覚えた</button><button type="button" class="learned-btn weak-btn" id="weakBtnQuiz">⚠ 苦手</button>
 
     <div class="quiz-body">
       <div class="quiz-timer" id="quizTimer">0.0秒</div>
@@ -930,14 +933,15 @@ const SYSTAN_DATA_URLS = [
 const POLYSEMY_DATA_URLS = [
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/polysemy_part1.json"
 ];
-const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS, target1000: JUKUGO1000_DATA_URLS, kobun: KOBUN601_DATA_URLS, leap: LEAP_DATA_URLS, pass1: PASS1_DATA_URLS, lingua: LINGUA_DATA_URLS, ex: EX_DATA_URLS, systan: SYSTAN_DATA_URLS, polysemy: POLYSEMY_DATA_URLS};
-const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000, kobun: 601, leap: 2300, pass1: 2169, lingua: 497, ex: 2412, systan: 2027, polysemy: 589};
+const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS, target1000: JUKUGO1000_DATA_URLS, kobun: KOBUN601_DATA_URLS, leap: LEAP_DATA_URLS, pass1: PASS1_DATA_URLS, lingua: LINGUA_DATA_URLS, ex: EX_DATA_URLS, systan: SYSTAN_DATA_URLS, polysemy: POLYSEMY_DATA_URLS, weak: []};
+const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000, kobun: 601, leap: 2300, pass1: 2169, lingua: 497, ex: 2412, systan: 2027, polysemy: 589, weak: 0};
 let curBook = 'teppeki';
 const bookCache = {};
 
 let wordData = [];
 
 async function fetchBookWords(key){
+  if(key === 'weak') return buildWeakList();
   if(bookCache[key]) return bookCache[key];
   const results = await Promise.all(BOOK_URLS[key].map(async (url)=>{
     const res = await fetch(url);
@@ -949,6 +953,31 @@ async function fetchBookWords(key){
   if(list.length !== BOOK_EXPECTED[key]) throw new Error('語数が ' + list.length + ' 語(期待値 ' + BOOK_EXPECTED[key] + ' 語)');
   bookCache[key] = list;
   return list;
+}
+/* 「苦手」ブック: 全ブックの苦手チェックを横断して集める(キャッシュせず毎回組み立てる) */
+async function buildWeakList(){
+  const keys = Object.keys(BOOK_URLS).filter(k => k !== 'weak');
+  const seen = new Set(); const out = [];
+  for(const k of keys){
+    const marks = saved.weak && saved.weak[k];
+    if(!Array.isArray(marks) || !marks.length) continue;
+    const list = await fetchBookWords(k);
+    const byId = new Map(list.map(w => [w.id, w]));
+    for(const id of marks){
+      const w = byId.get(id);
+      if(!w) continue;
+      const enKey = String(w.en || '').toLowerCase();
+      if(seen.has(enKey)) continue;
+      seen.add(enKey);
+      out.push({id: out.length + 1, en: w.en, ja: w.ja, syn: w.syn, ant: w.ant, _src: k, _sid: w.id});
+    }
+  }
+  const starts = []; const titles = [];
+  for(let s = 1; s <= out.length; s += 100){ starts.push(s); titles.push('苦手'); }
+  if(!starts.length){ starts.push(1); titles.push('苦手'); }
+  BOOK_SECTIONS.weak.starts = starts;
+  BOOK_SECTIONS.weak.titles = titles;
+  return out;
 }
 
 async function loadWordData(){
@@ -981,6 +1010,7 @@ async function setBook(key){
     curBook = key; wordData = list;
     saved.book = key; persist();
     loadLearned();
+    loadWeak();
     SECTIONS = getSections();
     renderSectionGrid();
     applySections();
@@ -1097,7 +1127,8 @@ const BOOK_SECTIONS = {
   lingua: {starts: LINGUA_SECTION_STARTS, titles: LINGUA_SECTION_TITLES, notes: LINGUA_SECTION_NOTES},
   ex: {starts: EX_SECTION_STARTS, titles: EX_SECTION_TITLES},
   systan: {starts: SYSTAN_SECTION_STARTS, titles: SYSTAN_SECTION_TITLES},
-  polysemy: {starts: POLYSEMY_SECTION_STARTS, titles: POLYSEMY_SECTION_TITLES}
+  polysemy: {starts: POLYSEMY_SECTION_STARTS, titles: POLYSEMY_SECTION_TITLES},
+  weak: {starts: [1], titles: ['苦手']}
 };
 const curStarts = () => BOOK_SECTIONS[curBook].starts;
 const curTitles = () => BOOK_SECTIONS[curBook].titles;
@@ -1122,7 +1153,7 @@ const state = {
 
 /* ================= 保存(設定・範囲・覚えたチェック) ================= */
 const SAVE_KEY = 'tango_fc_v1';
-let saved = {book:'teppeki', theme:null, direction:null, sections:{}, learned:{}};
+let saved = {book:'teppeki', theme:null, direction:null, sections:{}, learned:{}, weak:{}};
 try{ const p = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); if(p && typeof p === 'object') saved = Object.assign(saved, p); }catch(e){}
 function persist(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(saved)); }catch(e){} }
 let learnedSet = new Set();
@@ -1144,6 +1175,40 @@ function updateLearnedBtns(){
   ['learnedBtnCard','learnedBtnQuiz'].forEach(id=>{
     const b = document.getElementById(id);
     if(b){ b.classList.toggle('active', on); b.textContent = on ? '✓ 覚えた（出題率 半分）' : '✓ 覚えた'; }
+  });
+}
+/* ================= 苦手チェック(全ブック横断) ================= */
+let weakSet = new Set();
+function loadWeak(){ weakSet = new Set(Array.isArray(saved.weak && saved.weak[curBook]) ? saved.weak[curBook] : []); }
+function weakOrigin(w){ return w && w._src ? [w._src, w._sid] : [curBook, w && w.id]; }
+function isWeak(w){
+  if(!w) return false;
+  const o = weakOrigin(w);
+  if(o[0] === curBook) return weakSet.has(o[1]);
+  const arr = saved.weak && saved.weak[o[0]];
+  return Array.isArray(arr) && arr.includes(o[1]);
+}
+function setWeak(w, on){
+  if(!w) return;
+  const o = weakOrigin(w);
+  if(!saved.weak) saved.weak = {};
+  if(o[0] === curBook){
+    if(on) weakSet.add(o[1]); else weakSet.delete(o[1]);
+    saved.weak[curBook] = Array.from(weakSet);
+  } else {
+    const arr = new Set(Array.isArray(saved.weak[o[0]]) ? saved.weak[o[0]] : []);
+    if(on) arr.add(o[1]); else arr.delete(o[1]);
+    saved.weak[o[0]] = Array.from(arr);
+  }
+  persist();
+}
+function addWeak(w){ if(w && !isWeak(w)) setWeak(w, true); }
+function toggleWeak(w){ if(!w) return; setWeak(w, !isWeak(w)); updateWeakBtns(); }
+function updateWeakBtns(){
+  const on = isWeak(currentWord());
+  ['weakBtnCard','weakBtnQuiz'].forEach(id=>{
+    const b = document.getElementById(id);
+    if(b){ b.classList.toggle('active', on); b.textContent = on ? '⚠ 苦手（チェック中）' : '⚠ 苦手'; }
   });
 }
 function saveSections(){ saved.sections[curBook] = Array.from(state.selectedSections); persist(); }
@@ -1366,6 +1431,8 @@ document.getElementById('speakBtnCard').addEventListener('click', speakCurrentWo
 document.getElementById('speakBtnQuiz').addEventListener('click', speakCurrentWord);
 document.getElementById('learnedBtnCard').addEventListener('click', ()=> toggleLearned(state.deck && state.deck[state.index]));
 document.getElementById('learnedBtnQuiz').addEventListener('click', ()=> toggleLearned(quizState.deck && quizState.deck[quizState.index]));
+document.getElementById('weakBtnCard').addEventListener('click', ()=> toggleWeak(state.deck && state.deck[state.index]));
+document.getElementById('weakBtnQuiz').addEventListener('click', ()=> toggleWeak(quizState.deck && quizState.deck[quizState.index]));
 document.getElementById('tipsOpenBtn').addEventListener('click', ()=>{ document.getElementById('tipsOverlay').classList.remove('hide'); });
 document.getElementById('tipsCloseBtn').addEventListener('click', ()=>{ document.getElementById('tipsOverlay').classList.add('hide'); });
 
@@ -1417,6 +1484,7 @@ function renderCard(){
   related.innerHTML = html;
 
   updateLearnedBtns();
+  updateWeakBtns();
   document.getElementById('progressText').textContent = `${state.index+1} / ${state.deck.length}`;
   document.getElementById('prevBtn').disabled = state.index === 0;
   document.getElementById('nextBtn').disabled = state.index === state.deck.length-1;
@@ -1540,6 +1608,7 @@ function renderQuizQuestion(){
   quizState.locked = false;
   const word = quizState.deck[quizState.index];
   updateLearnedBtns();
+  updateWeakBtns();
   const answerField = state.direction === 'ja-en' ? 'en' : 'ja';
   const subField = state.direction === 'ja-en' ? 'ja' : 'en';
   const questionText = word[subField];
@@ -1604,6 +1673,7 @@ function finishQuizQuestion(pickedBtn){
 
   const isCorrect = !!(pickedBtn && pickedBtn.dataset.correct === 'true');
   if(isCorrect) quizState.correctCount++;
+  else addWeak(word);
   quizState.answeredCount++;
 
   choicesEl.querySelectorAll('.quiz-choice').forEach(btn=>{
@@ -1643,6 +1713,7 @@ function finishQuizQuestion(pickedBtn){
   related.innerHTML = html;
 
   updateQuizRing();
+  updateWeakBtns();
   document.getElementById('quizReveal').classList.add('show');
 }
 
@@ -1775,6 +1846,7 @@ function initApp(){
     document.querySelectorAll('#directionToggle .dir-btn').forEach(b=>b.classList.toggle('active', b.dataset.dir === state.direction));
   }
   loadLearned();
+  loadWeak();
   applySections();
   updateDiagSummary();
 }
@@ -2052,7 +2124,7 @@ window.addEventListener('popstate', ()=> Diag.stop());
 /* ================= みんなの勉強記録（Supabase・匿名） ================= */
 const SB_URL = 'https://wwjbmoizsggifehzrvjk.supabase.co';
 const SB_ANON_KEY = 'sb_publishable_QDRHRGX_0IoQcz17413jEg_qyqwZltY';
-const ACT_BOOK_LABELS = {teppeki:'鉄壁', target:'ターゲット1900', target1200:'ターゲット1200', target1000:'熟語ターゲット1000', kobun:'古文単語601', leap:'LEAP', pass1:'パス単1級', lingua:'リンガメタリカ', ex:'単熟語EX', systan:'シス単', polysemy:'多義語'};
+const ACT_BOOK_LABELS = {teppeki:'鉄壁', target:'ターゲット1900', target1200:'ターゲット1200', target1000:'熟語ターゲット1000', kobun:'古文単語601', leap:'LEAP', pass1:'パス単1級', lingua:'リンガメタリカ', ex:'単熟語EX', systan:'シス単', polysemy:'多義語', weak:'苦手単語'};
 const escA = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const Act = {
   enabled: !!SB_ANON_KEY,
