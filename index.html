@@ -462,6 +462,57 @@
     padding:26px 18px; margin-bottom:16px; box-shadow:var(--shadow);
   }
   .quiz-choices{display:flex; flex-direction:column; gap:8px;}
+  .quiz-choices.waiting .quiz-choice{opacity:0; pointer-events:none;}
+  .quiz-choice{transition:opacity .15s ease;}
+  #actBtn{position:fixed; top:calc(10px + env(safe-area-inset-top)); right:12px; z-index:900; width:44px; height:44px; border-radius:50%; border:1.5px solid var(--border); background:var(--bg-elevated); color:var(--text-main); font-size:1.15rem; box-shadow:0 2px 10px rgba(0,0,0,.25); cursor:pointer;}
+  #actBtn[hidden]{display:none;}
+  #actToast{position:fixed; top:calc(62px + env(safe-area-inset-top)); right:12px; z-index:901; background:var(--bg-elevated); border:1.5px solid var(--accent); color:var(--text-main); padding:10px 12px; border-radius:12px; font-size:.82rem; font-weight:700; box-shadow:0 4px 16px rgba(0,0,0,.3); max-width:80vw; animation:actPop .25s ease;}
+  #actToast[hidden]{display:none;}
+  @keyframes actPop{from{transform:translateY(-8px); opacity:0;} to{transform:translateY(0); opacity:1;}}
+  #actPanel{position:fixed; inset:0; z-index:902; background:rgba(0,0,0,.5); display:flex; align-items:flex-start; justify-content:center; padding:calc(64px + env(safe-area-inset-top)) 14px 14px;}
+  #actPanel[hidden]{display:none;}
+  .act-box{background:var(--bg); border:1px solid var(--border); border-radius:14px; width:100%; max-width:480px; max-height:76vh; overflow-y:auto; padding:14px;}
+  .act-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;}
+  .act-head b{font-size:1rem;}
+  #actClose{border:1px solid var(--border); background:var(--bg-elevated); color:var(--text-main); border-radius:8px; padding:4px 10px; cursor:pointer;}
+  .act-h{font-size:.85rem; margin:12px 0 6px; color:var(--text-sub);}
+  .act-row{display:flex; justify-content:space-between; gap:10px; padding:5px 2px; border-bottom:1px dashed var(--border); font-size:.85rem;}
+  .act-note{font-size:.78rem; color:var(--text-sub); margin-top:10px;}
+  .dg-rules{margin:10px 0 14px; padding-left:20px; font-size:.88rem; line-height:1.7; color:var(--text-sub);}
+  .dg-timer-row{display:flex; align-items:center; gap:10px; margin:8px 0 4px;}
+  .dg-bar-wrap{flex:1; height:8px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; overflow:hidden;}
+  .dg-bar{height:100%; width:100%; background:var(--accent);}
+  .dg-time{font-weight:800; min-width:2.4em; text-align:right; font-variant-numeric:tabular-nums;}
+  .dg-word{font-size:clamp(1.7rem,7vw,2.3rem); font-weight:800; text-align:center; padding:30px 8px 22px; overflow-wrap:anywhere;}
+  .dg-choices{display:flex; flex-direction:column; gap:8px;}
+  .dg-choice{display:flex; align-items:center; gap:9px; padding:12px; border:1.5px solid var(--border); border-radius:10px; background:var(--bg-elevated); color:var(--text-main); cursor:pointer; text-align:left; font-size:.95rem; font-weight:600; touch-action:manipulation; width:100%;}
+  .dg-choice:active:not(:disabled){transform:scale(.98);}
+  .dg-choice .n{flex:0 0 auto; width:22px; height:22px; border-radius:50%; background:var(--bg); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:800; color:var(--text-sub);}
+  .dg-choice.none{border-style:dashed; color:var(--text-sub);}
+  .dg-choice.correct{background:var(--badge-syn-bg); border-color:var(--badge-syn-border);}
+  .dg-choice.wrong{background:var(--badge-ant-bg); border-color:var(--badge-ant-border);}
+  .dg-choice.picked{outline:2px solid var(--accent); outline-offset:1px;}
+  .dg-choice:disabled{cursor:default;}
+  .dg-wait{text-align:center; color:var(--text-sub); padding:34px 0; font-size:1.1rem; letter-spacing:.3em;}
+  .dg-est-label{text-align:center; color:var(--text-sub); font-size:.85rem; font-weight:700; margin-top:6px;}
+  .dg-est{font-size:clamp(2rem,9vw,2.8rem); font-weight:800; text-align:center; line-height:1.2;}
+  .dg-level{text-align:center; font-size:1.15rem; font-weight:800; color:var(--accent); margin-bottom:4px;}
+  .dg-avg{text-align:center; color:var(--text-sub); font-size:.85rem;}
+  .dg-axis{position:relative; height:10px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:5px; margin:18px 0 2px;}
+  .dg-axis-fill{height:100%; background:var(--accent); border-radius:5px;}
+  .dg-axis-dot{position:absolute; top:-5px; width:18px; height:18px; margin-left:-9px; border-radius:50%; background:var(--accent); border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,.3);}
+  .dg-axis-labels{display:flex; justify-content:space-between; font-size:.68rem; color:var(--text-sub); margin-bottom:10px;}
+  .dg-map-row{display:flex; align-items:center; gap:8px; padding:6px 9px; border-radius:8px; font-size:.86rem;}
+  .dg-map-row .dg-map-name{font-weight:700; min-width:5.5em;}
+  .dg-map-row .dg-map-cum{color:var(--text-sub); font-size:.78rem;}
+  .dg-map-row.mine{background:var(--bg-elevated); outline:1.5px solid var(--accent);}
+  .dg-map-you{margin-left:auto; font-weight:800; color:var(--accent); font-size:.78rem; white-space:nowrap;}
+  .dg-band-row{display:flex; align-items:center; gap:8px; font-size:.85rem; padding:4px 0;}
+  .dg-band-row .dg-band-name{min-width:5.5em; font-weight:700;}
+  .dg-band-bar{flex:1; height:8px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; overflow:hidden;}
+  .dg-band-fill{height:100%; background:var(--accent);}
+  .dg-band-pct{min-width:3em; text-align:right; font-variant-numeric:tabular-nums;}
+  .dg-btn-col{display:flex; flex-direction:column; gap:8px; margin-top:14px;}
   .quiz-choice{
     display:flex; align-items:baseline; gap:8px; text-align:left;
     border:1.5px solid var(--border); border-radius:12px; padding:12px 14px;
@@ -546,6 +597,15 @@
 </head>
 <body>
 <div id="app">
+
+  <button type="button" id="actBtn" aria-label="みんなの勉強記録" hidden>👥</button>
+  <div id="actToast" hidden></div>
+  <div id="actPanel" hidden>
+    <div class="act-box">
+      <div class="act-head"><b>みんなの勉強記録</b><button type="button" id="actClose">✕ 閉じる</button></div>
+      <div id="actBody"></div>
+    </div>
+  </div>
 
   <section id="screen-settings" class="screen active">
     <header class="app-header">
@@ -651,6 +711,7 @@
 
     <button type="button" class="start-btn" id="startBtn" disabled>スタート</button>
     <button type="button" class="test-btn" id="testBtn" disabled>テスト</button>
+    <button type="button" class="test-btn" id="diagBtn">📊 語彙力診断（25問）</button>
   </section>
 
   <section id="screen-card" class="screen">
@@ -726,6 +787,14 @@
       <p class="result-detail" id="resultDetailText"></p>
       <button type="button" class="start-btn" id="resultBackBtn">設定に戻る</button>
     </div>
+  </section>
+
+  <section id="screen-diag" class="screen">
+    <header class="quiz-header">
+      <button type="button" class="icon-btn" id="dgClose">✕ 終了</button>
+      <div class="progress" id="dgProg"></div>
+    </header>
+    <div id="dgBody"></div>
   </section>
 
   <div id="loadingOverlay" class="loading-overlay">
@@ -1214,6 +1283,7 @@ function shuffle(arr){
 /* ================= Screen navigation ================= */
 function showScreenRaw(name){
   if(name !== 'card') stopAuto();
+  if(name !== 'card' && window.__actFlush) window.__actFlush();
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
 }
@@ -1289,6 +1359,7 @@ function renderCard(){
   }
 
   const word = state.deck[state.index];
+  if(window.__actSeen) window.__actSeen(word);
   const front = state.direction === 'ja-en' ? word.ja : word.en;
   const back  = state.direction === 'ja-en' ? word.en : word.ja;
   document.getElementById('frontText').textContent = front;
@@ -1393,7 +1464,7 @@ autoSpeedEl.addEventListener('input', ()=>{
 /* ================= Test (Quiz) Mode ================= */
 const quizState = {
   deck: [], index: 0, correctCount: 0, answeredCount: 0,
-  timerStart: 0, timerInterval: null, locked: false, _choiceWords: [],
+  timerStart: 0, timerInterval: null, locked: false, _choiceWords: [], _token: 0,
 };
 
 document.getElementById('testBtn').addEventListener('click', ()=>{
@@ -1432,8 +1503,9 @@ function renderQuizQuestion(){
   document.getElementById('quizQuestion').textContent = questionText;
   document.getElementById('quizProgressText').textContent = `${quizState.index+1} / ${quizState.deck.length}`;
 
-  const distractors = pickDistractors(word, 3);
-  const choiceWords = shuffle([word, ...distractors]);
+  const noneCorrect = Math.random() < 0.15;
+  const distractors = pickDistractors(word, noneCorrect ? 4 : 3);
+  const choiceWords = noneCorrect ? shuffle(distractors) : shuffle([word, ...distractors]);
   quizState._choiceWords = choiceWords;
 
   const choicesEl = document.getElementById('quizChoices');
@@ -1444,10 +1516,14 @@ function renderQuizQuestion(){
       <span class="qc-num">${i+1}.</span>
       <span class="qc-text"><span class="qc-main">${w[answerField]}</span><span class="qc-sub" style="display:none;"></span></span>
     </button>`).join('') +
-    `<button type="button" class="quiz-choice" data-idx="none" data-correct="false">
+    `<button type="button" class="quiz-choice" data-idx="none" data-correct="${noneCorrect ? 'true' : 'false'}">
       <span class="qc-num">・</span><span class="qc-text"><span class="qc-main">1〜4に正解なし</span></span>
     </button>`;
   choicesEl.querySelectorAll('.quiz-choice').forEach(btn=>btn.addEventListener('click', onQuizChoice));
+
+  choicesEl.classList.add('waiting');
+  const qToken = ++quizState._token;
+  setTimeout(()=>{ if(quizState._token === qToken) choicesEl.classList.remove('waiting'); }, 1000);
 
   document.getElementById('quizReveal').classList.remove('show');
 
@@ -1472,10 +1548,12 @@ document.getElementById('quizSkipBtn').addEventListener('click', ()=>{
 
 function finishQuizQuestion(pickedBtn){
   quizState.locked = true;
+  quizState._token++;
   clearInterval(quizState.timerInterval);
   const elapsed = ((Date.now() - quizState.timerStart)/1000).toFixed(1);
   const word = quizState.deck[quizState.index];
   const choicesEl = document.getElementById('quizChoices');
+  choicesEl.classList.remove('waiting');
   const answerField = choicesEl.dataset.answerField;
   const subField = choicesEl.dataset.subField;
   const choiceWords = quizState._choiceWords;
@@ -1544,6 +1622,7 @@ document.getElementById('quizCloseBtn').addEventListener('click', ()=>{
 });
 function finishQuiz(){
   clearInterval(quizState.timerInterval);
+  if(window.__actQuiz) window.__actQuiz(quizState.answeredCount, quizState.correctCount);
   const pct = quizState.deck.length ? Math.round(quizState.correctCount/quizState.deck.length*100) : 0;
   document.getElementById('resultScoreText').textContent = pct + '%';
   document.getElementById('resultDetailText').textContent = `${quizState.deck.length}問中 ${quizState.correctCount}問正解`;
@@ -1654,6 +1733,306 @@ function initApp(){
   loadLearned();
   applySections();
 }
+/* ================= 語彙力診断 ================= */
+const DG_BANDS = [
+  { key:'chus',   label:'中学',       width:1500, n:4 },
+  { key:'kiso',   label:'高校基礎',   width:1500, n:4 },
+  { key:'kyotsu', label:'共通テスト', width:2000, n:5 },
+  { key:'nankan', label:'難関大',     width:2000, n:5 },
+  { key:'eijun1', label:'英検準1級',  width:2000, n:4 },
+  { key:'ei1',    label:'英検1級',    width:3000, n:3 },
+];
+const DG_LEVELS = [
+  { to: 2000, name: '中学レベル' }, { to: 3500, name: '高校基礎レベル' },
+  { to: 5000, name: '共通テストレベル' }, { to: 6000, name: '中堅私大レベル' },
+  { to: 7000, name: '難関大レベル' }, { to: 8000, name: '最難関レベル' },
+  { to: 9000, name: '英検準1級レベル' }, { to: Infinity, name: '英検1級レベル' },
+];
+const DG_MAP = DG_LEVELS.map(l => ({ name: l.name.replace('レベル',''), to: l.to }));
+const DG_NONE_RATE = 0.15, DG_LIMIT_MS = 5000, DG_DELAY_MS = 1000;
+const Diag = {
+  qs: [], idx: 0, locked: false, t0: 0, timer: null, revealTimer: null, nextTimer: null, token: 0,
+  active(){ return document.getElementById('screen-diag').classList.contains('active'); },
+  async pools(){
+    const [t1200, target, teppeki, ex, pass1] = await Promise.all([
+      fetchBookWords('target1200'), fetchBookWords('target'), fetchBookWords('teppeki'), fetchBookWords('ex'), fetchBookWords('pass1'),
+    ]);
+    return {
+      chus: t1200.filter(w => w.id <= 850), kiso: t1200.filter(w => w.id > 850),
+      kyotsu: target, nankan: teppeki, eijun1: ex.filter(w => w.id <= 1680), ei1: pass1.filter(w => w.id <= 2100),
+      all: [...t1200, ...target, ...teppeki, ...ex, ...pass1],
+    };
+  },
+  buildQs(P){
+    const qs = [];
+    for(const band of DG_BANDS){
+      const pool = shuffle([...P[band.key]]);
+      const distPool = shuffle(P.all.filter(w => w.ja));
+      let di = 0;
+      const take = Math.min(band.n, pool.length);
+      for(let i = 0; i < take; i++){
+        const w = pool[i];
+        const noneCorrect = Math.random() < DG_NONE_RATE;
+        const need = noneCorrect ? 4 : 3;
+        const distract = [];
+        const usedJa = new Set([w.ja]);
+        while(distract.length < need && di < distPool.length){
+          const cand = distPool[di++];
+          if(cand.en === w.en || usedJa.has(cand.ja)) continue;
+          usedJa.add(cand.ja);
+          distract.push(cand);
+        }
+        const choices = distract.map(d => ({ en: d.en, ja: d.ja, correct: false }));
+        if(!noneCorrect) choices.push({ en: w.en, ja: w.ja, correct: true });
+        qs.push({ band: band.key, word: w, choices: shuffle(choices), noneCorrect });
+      }
+    }
+    return shuffle(qs);
+  },
+  stop(){ clearInterval(Diag.timer); clearTimeout(Diag.revealTimer); clearTimeout(Diag.nextTimer); Diag.token++; },
+  showIntro(){
+    Diag.stop();
+    document.getElementById('dgProg').textContent = '';
+    document.getElementById('dgBody').innerHTML =
+      '<div class="panel"><h2 class="panel-title">📊 語彙力診断</h2>' +
+      '<ul class="dg-rules"><li>いろんな単語帳からランダムに<b>25問</b>出題（英→日）</li>' +
+      '<li>1問の制限時間は<b>5秒</b>。選択肢は問題の<b>1秒後</b>に表示</li>' +
+      '<li>正解率と回答の速さから、推定語彙数とレベルを診断</li>' +
+      '<li>たまに正解が選択肢にない問題もあるよ（「1〜4に正解なし」が正解）</li></ul>' +
+      '<button type="button" class="start-btn" id="dgStart">診断スタート</button></div>';
+    document.getElementById('dgStart').addEventListener('click', Diag.start);
+  },
+  async start(){
+    Diag.stop();
+    document.getElementById('dgBody').innerHTML = '<p class="hint" style="padding:30px 0;">単語データを読み込んでいます…</p>';
+    let P;
+    try{ P = await Diag.pools(); }
+    catch(e){
+      document.getElementById('dgBody').innerHTML = '<p class="hint" style="padding:30px 0;">データの読み込みに失敗しました。通信を確認してもう一度試してね。</p><div class="dg-btn-col"><button type="button" class="start-btn" id="dgRetry">もう一度</button></div>';
+      document.getElementById('dgRetry').addEventListener('click', Diag.start);
+      return;
+    }
+    if(!Diag.active()) return;
+    Diag.qs = Diag.buildQs(P);
+    Diag.idx = 0;
+    Diag.renderQ();
+  },
+  renderQ(){
+    const q = Diag.qs[Diag.idx];
+    if(!q){ Diag.showResult(); return; }
+    Diag.locked = false;
+    Diag.token++;
+    const token = Diag.token;
+    document.getElementById('dgProg').textContent = (Diag.idx + 1) + ' / ' + Diag.qs.length + '問';
+    document.getElementById('dgBody').innerHTML =
+      '<div class="dg-timer-row"><div class="dg-bar-wrap"><div class="dg-bar" id="dgBar"></div></div><div class="dg-time" id="dgTime">5.0</div></div>' +
+      '<div class="dg-word">' + escA(q.word.en) + '</div>' +
+      '<div class="dg-choices" id="dgChoices"><div class="dg-wait">・・・</div></div>';
+    Diag.revealTimer = setTimeout(() => {
+      if(token !== Diag.token || !Diag.active() || Diag.locked) return;
+      const box = document.getElementById('dgChoices');
+      if(!box) return;
+      box.innerHTML = q.choices.map((c, i) =>
+        '<button type="button" class="dg-choice" data-i="' + i + '"><span class="n">' + (i + 1) + '</span><span>' + escA(c.ja) + '</span></button>'
+      ).join('') +
+      '<button type="button" class="dg-choice none" data-i="-1"><span class="n">5</span><span>1〜4に正解なし</span></button>';
+      box.querySelectorAll('.dg-choice').forEach(b => b.addEventListener('click', () => Diag.answer(parseInt(b.dataset.i, 10))));
+      Diag.t0 = Date.now();
+      Diag.timer = setInterval(() => {
+        const left = DG_LIMIT_MS - (Date.now() - Diag.t0);
+        const bar = document.getElementById('dgBar');
+        const tim = document.getElementById('dgTime');
+        if(bar) bar.style.width = Math.max(0, left / DG_LIMIT_MS * 100) + '%';
+        if(tim) tim.textContent = Math.max(0, left / 1000).toFixed(1);
+        if(left <= 0) Diag.timeout();
+      }, 50);
+    }, DG_DELAY_MS);
+  },
+  answer(i){
+    if(Diag.locked) return;
+    const q = Diag.qs[Diag.idx];
+    const ms = Date.now() - Diag.t0;
+    const correct = i === -1 ? q.noneCorrect : !!(q.choices[i] && q.choices[i].correct);
+    Diag.finishQ(i, correct, Math.min(ms, DG_LIMIT_MS));
+  },
+  timeout(){
+    if(Diag.locked) return;
+    Diag.finishQ(-2, false, DG_LIMIT_MS);
+  },
+  finishQ(picked, correct, ms){
+    Diag.locked = true;
+    clearInterval(Diag.timer);
+    const q = Diag.qs[Diag.idx];
+    q.result = { correct, ms };
+    document.querySelectorAll('#dgChoices .dg-choice').forEach(b => {
+      const i = parseInt(b.dataset.i, 10);
+      const isCorrect = i === -1 ? q.noneCorrect : !!(q.choices[i] && q.choices[i].correct);
+      if(isCorrect) b.classList.add('correct');
+      if(i === picked && !correct) b.classList.add('wrong');
+      if(i === picked) b.classList.add('picked');
+      b.disabled = true;
+    });
+    Diag.nextTimer = setTimeout(() => {
+      if(!Diag.active()) return;
+      Diag.idx++;
+      Diag.renderQ();
+    }, 900);
+  },
+  showResult(){
+    Diag.stop();
+    document.getElementById('dgProg').textContent = '';
+    let est = 0, totalCorrect = 0, totalMs = 0;
+    const bandRows = DG_BANDS.map(band => {
+      const bqs = Diag.qs.filter(q => q.band === band.key);
+      const n = bqs.length || 1;
+      let fsum = 0, c = 0;
+      bqs.forEach(q => {
+        totalMs += q.result ? q.result.ms : DG_LIMIT_MS;
+        if(q.result && q.result.correct){
+          c++; totalCorrect++;
+          const ms = q.result.ms;
+          fsum += ms <= 1500 ? 1.0 : ms <= 3000 ? 0.85 : 0.7;
+        }
+      });
+      const adj = Math.max(0, Math.min(1, (fsum / n - 0.2) / 0.8));
+      est += band.width * adj;
+      return { label: band.label, pct: Math.round(c / n * 100), adj };
+    });
+    est = Math.round(est / 10) * 10;
+    const level = DG_LEVELS.find(l => est <= l.to) || DG_LEVELS[DG_LEVELS.length - 1];
+    const avg = Diag.qs.length ? (totalMs / Diag.qs.length / 1000).toFixed(1) : '0.0';
+    const mapRows = DG_MAP.map((r, i) => {
+      const from = i === 0 ? 0 : DG_MAP[i - 1].to;
+      const mine = est <= r.to && (i === 0 || est > from);
+      const cum = r.to === Infinity ? '10,000語〜' : '〜' + r.to.toLocaleString() + '語';
+      return '<div class="dg-map-row' + (mine ? ' mine' : '') + '"><span class="dg-map-name">' + r.name + '</span><span class="dg-map-cum">' + cum + '</span>' + (mine ? '<span class="dg-map-you">← あなたはここ</span>' : '') + '</div>';
+    }).join('');
+    const bandHtml = bandRows.map(b =>
+      '<div class="dg-band-row"><span class="dg-band-name">' + b.label + '</span><div class="dg-band-bar"><div class="dg-band-fill" style="width:' + Math.round(b.adj * 100) + '%"></div></div><span class="dg-band-pct">正解' + b.pct + '%</span></div>'
+    ).join('');
+    document.getElementById('dgBody').innerHTML =
+      '<div class="panel"><h2 class="panel-title">診断結果</h2>' +
+      '<div class="dg-est-label">推定語彙数</div><div class="dg-est">約 ' + est.toLocaleString() + ' 語</div>' +
+      '<div class="dg-level">' + level.name + '</div>' +
+      '<div class="dg-avg">' + Diag.qs.length + '問中 ' + totalCorrect + '問正解 ／ 平均回答時間 ' + avg + '秒</div>' +
+      '<div class="dg-axis"><div class="dg-axis-fill" style="width:' + Math.min(100, est / 12000 * 100) + '%"></div><div class="dg-axis-dot" style="left:' + Math.min(100, est / 12000 * 100) + '%"></div></div>' +
+      '<div class="dg-axis-labels"><span>0</span><span>6,000</span><span>12,000語</span></div>' +
+      mapRows +
+      '<h3 class="act-h">レベル帯ごとの結果</h3>' + bandHtml +
+      '<p class="act-note">※ 推定は目安です。正解は回答速度で重み付けし、5択の当て推量（20%）を差し引いて計算しています。バーの長さはそのレベル帯への到達度の推定です。</p>' +
+      '<div class="dg-btn-col"><button type="button" class="start-btn" id="dgAgain">もう一度診断</button>' +
+      '<button type="button" class="test-btn" id="dgHome">設定に戻る</button></div></div>';
+    document.getElementById('dgAgain').addEventListener('click', Diag.start);
+    document.getElementById('dgHome').addEventListener('click', () => showScreen('settings'));
+  },
+};
+document.getElementById('diagBtn').addEventListener('click', ()=>{ showScreen('diag'); Diag.showIntro(); });
+document.getElementById('dgClose').addEventListener('click', ()=>{ Diag.stop(); showScreen('settings'); });
+window.addEventListener('popstate', ()=> Diag.stop());
+
+/* ================= みんなの勉強記録（Supabase・匿名） ================= */
+const SB_URL = 'https://wwjbmoizsggifehzrvjk.supabase.co';
+const SB_ANON_KEY = 'sb_publishable_QDRHRGX_0IoQcz17413jEg_qyqwZltY';
+const ACT_BOOK_LABELS = {teppeki:'鉄壁', target:'ターゲット1900', target1200:'ターゲット1200', target1000:'熟語ターゲット1000', kobun:'古文単語601', leap:'LEAP', pass1:'パス単1級', lingua:'リンガメタリカ', ex:'単熟語EX', systan:'シス単'};
+const escA = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+const Act = {
+  enabled: !!SB_ANON_KEY,
+  cardSeen: new Set(), cardBook: null, lastSeen: 0, toastTimer: null,
+  name(){
+    if(!saved.anonName){
+      const animals = ['ねこ','いぬ','きつね','たぬき','うさぎ','くま','ぱんだ','とら','しか','さる','ぺんぎん','ふくろう'];
+      saved.anonName = animals[Math.floor(Math.random()*animals.length)] + '#' + (1000 + Math.floor(Math.random()*9000));
+      persist();
+    }
+    return saved.anonName;
+  },
+  headers(){ return {apikey: SB_ANON_KEY, Authorization: 'Bearer ' + SB_ANON_KEY, 'Content-Type': 'application/json'}; },
+  async post(kind, questions, correct, bookKey){
+    if(!Act.enabled) return;
+    try{
+      await fetch(SB_URL + '/rest/v1/activity', {method:'POST', headers: Act.headers(), body: JSON.stringify({anon_name: Act.name(), book: ACT_BOOK_LABELS[bookKey] || bookKey, questions: questions, correct: correct, kind: kind})});
+    }catch(e){}
+  },
+  async fetchRecent(limit){
+    const r = await fetch(SB_URL + '/rest/v1/activity?select=id,anon_name,book,questions,correct,kind,created_at&order=id.desc&limit=' + limit, {headers: Act.headers()});
+    if(!r.ok) throw new Error('ng');
+    return r.json();
+  },
+  describe(r){ return r.kind === 'card' ? (r.book + ' カード' + r.questions + '枚') : (r.book + ' テスト' + r.questions + '問（正解' + r.correct + '）'); },
+  fmtTime(iso){
+    const d = new Date(iso);
+    return (d.getMonth()+1) + '/' + d.getDate() + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  },
+  toast(msg){
+    const t = document.getElementById('actToast');
+    if(!t) return;
+    t.textContent = msg;
+    t.hidden = false;
+    clearTimeout(Act.toastTimer);
+    Act.toastTimer = setTimeout(()=>{ t.hidden = true; }, 4200);
+  },
+  async poll(){
+    if(!Act.enabled) return;
+    try{
+      const rows = await Act.fetchRecent(1);
+      if(!rows.length) return;
+      const newest = rows[0];
+      if(Act.lastSeen && newest.id > Act.lastSeen && newest.anon_name !== Act.name()){
+        Act.toast(newest.anon_name + ' が ' + Act.describe(newest) + ' やったよ');
+      }
+      if(newest.id > Act.lastSeen){
+        Act.lastSeen = newest.id;
+        saved.actLastSeen = Act.lastSeen;
+        persist();
+      }
+    }catch(e){}
+  },
+  async open(){
+    const panel = document.getElementById('actPanel');
+    const body = document.getElementById('actBody');
+    panel.hidden = false;
+    body.innerHTML = '<p class="act-note">読み込み中…</p>';
+    try{
+      const rows = await Act.fetchRecent(300);
+      const now = new Date();
+      const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7));
+      const totals = {};
+      rows.forEach(r => { if(new Date(r.created_at) >= monday) totals[r.anon_name] = (totals[r.anon_name] || 0) + r.questions; });
+      const rank = Object.entries(totals).sort((a,b) => b[1] - a[1]);
+      const rankHtml = rank.length ? rank.map(([n, c], i) => '<div class="act-row"><span>' + (i+1) + '. ' + escA(n) + '</span><b>' + c + '</b></div>').join('') : '<p class="act-note">今週の記録はまだないよ</p>';
+      const recentHtml = rows.slice(0, 20).map(r => '<div class="act-row"><span>' + Act.fmtTime(r.created_at) + ' ・ ' + escA(r.anon_name) + '</span><span>' + escA(Act.describe(r)) + '</span></div>').join('');
+      body.innerHTML =
+        '<h3 class="act-h">今週の合計（問題数＋カード枚数）</h3>' + rankHtml +
+        '<h3 class="act-h">直近の記録</h3>' + (recentHtml || '<p class="act-note">記録はまだないよ</p>') +
+        '<p class="act-note">あなたの名前：' + escA(Act.name()) + '（この端末に自動で付いた匿名ネーム）</p>';
+      if(rows.length && rows[0].id > Act.lastSeen){ Act.lastSeen = rows[0].id; saved.actLastSeen = Act.lastSeen; persist(); }
+    }catch(e){
+      body.innerHTML = '<p class="act-note">読み込めませんでした。通信を確認してね。</p>';
+    }
+  },
+  init(){
+    if(!Act.enabled) return;
+    Act.name();
+    Act.lastSeen = saved.actLastSeen || 0;
+    const btn = document.getElementById('actBtn');
+    btn.hidden = false;
+    btn.addEventListener('click', Act.open);
+    document.getElementById('actClose').addEventListener('click', ()=>{ document.getElementById('actPanel').hidden = true; });
+    document.getElementById('actPanel').addEventListener('click', (e)=>{ if(e.target.id === 'actPanel') e.target.hidden = true; });
+    setTimeout(Act.poll, 3000);
+    setInterval(Act.poll, 45000);
+  },
+};
+window.__actSeen = (w) => { if(w){ if(!Act.cardSeen.size) Act.cardBook = curBook; Act.cardSeen.add(w.id); } };
+window.__actFlush = () => {
+  const n = Act.cardSeen.size;
+  const bk = Act.cardBook;
+  Act.cardSeen = new Set(); Act.cardBook = null;
+  if(n >= 5 && bk) Act.post('card', n, 0, bk);
+};
+window.__actQuiz = (answered, correct) => { if(answered > 0) Act.post('quiz', answered, correct, curBook); };
+Act.init();
+
 loadWordData();
 </script>
 </body>
