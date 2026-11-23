@@ -638,6 +638,7 @@
         <button type="button" class="dir-btn" data-book="pass1">パス単1級</button>
         <button type="button" class="dir-btn" data-book="lingua">リンガメタリカ</button>
         <button type="button" class="dir-btn" data-book="ex">単熟語EX</button>
+        <button type="button" class="dir-btn" data-book="polysemy">多義語</button>
       </div>
       <p class="lv-note">※ パス単1級は単語編2,100語を全収録（Section 2・7・10は別の公開データで補完したため、意味の表記が少し簡潔です）、熟語編は300語のうち69語のみです。単熟語EXは全2,412語を収録しています（ブログ掲載の第2版リストより）。シス単は全2,027語を収録しています（ブログ掲載の5訂版リストより）。リンガメタリカは、公開されているデータが本の一部のみのため、収録が足りていません（497フレーズ）。データは有志の転記をもとに、明らかな誤字を一部修正しています。</p>
       <div class="lv-wrap">
@@ -909,8 +910,12 @@ const SYSTAN_DATA_URLS = [
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/systan_part1.json",
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/systan_part2.json"
 ];
-const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS, target1000: JUKUGO1000_DATA_URLS, kobun: KOBUN601_DATA_URLS, leap: LEAP_DATA_URLS, pass1: PASS1_DATA_URLS, lingua: LINGUA_DATA_URLS, ex: EX_DATA_URLS, systan: SYSTAN_DATA_URLS};
-const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000, kobun: 601, leap: 2300, pass1: 2169, lingua: 497, ex: 2412, systan: 2027};
+/* 多義語デッキ(全589語): 6冊＋鉄壁のデータから意味が3つ以上ある語を抽出し、close/light/point/field等の定番は手で補った特製デッキ */
+const POLYSEMY_DATA_URLS = [
+  "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/polysemy_part1.json"
+];
+const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS, target1000: JUKUGO1000_DATA_URLS, kobun: KOBUN601_DATA_URLS, leap: LEAP_DATA_URLS, pass1: PASS1_DATA_URLS, lingua: LINGUA_DATA_URLS, ex: EX_DATA_URLS, systan: SYSTAN_DATA_URLS, polysemy: POLYSEMY_DATA_URLS};
+const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000, kobun: 601, leap: 2300, pass1: 2169, lingua: 497, ex: 2412, systan: 2027, polysemy: 589};
 let curBook = 'teppeki';
 const bookCache = {};
 
@@ -1056,6 +1061,11 @@ const EX_SECTION_TITLES = [
 ];
 /* シス単(システム英単語 5訂版): 本はStage制だが公開リストにStage境界の情報がないため、LEAPと同様に100語ごとの21セクション(最後は27語) */
 const SYSTAN_SECTION_STARTS = [1,101,201,301,401,501,601,701,801,901,1001,1101,1201,1301,1401,1501,1601,1701,1801,1901,2001];
+/* 多義語デッキ: 100語ごとの6セクション(最後は89語) */
+const POLYSEMY_SECTION_STARTS = [1,101,201,301,401,501];
+const POLYSEMY_SECTION_TITLES = [
+  "多義語","多義語","多義語","多義語","多義語","多義語"
+];
 const SYSTAN_SECTION_TITLES = [
   "単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語",
   "単語","単語","単語","単語","単語","単語","単語","単語","単語","単語"
@@ -1070,7 +1080,8 @@ const BOOK_SECTIONS = {
   pass1: {starts: PASS1_SECTION_STARTS, titles: PASS1_SECTION_TITLES, notes: PASS1_SECTION_NOTES},
   lingua: {starts: LINGUA_SECTION_STARTS, titles: LINGUA_SECTION_TITLES, notes: LINGUA_SECTION_NOTES},
   ex: {starts: EX_SECTION_STARTS, titles: EX_SECTION_TITLES},
-  systan: {starts: SYSTAN_SECTION_STARTS, titles: SYSTAN_SECTION_TITLES}
+  systan: {starts: SYSTAN_SECTION_STARTS, titles: SYSTAN_SECTION_TITLES},
+  polysemy: {starts: POLYSEMY_SECTION_STARTS, titles: POLYSEMY_SECTION_TITLES}
 };
 const curStarts = () => BOOK_SECTIONS[curBook].starts;
 const curTitles = () => BOOK_SECTIONS[curBook].titles;
@@ -1959,7 +1970,7 @@ window.addEventListener('popstate', ()=> Diag.stop());
 /* ================= みんなの勉強記録（Supabase・匿名） ================= */
 const SB_URL = 'https://wwjbmoizsggifehzrvjk.supabase.co';
 const SB_ANON_KEY = 'sb_publishable_QDRHRGX_0IoQcz17413jEg_qyqwZltY';
-const ACT_BOOK_LABELS = {teppeki:'鉄壁', target:'ターゲット1900', target1200:'ターゲット1200', target1000:'熟語ターゲット1000', kobun:'古文単語601', leap:'LEAP', pass1:'パス単1級', lingua:'リンガメタリカ', ex:'単熟語EX', systan:'シス単'};
+const ACT_BOOK_LABELS = {teppeki:'鉄壁', target:'ターゲット1900', target1200:'ターゲット1200', target1000:'熟語ターゲット1000', kobun:'古文単語601', leap:'LEAP', pass1:'パス単1級', lingua:'リンガメタリカ', ex:'単熟語EX', systan:'シス単', polysemy:'多義語'};
 const escA = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const Act = {
   enabled: !!SB_ANON_KEY,
