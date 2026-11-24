@@ -513,6 +513,15 @@
   .dg-map-row.mine{background:var(--bg-elevated); outline:1.5px solid var(--accent);}
   .dg-map-you{margin-left:auto; font-weight:800; color:var(--accent); font-size:.78rem; white-space:nowrap;}
   .dg-band-row{display:flex; align-items:center; gap:8px; font-size:.85rem; padding:4px 0;}
+  .dg-rev-row{display:flex; align-items:baseline; gap:8px; font-size:.88rem; padding:5px 0; border-bottom:1px solid var(--border);}
+  .dg-rev-row:last-child{border-bottom:none;}
+  .dg-rev-mark{font-weight:800; width:1em; text-align:center; flex:none;}
+  .dg-rev-mark.ok{color:#2e9e5b;}
+  .dg-rev-mark.ng{color:#d64545;}
+  .dg-rev-word{font-weight:700; flex:none;}
+  .dg-rev-ja{color:var(--text-sub); flex:1;}
+  .dg-rev-pick{color:#d64545; font-size:.78rem; flex:none;}
+  .dg-rev-time{color:var(--text-sub); font-size:.78rem; flex:none;}
   .dg-band-row .dg-band-name{min-width:5.5em; font-weight:700;}
   .dg-band-bar{flex:1; height:8px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; overflow:hidden;}
   .dg-band-fill{height:100%; background:var(--accent);}
@@ -2121,7 +2130,7 @@ const Diag = {
     Diag.locked = true;
     cancelAnimationFrame(Diag.timer);
     const q = Diag.qs[Diag.idx];
-    q.result = { correct, ms };
+    q.result = { correct, ms, picked };
     /* 適応型: 正解で上へ、間違いで下へ。ただし上昇幅＜下降幅にして、当て推量の正解で上がりすぎないよう補正（収束する正解率は約56%）。遅い正解は自信低めとみて上昇をさらに抑える */
     const delta = correct ? Diag.step * (ms <= 3000 ? 0.8 : 0.6) : -Diag.step;
     Diag.theta = Math.max(0, Math.min(12000, Diag.theta + delta));
@@ -2180,6 +2189,19 @@ const Diag = {
     const bandHtml = bandRows.map(b =>
       '<div class="dg-band-row"><span class="dg-band-name">' + b.label + '</span><div class="dg-band-bar"><div class="dg-band-fill" style="width:' + Math.round(b.adj * 100) + '%"></div></div><span class="dg-band-pct">' + (b.count ? '正解' + b.pct + '%（' + b.count + '問）' : '出題なし') + '</span></div>'
     ).join('');
+    const reviewHtml = Diag.qs.map((q, i) => {
+      const r = q.result || { correct: false, ms: DG_LIMIT_MS, picked: -2 };
+      const mark = r.correct ? '<span class="dg-rev-mark ok">○</span>' : '<span class="dg-rev-mark ng">✕</span>';
+      let pick = '';
+      if(!r.correct){
+        if(r.picked >= 0 && q.choices[r.picked]) pick = 'あなた：' + escA(q.choices[r.picked].ja);
+        else if(r.picked === -1) pick = 'あなた：1〜4に正解なし';
+        else if(r.picked === -3) pick = '分からない';
+        else pick = '時間切れ';
+      }
+      const ans = q.noneCorrect ? escA(q.word.ja) + '（選択肢になし）' : escA(q.word.ja);
+      return '<div class="dg-rev-row">' + mark + '<span class="dg-rev-word">' + (i + 1) + '. ' + escA(q.word.en) + '</span><span class="dg-rev-ja">' + ans + '</span>' + (pick ? '<span class="dg-rev-pick">' + pick + '</span>' : '') + '<span class="dg-rev-time">' + (r.ms / 1000).toFixed(1) + '秒</span></div>';
+    }).join('');
     document.getElementById('dgBody').innerHTML =
       '<div class="panel"><h2 class="panel-title">診断結果</h2>' +
       '<div class="dg-est-label">推定語彙数</div><div class="dg-est">約 ' + est.toLocaleString() + ' 語</div>' +
@@ -2191,6 +2213,7 @@ const Diag = {
       mapRows +
       '<h3 class="act-h">レベル帯ごとの結果</h3>' + bandHtml +
       '<p class="act-note">※ 推定は目安です。診断は適応型で、正解すると難しい問題、間違えると易しい問題が出て、今の実力の境目に収束するようになっています。当て推量の正解で上がりすぎないよう、正解の上昇幅より不正解の下降幅を大きくしてあります（その分、「分からない」を多用すると少し低めに出ます）。<br>※ 診断は1回だと運や調子でブレます。何回もやって平均を見ると精度が上がるので、レベルマップの位置は過去の平均で表示しています。</p>' +
+      '<h3 class="act-h">解いた単語</h3>' + reviewHtml +
       '<div class="dg-btn-col"><button type="button" class="start-btn" id="dgAgain">もう一度診断</button>' +
       '<button type="button" class="test-btn" id="dgHome">設定に戻る</button></div></div>';
     document.getElementById('dgAgain').addEventListener('click', Diag.start);
