@@ -644,6 +644,7 @@
         <button type="button" class="dir-btn" data-book="systan">シス単</button>
         <button type="button" class="dir-btn" data-book="target1200">ターゲット1200</button>
         <button type="button" class="dir-btn" data-book="target1000">ターゲット1000</button>
+        <button type="button" class="dir-btn" data-book="sokudoku">速読英熟語</button>
         <button type="button" class="dir-btn" data-book="kobun">古文単語601</button>
         <button type="button" class="dir-btn" data-book="kobun315">重要古文単語315</button>
         <button type="button" class="dir-btn" data-book="leap">LEAP</button>
@@ -653,7 +654,7 @@
         <button type="button" class="dir-btn" data-book="polysemy">多義語</button>
         <button type="button" class="dir-btn" data-book="weak">苦手</button>
       </div>
-      <p class="lv-note">※ パス単1級は単語編2,100語を全収録（Section 2・7・10は別の公開データで補完したため、意味の表記が少し簡潔です）、熟語編は300語のうち69語のみです。単熟語EXは全2,412語を収録しています（ブログ掲載の第2版リストより）。シス単は全2,027語を収録しています（ブログ掲載の5訂版リストより）。リンガメタリカは、公開されているデータが本の一部のみのため、収録が足りていません（497フレーズ）。データは有志の転記をもとに、明らかな誤字を一部修正しています。</p>
+      <p class="lv-note">※ パス単1級は単語編2,100語を全収録（Section 2・7・10は別の公開データで補完したため、意味の表記が少し簡潔です）、熟語編は300語のうち69語のみです。単熟語EXは全2,412語を収録しています（ブログ掲載の第2版リストより）。シス単は全2,027語を収録しています（ブログ掲載の5訂版リストより）。リンガメタリカは、公開されているデータが本の一部のみのため、収録が足りていません（497フレーズ）。データは有志の転記をもとに、明らかな誤字を一部修正しています。速読英熟語は熟語875＋構文209の全1,084項目を収録しています（受かる英語の改訂版一覧より）。</p>
       <div class="lv-wrap">
         <h3 class="lv-title">📊 レベルマップ（詳しい版）</h3>
         <div class="lv-map" id="lvMap">
@@ -900,6 +901,11 @@ const JUKUGO1000_DATA_URLS = [
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/jukugo1000_part1.json",
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/jukugo1000_part2.json"
 ];
+/* 速読英熟語(Z会・改訂版)のデータ。全1,084項目(熟語875+構文209)。受かる英語の熟語一覧から変換 */
+const SOKUDOKU_DATA_URLS = [
+  "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/sokudoku_part1.json",
+  "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/sokudoku_part2.json"
+];
 /* 古文単語601(こぶんめくり重要度順)のデータ。en=古文単語、ja=現代語訳。品詞→重要度順に並べ替え済み */
 const KOBUN601_DATA_URLS = [
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/kobun601_part1.json",
@@ -939,8 +945,8 @@ const SYSTAN_DATA_URLS = [
 const POLYSEMY_DATA_URLS = [
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/polysemy_part1.json"
 ];
-const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS, target1000: JUKUGO1000_DATA_URLS, kobun: KOBUN601_DATA_URLS, kobun315: KOBUN315_DATA_URLS, leap: LEAP_DATA_URLS, pass1: PASS1_DATA_URLS, lingua: LINGUA_DATA_URLS, ex: EX_DATA_URLS, systan: SYSTAN_DATA_URLS, polysemy: POLYSEMY_DATA_URLS, weak: []};
-const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000, kobun: 601, kobun315: 452, leap: 2300, pass1: 2169, lingua: 497, ex: 2412, systan: 2027, polysemy: 589, weak: 0};
+const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS, target1000: JUKUGO1000_DATA_URLS, sokudoku: SOKUDOKU_DATA_URLS, kobun: KOBUN601_DATA_URLS, kobun315: KOBUN315_DATA_URLS, leap: LEAP_DATA_URLS, pass1: PASS1_DATA_URLS, lingua: LINGUA_DATA_URLS, ex: EX_DATA_URLS, systan: SYSTAN_DATA_URLS, polysemy: POLYSEMY_DATA_URLS, weak: []};
+const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000, sokudoku: 1084, kobun: 601, kobun315: 452, leap: 2300, pass1: 2169, lingua: 497, ex: 2412, systan: 2027, polysemy: 589, weak: 0};
 let curBook = 'teppeki';
 const bookCache = {};
 
@@ -1068,6 +1074,11 @@ const JUKUGO_SECTION_STARTS = [1,181,421,661,831];
 const JUKUGO_SECTION_TITLES = [
   "絶対覚えておきたい","グルーピングで覚える","形で覚える","文法・構文で覚える","ここで差がつく難熟語"
 ];
+/* 速読英熟語: 本の章境界の公開情報がないため100項目ごとの11セクション(最後は84項目) */
+const SOKUDOKU_SECTION_STARTS = [1,101,201,301,401,501,601,701,801,901,1001];
+const SOKUDOKU_SECTION_TITLES = [
+  "熟語・構文","熟語・構文","熟語・構文","熟語・構文","熟語・構文","熟語・構文","熟語・構文","熟語・構文","熟語・構文","熟語・構文","熟語・構文"
+];
 /* 古文単語601: 品詞ごとに大まかに分け、各品詞の中は重要度順に30語ずつのセクション */
 const KOBUN_SECTION_STARTS = [1,31,61,91,121,151,158,188,218,248,278,308,310,340,370,400,430,435,465,495,507,537,564,584];
 const KOBUN_SECTION_TITLES = [
@@ -1132,6 +1143,7 @@ const BOOK_SECTIONS = {
   target: {starts: TARGET_SECTION_STARTS, titles: TARGET_SECTION_TITLES},
   target1200: {starts: TARGET1200_SECTION_STARTS, titles: TARGET1200_SECTION_TITLES},
   target1000: {starts: JUKUGO_SECTION_STARTS, titles: JUKUGO_SECTION_TITLES},
+  sokudoku: {starts: SOKUDOKU_SECTION_STARTS, titles: SOKUDOKU_SECTION_TITLES},
   kobun: {starts: KOBUN_SECTION_STARTS, titles: KOBUN_SECTION_TITLES},
   kobun315: {starts: KOBUN315_SECTION_STARTS, titles: KOBUN315_SECTION_TITLES},
   leap: {starts: LEAP_SECTION_STARTS, titles: LEAP_SECTION_TITLES},
@@ -2103,9 +2115,8 @@ const Diag = {
     cancelAnimationFrame(Diag.timer);
     const q = Diag.qs[Diag.idx];
     q.result = { correct, ms };
-    /* 適応型: 正解で上へ、間違いで下へ。推定位置(theta)が実力の境目に収束する */
-    const f = correct ? (ms <= 1500 ? 1.0 : ms <= 3000 ? 0.85 : 0.7) : 0;
-    const delta = Diag.step * (f - 0.5) / 0.5;
+    /* 適応型: 正解で上へ、間違いで下へ。ただし上昇幅＜下降幅にして、当て推量の正解で上がりすぎないよう補正（収束する正解率は約56%）。遅い正解は自信低めとみて上昇をさらに抑える */
+    const delta = correct ? Diag.step * (ms <= 3000 ? 0.8 : 0.6) : -Diag.step;
     Diag.theta = Math.max(0, Math.min(12000, Diag.theta + delta));
     Diag.step *= 0.9;
     document.querySelectorAll('#dgChoices .dg-choice').forEach(b => {
@@ -2171,7 +2182,7 @@ const Diag = {
       '<div class="dg-axis-labels"><span>0</span><span>6,000</span><span>12,000語</span></div>' +
       mapRows +
       '<h3 class="act-h">レベル帯ごとの結果</h3>' + bandHtml +
-      '<p class="act-note">※ 推定は目安です。診断は適応型で、正解すると難しい問題、間違えると易しい問題が出て、今の実力の境目に収束するようになっています（当て推量と回答速度も加味）。だから運だけの上振れは起きにくいよ。<br>※ 診断は1回だと運や調子でブレます。何回もやって平均を見ると精度が上がるので、レベルマップの位置は過去の平均で表示しています。</p>' +
+      '<p class="act-note">※ 推定は目安です。診断は適応型で、正解すると難しい問題、間違えると易しい問題が出て、今の実力の境目に収束するようになっています。当て推量の正解で上がりすぎないよう、正解の上昇幅より不正解の下降幅を大きくしてあります（その分、「分からない」を多用すると少し低めに出ます）。<br>※ 診断は1回だと運や調子でブレます。何回もやって平均を見ると精度が上がるので、レベルマップの位置は過去の平均で表示しています。</p>' +
       '<div class="dg-btn-col"><button type="button" class="start-btn" id="dgAgain">もう一度診断</button>' +
       '<button type="button" class="test-btn" id="dgHome">設定に戻る</button></div></div>';
     document.getElementById('dgAgain').addEventListener('click', Diag.start);
@@ -2185,7 +2196,7 @@ window.addEventListener('popstate', ()=> Diag.stop());
 /* ================= みんなの勉強記録（Supabase・匿名） ================= */
 const SB_URL = 'https://wwjbmoizsggifehzrvjk.supabase.co';
 const SB_ANON_KEY = 'sb_publishable_QDRHRGX_0IoQcz17413jEg_qyqwZltY';
-const ACT_BOOK_LABELS = {teppeki:'鉄壁', target:'ターゲット1900', target1200:'ターゲット1200', target1000:'熟語ターゲット1000', kobun:'古文単語601', kobun315:'重要古文単語315', leap:'LEAP', pass1:'パス単1級', lingua:'リンガメタリカ', ex:'単熟語EX', systan:'シス単', polysemy:'多義語', weak:'苦手単語'};
+const ACT_BOOK_LABELS = {teppeki:'鉄壁', target:'ターゲット1900', target1200:'ターゲット1200', target1000:'熟語ターゲット1000', sokudoku:'速読英熟語', kobun:'古文単語601', kobun315:'重要古文単語315', leap:'LEAP', pass1:'パス単1級', lingua:'リンガメタリカ', ex:'単熟語EX', systan:'シス単', polysemy:'多義語', weak:'苦手単語'};
 const escA = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const Act = {
   enabled: !!SB_ANON_KEY,
