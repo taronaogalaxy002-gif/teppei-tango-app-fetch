@@ -645,6 +645,7 @@
         <button type="button" class="dir-btn" data-book="target1200">ターゲット1200</button>
         <button type="button" class="dir-btn" data-book="target1000">ターゲット1000</button>
         <button type="button" class="dir-btn" data-book="kobun">古文単語601</button>
+        <button type="button" class="dir-btn" data-book="kobun315">重要古文単語315</button>
         <button type="button" class="dir-btn" data-book="leap">LEAP</button>
         <button type="button" class="dir-btn" data-book="pass1">パス単1級</button>
         <button type="button" class="dir-btn" data-book="lingua">リンガメタリカ</button>
@@ -904,6 +905,11 @@ const KOBUN601_DATA_URLS = [
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/kobun601_part1.json",
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/kobun601_part2.json"
 ];
+/* 重要古文単語315(桐原書店・改訂版)のデータ。有志のAnkiデッキ(452語=見出し語+関連語)から変換。en=古文単語、ja=現代語訳+活用形 */
+const KOBUN315_DATA_URLS = [
+  "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/kobun315_part1.json",
+  "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/kobun315_part2.json"
+];
 /* LEAP(改訂版 必携英単語LEAP)のデータ。全2300語 */
 const LEAP_DATA_URLS = [
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/leap_part1.json",
@@ -933,8 +939,8 @@ const SYSTAN_DATA_URLS = [
 const POLYSEMY_DATA_URLS = [
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/polysemy_part1.json"
 ];
-const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS, target1000: JUKUGO1000_DATA_URLS, kobun: KOBUN601_DATA_URLS, leap: LEAP_DATA_URLS, pass1: PASS1_DATA_URLS, lingua: LINGUA_DATA_URLS, ex: EX_DATA_URLS, systan: SYSTAN_DATA_URLS, polysemy: POLYSEMY_DATA_URLS, weak: []};
-const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000, kobun: 601, leap: 2300, pass1: 2169, lingua: 497, ex: 2412, systan: 2027, polysemy: 589, weak: 0};
+const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS, target1000: JUKUGO1000_DATA_URLS, kobun: KOBUN601_DATA_URLS, kobun315: KOBUN315_DATA_URLS, leap: LEAP_DATA_URLS, pass1: PASS1_DATA_URLS, lingua: LINGUA_DATA_URLS, ex: EX_DATA_URLS, systan: SYSTAN_DATA_URLS, polysemy: POLYSEMY_DATA_URLS, weak: []};
+const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000, kobun: 601, kobun315: 452, leap: 2300, pass1: 2169, lingua: 497, ex: 2412, systan: 2027, polysemy: 589, weak: 0};
 let curBook = 'teppeki';
 const bookCache = {};
 
@@ -1072,6 +1078,11 @@ const KOBUN_SECTION_TITLES = [
   "形容動詞 1","形容動詞 2",
   "連語","その他"
 ];
+/* 重要古文単語315: 本の番号順に100語ごとの5セクション(最後は52語) */
+const KOBUN315_SECTION_STARTS = [1,101,201,301,401];
+const KOBUN315_SECTION_TITLES = [
+  "単語","単語","単語","単語","単語"
+];
 /* LEAP改訂版: 100語ごとの23セクション */
 const LEAP_SECTION_STARTS = [1,101,201,301,401,501,601,701,801,901,1001,1101,1201,1301,1401,1501,1601,1701,1801,1901,2001,2101,2201];
 const LEAP_SECTION_TITLES = [
@@ -1122,6 +1133,7 @@ const BOOK_SECTIONS = {
   target1200: {starts: TARGET1200_SECTION_STARTS, titles: TARGET1200_SECTION_TITLES},
   target1000: {starts: JUKUGO_SECTION_STARTS, titles: JUKUGO_SECTION_TITLES},
   kobun: {starts: KOBUN_SECTION_STARTS, titles: KOBUN_SECTION_TITLES},
+  kobun315: {starts: KOBUN315_SECTION_STARTS, titles: KOBUN315_SECTION_TITLES},
   leap: {starts: LEAP_SECTION_STARTS, titles: LEAP_SECTION_TITLES},
   pass1: {starts: PASS1_SECTION_STARTS, titles: PASS1_SECTION_TITLES, notes: PASS1_SECTION_NOTES},
   lingua: {starts: LINGUA_SECTION_STARTS, titles: LINGUA_SECTION_TITLES, notes: LINGUA_SECTION_NOTES},
@@ -1229,7 +1241,7 @@ function applyBookChrome(list){
   document.title = `単語帳 — 全${list.length}語`;
   document.querySelectorAll('#bookToggle .dir-btn').forEach(b=>b.classList.toggle('active', b.dataset.book === curBook));
   document.querySelectorAll('#directionToggle .dir-btn').forEach(b=>{
-    if(curBook === 'kobun') b.textContent = b.dataset.dir === 'ja-en' ? '現代語 → 古文' : '古文 → 現代語';
+    if(curBook === 'kobun' || curBook === 'kobun315') b.textContent = b.dataset.dir === 'ja-en' ? '現代語 → 古文' : '古文 → 現代語';
     else b.textContent = b.dataset.dir === 'ja-en' ? '日本語 → 英語' : '英語 → 日本語';
   });
 }
@@ -1415,7 +1427,7 @@ function speakEn(text){
     if(!('speechSynthesis' in window) || !text) return;
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(String(text));
-    u.lang = curBook === 'kobun' ? 'ja-JP' : 'en-US'; u.rate = 0.92;
+    u.lang = (curBook === 'kobun' || curBook === 'kobun315') ? 'ja-JP' : 'en-US'; u.rate = 0.92;
     speechSynthesis.speak(u);
   }catch(e){}
 }
@@ -2173,7 +2185,7 @@ window.addEventListener('popstate', ()=> Diag.stop());
 /* ================= みんなの勉強記録（Supabase・匿名） ================= */
 const SB_URL = 'https://wwjbmoizsggifehzrvjk.supabase.co';
 const SB_ANON_KEY = 'sb_publishable_QDRHRGX_0IoQcz17413jEg_qyqwZltY';
-const ACT_BOOK_LABELS = {teppeki:'鉄壁', target:'ターゲット1900', target1200:'ターゲット1200', target1000:'熟語ターゲット1000', kobun:'古文単語601', leap:'LEAP', pass1:'パス単1級', lingua:'リンガメタリカ', ex:'単熟語EX', systan:'シス単', polysemy:'多義語', weak:'苦手単語'};
+const ACT_BOOK_LABELS = {teppeki:'鉄壁', target:'ターゲット1900', target1200:'ターゲット1200', target1000:'熟語ターゲット1000', kobun:'古文単語601', kobun315:'重要古文単語315', leap:'LEAP', pass1:'パス単1級', lingua:'リンガメタリカ', ex:'単熟語EX', systan:'シス単', polysemy:'多義語', weak:'苦手単語'};
 const escA = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const Act = {
   enabled: !!SB_ANON_KEY,
