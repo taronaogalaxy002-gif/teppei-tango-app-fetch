@@ -350,6 +350,11 @@
   .start-btn:active:not(:disabled){transform:scale(.98);}
   .start-btn:disabled{opacity:.4; cursor:not-allowed;}
 
+  /* 設定画面下部の固定バー: スタートとテストを並べて常に下に固定 */
+  .start-bar{position:sticky; bottom:12px; display:flex; gap:10px; margin-top:16px; z-index:40;}
+  .start-bar .start-btn{position:static; margin-top:0; flex:1.35;}
+  .start-bar .test-btn{margin-top:0; flex:1; background:var(--bg-elevated);}
+
   /* ---------- Card screen ---------- */
   .speak-btn{
     align-self:center; margin:0 0 12px; border:none; cursor:pointer;
@@ -731,8 +736,10 @@
       <div class="section-grid" id="sectionGrid"></div>
     </div>
 
-    <button type="button" class="start-btn" id="startBtn" disabled>スタート</button>
-    <button type="button" class="test-btn" id="testBtn" disabled>テスト</button>
+    <div class="start-bar">
+      <button type="button" class="start-btn" id="startBtn" disabled>スタート</button>
+      <button type="button" class="test-btn" id="testBtn" disabled>テスト</button>
+    </div>
   </section>
 
   <section id="screen-card" class="screen">
