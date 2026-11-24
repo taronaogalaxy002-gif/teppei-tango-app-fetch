@@ -2166,6 +2166,7 @@ const Diag = {
     saved.diagHistory.push(est);
     if(saved.diagHistory.length > 50) saved.diagHistory = saved.diagHistory.slice(-50);
     persist();
+    if(window.__actDiag) window.__actDiag(Diag.qs.length, totalCorrect);
     const histN = saved.diagHistory.length;
     const avgEst = Math.round(saved.diagHistory.reduce((a, b) => a + b, 0) / histN / 10) * 10;
     const avgLevel = DG_LEVELS.find(l => avgEst <= l.to) || DG_LEVELS[DG_LEVELS.length - 1];
@@ -2228,7 +2229,11 @@ const Act = {
     if(!r.ok) throw new Error('ng');
     return r.json();
   },
-  describe(r){ return r.kind === 'card' ? (r.book + ' カード' + r.questions + '枚') : (r.book + ' テスト' + r.questions + '問（正解' + r.correct + '）'); },
+  describe(r){
+    if(r.kind === 'card') return r.book + ' カード' + r.questions + '枚';
+    if(r.kind === 'diag') return '語彙力診断 ' + r.questions + '問（正解' + r.correct + '）';
+    return r.book + ' テスト' + r.questions + '問（正解' + r.correct + '）';
+  },
   fmtTime(iso){
     const d = new Date(iso);
     return (d.getMonth()+1) + '/' + d.getDate() + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
@@ -2310,6 +2315,7 @@ window.__actFlush = () => {
   if(n >= 5 && bk) Act.post('card', n, 0, bk);
 };
 window.__actQuiz = (answered, correct) => { if(answered > 0) Act.post('quiz', answered, correct, curBook); };
+window.__actDiag = (answered, correct) => { if(answered > 0) Act.post('diag', answered, correct, '語彙力診断'); };
 Act.init();
 
 loadWordData();
