@@ -1579,15 +1579,40 @@ function autoTick(){
   }
   autoSchedule();
 }
+/* ---- Screen Wake Lock（自動めくり中は画面を消さない） ---- */
+let wakeLockSentinel = null;
+async function acquireWakeLock(){
+  try{
+    if(!('wakeLock' in navigator)) return;
+    if(wakeLockSentinel) return;
+    const wl = await navigator.wakeLock.request('screen');
+    if(!auto.playing){ try{ wl.release(); }catch(e){} return; }
+    wakeLockSentinel = wl;
+    try{ wakeLockSentinel.addEventListener('release', ()=>{ wakeLockSentinel = null; }); }catch(e){}
+  }catch(e){ wakeLockSentinel = null; }
+}
+function releaseWakeLock(){
+  try{
+    if(wakeLockSentinel){ const wl = wakeLockSentinel; wakeLockSentinel = null; wl.release(); }
+  }catch(e){ wakeLockSentinel = null; }
+}
+document.addEventListener('visibilitychange', ()=>{
+  try{
+    if(document.visibilityState === 'visible' && auto.playing) acquireWakeLock();
+  }catch(e){}
+});
+
 function startAuto(){
   if(!state.deck || !state.deck.length) return;
   auto.playing = true;
+  acquireWakeLock();
   document.getElementById('autoPlayBtn').textContent = '⏸';
   autoSchedule();
   autoSpeak();
 }
 function stopAuto(){
   auto.playing = false;
+  releaseWakeLock();
   clearTimeout(auto.timer);
   const b = document.getElementById('autoPlayBtn');
   if(b) b.textContent = '▶';
