@@ -776,7 +776,7 @@
           <div class="lv-sub">いちばん右。EXよりさらに上で、英検1級の語が中心。</div>
         </div>
         <div class="lv-axis"><span>中学</span><span>高校基礎</span><span>共通テスト</span><span>中堅私大</span><span>難関大</span><span>最難関</span><span>英検準1級</span><span>英検1級</span></div>
-        <div class="lv-axis2"><span>〜2,000語</span><span>〜3,500語</span><span>〜5,000語</span><span>〜6,000語</span><span>〜7,000語</span><span>〜8,000語</span><span>〜9,000語</span><span>10,000語〜</span></div>
+        <div class="lv-axis2"><span>〜850語</span><span>〜1,650語</span><span>〜2,400語</span><span>〜2,875語</span><span>〜3,350語</span><span>〜4,025語</span><span>〜4,700語</span><span>4,700語〜</span></div>
         </div>
         <p class="lv-note" id="lvAvgNote"></p>
         <p class="lv-note">※ バーの位置は各出版社の公式の対象レベル表記（旺文社のシリーズ対応レベル、数研出版・KADOKAWAの商品説明）とCEFRをもとにした目安。同じ帯の中での細かいズレは、収録語の傾向からの推定です。下段の語数は「そのレベルに届くまでの累計語彙数」の目安。実際の収録語には前後のレベルの語も混ざります。古文単語601は除く。</p>
@@ -1567,7 +1567,7 @@ document.getElementById('tipsCloseBtn').addEventListener('click', ()=>{ document
 
 /* ================= 更新履歴 ================= */
 const UPDATES = [
-  {date:'2026-11-26', items:['「世界史B用語」（728語）を追加', '「日本史B用語」（842語）を追加', '自動めくり中は画面が消えないようにした', 'みんなの勉強記録で名前（動物＋イニシャル）とテーマカラーを選べるようにした', '勉強記録の表示を表形式にした', '語彙力診断の推定を見直し（低い語彙でも低く出るように較正）', '勉強記録の診断結果に推定語彙数を表示']},
+  {date:'2026-11-26', items:['「世界史B用語」（728語）を追加', '「日本史B用語」（842語）を追加', '自動めくり中は画面が消えないようにした', 'みんなの勉強記録で名前（動物＋イニシャル）とテーマカラーを選べるようにした', '勉強記録の表示を表形式にした', '語彙力診断の推定を見直し（低い語彙でも低く出るように較正）', '勉強記録の診断結果に推定語彙数を表示', '診断のレベル表示を修正し、CEFR表示を追加', '本の選択ボタンを教科別に色分け']},
   {date:'2026-11-24', items:['「重要古文単語315」「速読英熟語」を追加']},
   {date:'2026-11-23', items:['語彙力診断を追加（適応式に改良）', '「みんなの勉強記録」を追加', '「多義語」「苦手」ブックを追加']},
 ];
@@ -2046,11 +2046,12 @@ function updateDiagSummary(){
   const h = Array.isArray(saved.diagHistory) ? saved.diagHistory : [];
   if(!h.length){ el.textContent = ''; updateLvAvg(0, 0); return; }
   const a = Math.round(diagAvg(h) / 10) * 10;
-  el.textContent = 'あなたの平均：約 ' + a.toLocaleString() + ' 語（診断' + h.length + '回）';
+  const lv = DG_LEVELS.find(l => a <= l.to) || DG_LEVELS[DG_LEVELS.length - 1];
+  el.textContent = 'あなたの平均：約 ' + a.toLocaleString() + ' 語（診断' + h.length + '回）・CEFR ' + lv.cefr + ' 相当（目安）';
   updateLvAvg(a, h.length);
 }
 /* レベルマップ: 帯ごとの累計語彙数 → マップ上の%位置(帯ごとに線形) */
-const LV_VOCAB_SEG = [[0,2000,0],[2000,3500,12.5],[3500,5000,25],[5000,6000,37.5],[6000,7000,50],[7000,8000,62.5],[8000,9000,75],[9000,12000,87.5]];
+const LV_VOCAB_SEG = [[0,850,0],[850,1650,12.5],[1650,2400,25],[2400,2875,37.5],[2875,3350,50],[3350,4025,62.5],[4025,4700,75],[4700,8000,87.5]];
 function lvVocabToPct(v){
   if(v <= 0) return 0;
   for(let i = LV_VOCAB_SEG.length - 1; i >= 0; i--){
@@ -2107,13 +2108,15 @@ const DG_BANDS = [
   { key:'eijun1', label:'英検準1級',  width:2000, n:4 },
   { key:'ei1',    label:'英検1級',    width:3000, n:3 },
 ];
+/* レベルの境界は較正後est軸（dgCalibrateの帯境界値）に合わせる: 帯境界 theta 1500/3000/5000/7000/9000 → est 850/1650/2400/3350/4700、上限は較正マップ上限の8000。
+   中堅私大・最難関は各帯の中点（theta 6000→2875、theta 8000→4025）で分割。CEFRは英検との公式対応（準1級=B2、1級=C1、2級=B1）を軸に、鉄壁の公称「B2〜C1」とも整合させた目安 */
 const DG_LEVELS = [
-  { to: 2000, name: '中学レベル' }, { to: 3500, name: '高校基礎レベル' },
-  { to: 5000, name: '共通テストレベル' }, { to: 6000, name: '中堅私大レベル' },
-  { to: 7000, name: '難関大レベル' }, { to: 8000, name: '最難関レベル' },
-  { to: 9000, name: '英検準1級レベル' }, { to: Infinity, name: '英検1級レベル' },
+  { to: 850, name: '中学レベル', cefr: 'A1' }, { to: 1650, name: '高校基礎レベル', cefr: 'A2' },
+  { to: 2400, name: '共通テストレベル', cefr: 'B1' }, { to: 2875, name: '中堅私大レベル', cefr: 'B1' },
+  { to: 3350, name: '難関大レベル', cefr: 'B2' }, { to: 4025, name: '最難関レベル', cefr: 'B2' },
+  { to: 4700, name: '英検準1級レベル', cefr: 'B2' }, { to: 8000, name: '英検1級レベル', cefr: 'C1' },
 ];
-const DG_MAP = DG_LEVELS.map(l => ({ name: l.name.replace('レベル',''), to: l.to }));
+const DG_MAP = DG_LEVELS.map(l => ({ name: l.name.replace('レベル',''), to: l.to, cefr: l.cefr }));
 /* theta（適応軸 0〜12000）は実際の語彙数と一致しない。帯の幅とプールの実語数が違い（例：中学帯1500に対しプールは850語）、
    本同士の重なりも大きいため、そのままだと弱い層ほど過大に出る。実語彙数への換算テーブルで補正する（オフラインシミュレーションで調整） */
 const DG_EST_MAP = [[0,0],[1500,850],[3000,1650],[5000,2400],[7000,3350],[9000,4700],[12000,8000]];
@@ -2374,10 +2377,11 @@ const Diag = {
       '<div class="panel"><h2 class="panel-title">診断結果</h2>' +
       '<div class="dg-est-label">推定語彙数</div><div class="dg-est">約 ' + est.toLocaleString() + ' 語</div>' +
       '<div class="dg-level">' + level.name + '</div>' +
+      '<div class="dg-avg">CEFR ' + level.cefr + ' 相当（目安）</div>' +
       '<div class="dg-avg">' + Diag.qs.length + '問中 ' + totalCorrect + '問正解 ／ 平均回答時間 ' + avgSec + '秒</div>' +
-      '<div class="dg-avg">過去' + histN + '回の平均：約 ' + avgEst.toLocaleString() + ' 語（' + avgLevel.name + '）</div>' +
-      '<div class="dg-axis"><div class="dg-axis-fill" style="width:' + Math.min(100, avgEst / 12000 * 100) + '%"></div><div class="dg-axis-dot" style="left:' + Math.min(100, avgEst / 12000 * 100) + '%"></div></div>' +
-      '<div class="dg-axis-labels"><span>0</span><span>6,000</span><span>12,000語</span></div>' +
+      '<div class="dg-avg">過去' + histN + '回の平均：約 ' + avgEst.toLocaleString() + ' 語（' + avgLevel.name + '／CEFR ' + avgLevel.cefr + ' 相当）</div>' +
+      '<div class="dg-axis"><div class="dg-axis-fill" style="width:' + Math.min(100, avgEst / 8000 * 100) + '%"></div><div class="dg-axis-dot" style="left:' + Math.min(100, avgEst / 8000 * 100) + '%"></div></div>' +
+      '<div class="dg-axis-labels"><span>0</span><span>4,000</span><span>8,000語</span></div>' +
       mapRows +
       '<h3 class="act-h">レベル帯ごとの結果</h3>' + bandHtml +
       '<p class="act-note">※ 推定は目安です。診断は適応型で、正解すると難しい問題、間違えると易しい問題が出て、今の実力の境目に収束するようになっています。当て推量の正解で上がりすぎないよう、正解の上昇幅より不正解の下降幅を大きくしてあります（その分、「分からない」を多用すると少し低めに出ます）。<br>※ 診断は1回だと運や調子でブレます。何回もやって平均を見ると精度が上がるので、レベルマップの位置は過去の平均で表示しています。</p>' +
