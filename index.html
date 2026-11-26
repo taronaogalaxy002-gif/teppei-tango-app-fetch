@@ -1549,7 +1549,7 @@ document.getElementById('tipsCloseBtn').addEventListener('click', ()=>{ document
 
 /* ================= 更新履歴 ================= */
 const UPDATES = [
-  {date:'2026-11-26', items:['「世界史B用語」（728語）を追加', '自動めくり中は画面が消えないようにした', 'みんなの勉強記録で名前（動物＋イニシャル）とテーマカラーを選べるようにした', '勉強記録の表示を表形式にした']},
+  {date:'2026-11-26', items:['「世界史B用語」（728語）を追加', '自動めくり中は画面が消えないようにした', 'みんなの勉強記録で名前（動物＋イニシャル）とテーマカラーを選べるようにした', '勉強記録の表示を表形式にした', '語彙力診断の推定を見直し（低い語彙でも低く出るように較正）', '勉強記録の診断結果に推定語彙数を表示']},
   {date:'2026-11-24', items:['「重要古文単語315」「速読英熟語」を追加']},
   {date:'2026-11-23', items:['語彙力診断を追加（適応式に改良）', '「みんなの勉強記録」を追加', '「多義語」「苦手」ブックを追加']},
 ];
@@ -2081,6 +2081,19 @@ const DG_LEVELS = [
   { to: 9000, name: '英検準1級レベル' }, { to: Infinity, name: '英検1級レベル' },
 ];
 const DG_MAP = DG_LEVELS.map(l => ({ name: l.name.replace('レベル',''), to: l.to }));
+/* theta（適応軸 0〜12000）は実際の語彙数と一致しない。帯の幅とプールの実語数が違い（例：中学帯1500に対しプールは850語）、
+   本同士の重なりも大きいため、そのままだと弱い層ほど過大に出る。実語彙数への換算テーブルで補正する（オフラインシミュレーションで調整） */
+const DG_EST_MAP = [[0,0],[1500,850],[3000,1650],[5000,2400],[7000,3350],[9000,4700],[12000,8000]];
+function dgCalibrate(theta){
+  if(theta <= 0) return 0;
+  for(let i = 1; i < DG_EST_MAP.length; i++){
+    if(theta <= DG_EST_MAP[i][0]){
+      const x0 = DG_EST_MAP[i - 1][0], y0 = DG_EST_MAP[i - 1][1], x1 = DG_EST_MAP[i][0], y1 = DG_EST_MAP[i][1];
+      return y0 + (theta - x0) / (x1 - x0) * (y1 - y0);
+    }
+  }
+  return DG_EST_MAP[DG_EST_MAP.length - 1][1];
+}
 const DG_NONE_RATE = 0.15, DG_LIMIT_MS = 5000, DG_DELAY_MS = 1000;
 const Diag = {
   qs: [], idx: 0, locked: false, t0: 0, timer: null, revealTimer: null, nextTimer: null, token: 0,
@@ -2092,7 +2105,9 @@ const Diag = {
     ]);
     return {
       chus: t1200.filter(w => w.id <= 850), kiso: t1200.filter(w => w.id > 850),
-      kyotsu: target, nankan: teppeki, eijun1: ex.filter(w => w.id <= 1680), ei1: pass1.filter(w => w.id <= 2100),
+      kyotsu: target, nankan: teppeki, eijun1: ex.filter(w => w.id <= 1680),
+      /* 英検1級帯はパス単1級（単語編）に単熟語EXのテクニカルタームを最難関側へ追加して厚くする（_s = 診断内の難易度順キー） */
+      ei1: [...pass1.filter(w => w.id <= 2100).map(w => ({...w, _s: w.id})), ...ex.filter(w => w.id >= 2017).map(w => ({...w, _s: 100000 + w.id}))],
       all: [...t1200, ...target, ...teppeki, ...ex, ...pass1],
     };
   },
@@ -2169,7 +2184,18 @@ const Diag = {
     let band = target, w = null;
     for(const b of order){
       const pool = P[b.key].filter(x => x.ja && !used.has(x.en));
-      if(pool.length){ band = b; w = pool[Math.floor(Math.random() * pool.length)]; break; }
+      if(!pool.length) continue;
+      /* バンド内でも theta の位置に応じて難しさが連続的に変わるよう、プールを難易度順（id／_s）に並べ、theta の帯内相対位置の周辺（前後あわせて約2割）から出す */
+      const sorted = pool.slice().sort((a, b2) => ((a._s != null ? a._s : a.id) - (b2._s != null ? b2._s : b2.id)));
+      let start = 0;
+      for(const bb of DG_BANDS){ if(bb === b) break; start += bb.width; }
+      const frac = Math.max(0, Math.min(1, (Diag.theta - start) / b.width));
+      const center = frac * (sorted.length - 1);
+      const win = Math.max(30, Math.round(sorted.length * 0.2));
+      const slice = sorted.slice(Math.max(0, Math.floor(center - win / 2)), Math.min(sorted.length, Math.ceil(center + win / 2)));
+      band = b;
+      w = slice[Math.floor(Math.random() * slice.length)];
+      break;
     }
     if(!w){ w = P.all.find(x => x.ja && !used.has(x.en)); band = target; }
     const noneCorrect = Math.random() < DG_NONE_RATE;
@@ -2277,14 +2303,14 @@ const Diag = {
       const adj = bqs.length ? Math.max(0, Math.min(1, (fsum / n - 0.2) / 0.8)) : 0;
       return { label: band.label, pct: Math.round(c / n * 100), adj, count: bqs.length };
     });
-    const est = Math.round(Diag.theta / 10) * 10;
+    const est = Math.round(dgCalibrate(Diag.theta) / 10) * 10;
     const level = DG_LEVELS.find(l => est <= l.to) || DG_LEVELS[DG_LEVELS.length - 1];
     const avgSec = Diag.qs.length ? (totalMs / Diag.qs.length / 1000).toFixed(1) : '0.0';
     if(!Array.isArray(saved.diagHistory)) saved.diagHistory = [];
     saved.diagHistory.push(est);
     if(saved.diagHistory.length > 50) saved.diagHistory = saved.diagHistory.slice(-50);
     persist();
-    if(window.__actDiag) window.__actDiag(Diag.qs.length, totalCorrect);
+    if(window.__actDiag) window.__actDiag(Diag.qs.length, totalCorrect, est);
     const histN = saved.diagHistory.length;
     const avgEst = Math.round(saved.diagHistory.reduce((a, b) => a + b, 0) / histN / 10) * 10;
     const avgLevel = DG_LEVELS.find(l => avgEst <= l.to) || DG_LEVELS[DG_LEVELS.length - 1];
@@ -2405,17 +2431,23 @@ const Act = {
     Act.toast('名前を「' + saved.customName + '」にしたよ');
   },
   headers(){ return {apikey: SB_ANON_KEY, Authorization: 'Bearer ' + SB_ANON_KEY, 'Content-Type': 'application/json'}; },
-  async post(kind, questions, correct, bookKey){
+  async post(kind, questions, correct, bookKey, estVal){
     if(!Act.enabled) return;
     const body = {anon_name: Act.name(), book: ACT_BOOK_LABELS[bookKey] || bookKey, questions: questions, correct: correct, kind: kind};
     if(Act.safeColor(saved.customColor)) body.color = saved.customColor;
+    if(kind === 'diag' && Number.isFinite(estVal)) body.est = Math.round(estVal);
     try{
       const res = await fetch(SB_URL + '/rest/v1/activity', {method:'POST', headers: Act.headers(), body: JSON.stringify(body)});
-      if(!res.ok && body.color){
+      if(!res.ok){
         const t = await res.text().catch(()=> '');
-        if(t.includes('PGRST204') || (t.includes('color') && /column/i.test(t))){
+        /* 任意カラム（color/est）がテーブル側に無い場合だけ、そのカラムを落として1回だけ再送する。
+           エラーがカラム名を示していればそのカラムだけ、示していなければ任意カラム全部を落とす */
+        const optCols = ['color', 'est'].filter(k => k in body);
+        const namedCols = optCols.filter(k => t.includes(k) && /column/i.test(t));
+        const badCols = namedCols.length ? namedCols : (t.includes('PGRST204') ? optCols : []);
+        if(badCols.length){
           const retry = Object.assign({}, body);
-          delete retry.color;
+          badCols.forEach(k => delete retry[k]);
           await fetch(SB_URL + '/rest/v1/activity', {method:'POST', headers: Act.headers(), body: JSON.stringify(retry)});
         }
       }
@@ -2423,10 +2455,10 @@ const Act = {
   },
   async fetchRecent(limit){
     const cols = 'id,anon_name,book,questions,correct,kind,created_at';
-    let r = await fetch(SB_URL + '/rest/v1/activity?select=' + cols + ',color&order=id.desc&limit=' + limit, {headers: Act.headers()});
+    let r = await fetch(SB_URL + '/rest/v1/activity?select=' + cols + ',color,est&order=id.desc&limit=' + limit, {headers: Act.headers()});
     if(!r.ok){
       const t = await r.text().catch(()=> '');
-      if(t.includes('PGRST204') || t.includes('color')){
+      if(t.includes('PGRST204') || t.includes('color') || t.includes('est')){
         r = await fetch(SB_URL + '/rest/v1/activity?select=' + cols + '&order=id.desc&limit=' + limit, {headers: Act.headers()});
       }
     }
@@ -2435,7 +2467,11 @@ const Act = {
   },
   describe(r){
     if(r.kind === 'card') return r.book + ' カード' + r.questions + '枚';
-    if(r.kind === 'diag') return '語彙力診断 ' + r.questions + '問（正解' + r.correct + '）';
+    if(r.kind === 'diag'){
+      let s = '語彙力診断 ' + r.questions + '問（正解' + r.correct;
+      if(typeof r.est === 'number' && Number.isFinite(r.est)) s += '・推定約' + r.est.toLocaleString() + '語';
+      return s + '）';
+    }
     return r.book + ' テスト' + r.questions + '問（正解' + r.correct + '）';
   },
   fmtTime(iso){
@@ -2566,7 +2602,7 @@ window.__actFlush = () => {
   if(n >= 5 && bk) Act.post('card', n, 0, bk);
 };
 window.__actQuiz = (answered, correct) => { if(answered > 0) Act.post('quiz', answered, correct, curBook); };
-window.__actDiag = (answered, correct) => { if(answered > 0) Act.post('diag', answered, correct, '語彙力診断'); };
+window.__actDiag = (answered, correct, est) => { if(answered > 0) Act.post('diag', answered, correct, '語彙力診断', est); };
 Act.init();
 
 loadWordData();
