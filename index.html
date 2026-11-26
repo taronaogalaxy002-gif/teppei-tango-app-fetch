@@ -517,6 +517,11 @@
   .np-actions{display:flex; gap:8px;}
   #npSave{flex:1; border:none; background:var(--accent); color:#fff; border-radius:9px; padding:10px; font-weight:800; cursor:pointer;}
   #npCancel{border:1px solid var(--border); background:var(--bg-elevated); color:var(--text-main); border-radius:9px; padding:10px 14px; cursor:pointer;}
+  #actPlayerOverlay{position:fixed; inset:0; z-index:991; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; padding:16px;}
+  #actPlayerOverlay[hidden]{display:none;}
+  .ap-name{cursor:pointer; text-decoration:underline; text-underline-offset:2px; text-decoration-color:var(--text-sub);}
+  #apClose{flex:1; border:1px solid var(--border); background:var(--bg-elevated); color:var(--text-main); border-radius:9px; padding:10px 14px; cursor:pointer; font-weight:700;}
+  .ap-dot{display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:7px; vertical-align:-1px;}
   .dg-rules{margin:10px 0 14px; padding-left:20px; font-size:.88rem; line-height:1.7; color:var(--text-sub);}
   .dg-timer-row{display:flex; align-items:center; gap:10px; margin:8px 0 4px;}
   .dg-bar-wrap{flex:1; height:8px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; overflow:hidden;}
@@ -682,6 +687,16 @@
       <div class="np-actions">
         <button type="button" id="npSave">保存</button>
         <button type="button" id="npCancel">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="actPlayerOverlay" hidden>
+    <div class="np-card">
+      <h3 class="np-title" id="apTitle"></h3>
+      <div id="apBody"></div>
+      <div class="np-actions" style="margin-top:14px;">
+        <button type="button" id="apClose">閉じる</button>
       </div>
     </div>
   </div>
@@ -1567,7 +1582,7 @@ document.getElementById('tipsCloseBtn').addEventListener('click', ()=>{ document
 
 /* ================= 更新履歴 ================= */
 const UPDATES = [
-  {date:'2026-11-26', items:['「世界史B用語」（728語）を追加', '「日本史B用語」（842語）を追加', '自動めくり中は画面が消えないようにした', 'みんなの勉強記録で名前（動物＋イニシャル）とテーマカラーを選べるようにした', '勉強記録の表示を表形式にした', '語彙力診断の推定を見直し（低い語彙でも低く出るように較正）', '勉強記録の診断結果に推定語彙数を表示', '診断のレベル表示を修正し、CEFR表示を追加', '本の選択ボタンを教科別に色分け']},
+  {date:'2026-11-26', items:['「世界史B用語」（728語）を追加', '「日本史B用語」（842語）を追加', '自動めくり中は画面が消えないようにした', 'みんなの勉強記録で名前（動物＋イニシャル）とテーマカラーを選べるようにした', '勉強記録の表示を表形式にした', '語彙力診断の推定を見直し（低い語彙でも低く出るように較正）', '勉強記録の診断結果に推定語彙数を表示', '診断のレベル表示を修正し、CEFR表示を追加', '本の選択ボタンを教科別に色分け', '勉強記録でプレイヤー名をタップすると詳細（推定語彙数・CEFR・1日の平均学習量）が見られるようにした']},
   {date:'2026-11-24', items:['「重要古文単語315」「速読英熟語」を追加']},
   {date:'2026-11-23', items:['語彙力診断を追加（適応式に改良）', '「みんなの勉強記録」を追加', '「多義語」「苦手」ブックを追加']},
 ];
@@ -2544,10 +2559,65 @@ const Act = {
       html += '<tr>';
       if(dateSpan[i]) html += '<td class="act-td-date"' + (dateSpan[i] > 1 ? ' rowspan="' + dateSpan[i] + '"' : '') + '>' + Act.fmtDate(r.created_at) + '</td>';
       html += '<td class="act-td-time">' + Act.fmtHM(r.created_at) + '</td>';
-      if(nameSpan[i]) html += '<td class="act-td-name"' + (nameSpan[i] > 1 ? ' rowspan="' + nameSpan[i] + '"' : '') + (nameColor[i] ? ' style="border-left:4px solid ' + nameColor[i] + ';"' : '') + '>' + escA(r.anon_name) + '</td>';
+      if(nameSpan[i]) html += '<td class="act-td-name ap-name" data-name="' + escA(r.anon_name) + '"' + (nameSpan[i] > 1 ? ' rowspan="' + nameSpan[i] + '"' : '') + (nameColor[i] ? ' style="border-left:4px solid ' + nameColor[i] + ';"' : '') + '>' + escA(r.anon_name) + '</td>';
       html += '<td class="act-td-rec">' + escA(Act.describe(r)) + '</td></tr>';
     }
     return html + '</tbody></table>';
+  },
+  playerStats(name){
+    const rows = Act._panelRows || [];
+    const mine = rows.filter(r => r.anon_name === name);
+    const diag = mine.filter(r => r.kind === 'diag');
+    const ests = diag.map(r => r.est).filter(v => typeof v === 'number' && Number.isFinite(v));
+    let estAvg = null, level = null;
+    if(ests.length){
+      estAvg = Math.round(ests.reduce((a, b) => a + b, 0) / ests.length);
+      level = DG_LEVELS.find(l => estAvg <= l.to) || DG_LEVELS[DG_LEVELS.length - 1];
+    }
+    const study = mine.filter(r => r.kind === 'quiz' || r.kind === 'card');
+    const studyTotal = study.reduce((a, r) => a + (r.questions || 0), 0);
+    const daySet = new Set(study.map(r => { const d = new Date(r.created_at); return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate(); }));
+    let color = null;
+    for(const r of mine){ const c = Act.safeColor(r.color); if(c){ color = c; break; } }
+    const totals = Act._panelTotals || {};
+    return {
+      name: name, color: color,
+      diagCount: diag.length, estCount: ests.length, estAvg: estAvg, level: level,
+      studyTotal: studyTotal, studyDays: daySet.size,
+      studyAvg: daySet.size ? Math.round(studyTotal / daySet.size) : null,
+      weekTotal: Object.prototype.hasOwnProperty.call(totals, name) ? totals[name] : null,
+      fetched: rows.length,
+    };
+  },
+  openPlayer(name){
+    const s = Act.playerStats(name);
+    document.getElementById('apTitle').innerHTML = (s.color ? '<span class="ap-dot" style="background:' + s.color + ';"></span>' : '') + escA(s.name);
+    let h = '';
+    if(s.diagCount === 0){
+      h += '<div class="act-row"><span>語彙力診断</span><b>診断記録なし</b></div>';
+    } else if(s.estAvg == null){
+      h += '<div class="act-row"><span>推定語彙数</span><b>記録なし（診断は' + s.diagCount + '回）</b></div>';
+    } else {
+      h += '<div class="act-row"><span>推定語彙数</span><b>約' + s.estAvg.toLocaleString() + '語</b></div>';
+      h += '<div class="act-row"><span>レベル</span><b>' + escA(s.level.name) + '（CEFR ' + escA(s.level.cefr) + ' 相当・目安）</b></div>';
+      h += '<div class="act-row"><span>診断回数</span><b>' + s.diagCount + '回</b></div>';
+    }
+    if(s.studyDays === 0){
+      h += '<div class="act-row"><span>学習量</span><b>記録なし</b></div>';
+    } else {
+      h += '<div class="act-row"><span>学習量の合計</span><b>' + s.studyTotal.toLocaleString() + '問・枚</b></div>';
+      h += '<div class="act-row"><span>勉強した日数</span><b>' + s.studyDays + '日</b></div>';
+      h += '<div class="act-row"><span>勉強した日1日あたり</span><b>約' + s.studyAvg.toLocaleString() + '問・枚</b></div>';
+    }
+    if(s.weekTotal != null) h += '<div class="act-row"><span>今週の合計</span><b>' + s.weekTotal.toLocaleString() + '</b></div>';
+    h += '<p class="act-note">表示中の記録（直近' + s.fetched + '件）から集計しています</p>';
+    document.getElementById('apBody').innerHTML = h;
+    document.getElementById('actPlayerOverlay').hidden = false;
+  },
+  bindPlayerNames(root){
+    root.querySelectorAll('.ap-name').forEach(el => {
+      el.addEventListener('click', ()=>{ Act.openPlayer(el.dataset.name); });
+    });
   },
   toast(msg){
     const t = document.getElementById('actToast');
@@ -2589,7 +2659,9 @@ const Act = {
         if(!colorByName[r.anon_name]){ const c = Act.safeColor(r.color); if(c) colorByName[r.anon_name] = c; }
       });
       const rank = Object.entries(totals).sort((a,b) => b[1] - a[1]);
-      const rankHtml = rank.length ? rank.map(([n, c], i) => '<div class="act-row"' + (colorByName[n] ? ' style="border-left:4px solid ' + colorByName[n] + '; padding-left:6px;"' : '') + '><span>' + (i+1) + '. ' + escA(n) + '</span><b>' + c + '</b></div>').join('') : '<p class="act-note">今週の記録はまだないよ</p>';
+      Act._panelRows = rows;
+      Act._panelTotals = totals;
+      const rankHtml = rank.length ? rank.map(([n, c], i) => '<div class="act-row"' + (colorByName[n] ? ' style="border-left:4px solid ' + colorByName[n] + '; padding-left:6px;"' : '') + '><span>' + (i+1) + '. <span class="ap-name" data-name="' + escA(n) + '">' + escA(n) + '</span></span><b>' + c + '</b></div>').join('') : '<p class="act-note">今週の記録はまだないよ</p>';
       const disp = [];
       for(const r of rows.slice(0, 20)){
         const last = disp[disp.length - 1];
@@ -2604,6 +2676,7 @@ const Act = {
         '<h3 class="act-h">今週の合計（問題数＋カード枚数）</h3>' + rankHtml +
         '<h3 class="act-h">直近の記録</h3>' + (recentHtml || '<p class="act-note">記録はまだないよ</p>') +
         '<p class="act-note" id="actMyName">あなたの名前：' + escA(Act.name()) + escA(Act.nameNote()) + '</p>';
+      Act.bindPlayerNames(body);
       if(rows.length && rows[0].id > Act.lastSeen){ Act.lastSeen = rows[0].id; saved.actLastSeen = Act.lastSeen; persist(); }
     }catch(e){
       body.innerHTML = '<p class="act-note">読み込めませんでした。通信を確認してね。</p>';
@@ -2626,6 +2699,8 @@ const Act = {
     document.getElementById('npSave').addEventListener('click', Act.saveName);
     document.getElementById('npCancel').addEventListener('click', ()=>{ document.getElementById('actNameOverlay').hidden = true; });
     document.getElementById('actNameOverlay').addEventListener('click', (e)=>{ if(e.target.id === 'actNameOverlay') e.target.hidden = true; });
+    document.getElementById('apClose').addEventListener('click', ()=>{ document.getElementById('actPlayerOverlay').hidden = true; });
+    document.getElementById('actPlayerOverlay').addEventListener('click', (e)=>{ if(e.target.id === 'actPlayerOverlay') e.target.hidden = true; });
     document.getElementById('actPanel').addEventListener('click', (e)=>{ if(e.target.id === 'actPanel') e.target.hidden = true; });
     setTimeout(Act.poll, 3000);
     setInterval(Act.poll, 45000);
