@@ -485,14 +485,29 @@
   .act-note{font-size:.78rem; color:var(--text-sub); margin-top:10px;}
   .act-head-btns{display:flex; gap:6px;}
   #actNameBtn{border:1px solid var(--accent); background:var(--bg-elevated); color:var(--accent); border-radius:8px; padding:4px 10px; cursor:pointer; font-weight:700;}
-  #actNameEditor{border-top:1px dashed var(--border); margin-top:12px; padding-top:4px;}
+  #actNameOverlay{position:fixed; inset:0; z-index:990; background:rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; padding:16px;}
+  #actNameOverlay[hidden]{display:none;}
+  .np-card{background:var(--bg); border:1px solid var(--border); border-radius:14px; width:100%; max-width:520px; max-height:88vh; overflow-y:auto; padding:18px;}
+  .np-title{margin:0 0 4px; font-size:1.05rem;}
+  .np-label{font-size:.8rem; font-weight:700; color:var(--text-sub); margin:12px 0 4px;}
+  .np-colors{display:flex; flex-wrap:wrap; gap:9px; margin:6px 0 4px;}
+  .np-swatch{width:38px; height:38px; border-radius:50%; border:2px solid rgba(0,0,0,.12); cursor:pointer; padding:0; touch-action:manipulation;}
+  .np-swatch.sel{outline:3px solid var(--text-main); outline-offset:2px;}
+  .np-none{width:auto; height:38px; border-radius:19px; border:1.5px dashed var(--border); background:var(--bg-elevated); color:var(--text-sub); padding:0 14px; font-size:.82rem; font-weight:700;}
+  .np-none.sel{border-color:var(--accent); color:var(--accent); outline:none; box-shadow:0 0 0 1px var(--accent) inset;}
+  .act-table{width:100%; border-collapse:collapse; font-size:.84rem;}
+  .act-table th,.act-table td{border:1px solid var(--border); padding:5px 6px; text-align:left;}
+  .act-table th{background:var(--bg-elevated); color:var(--text-sub); font-size:.74rem; text-align:center;}
+  .act-table td.act-td-date,.act-table td.act-td-name{vertical-align:middle; text-align:center;}
+  .act-table td.act-td-time{vertical-align:middle; text-align:center; color:var(--text-sub); white-space:nowrap; font-variant-numeric:tabular-nums;}
+  .act-table td.act-td-rec{vertical-align:middle;}
   .np-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin:8px 0;}
-  .np-animal{border:1.5px solid var(--border); background:var(--bg-elevated); color:var(--text-main); border-radius:9px; padding:9px 2px; font-size:.85rem; cursor:pointer; touch-action:manipulation;}
+  .np-animal{border:1.5px solid var(--border); background:var(--bg-elevated); color:var(--text-main); border-radius:9px; padding:12px 2px; font-size:.9rem; cursor:pointer; touch-action:manipulation;}
   .np-animal.sel{border-color:var(--accent); color:var(--accent); font-weight:800; box-shadow:0 0 0 1px var(--accent) inset;}
   .np-row{display:flex; align-items:center; gap:8px; margin:8px 0;}
-  .np-letter{flex:1; padding:9px; border:1.5px solid var(--border); border-radius:9px; background:var(--bg-elevated); color:var(--text-main); font-size:1rem; font-weight:700; text-align:center;}
+  .np-letter{flex:1; padding:12px; border:1.5px solid var(--border); border-radius:9px; background:var(--bg-elevated); color:var(--text-main); font-size:1.05rem; font-weight:700; text-align:center;}
   .np-dot{font-weight:800; color:var(--text-sub);}
-  .np-preview{font-size:.95rem; margin:8px 0;}
+  .np-preview{font-size:.95rem; margin:10px 0; border-left:4px solid transparent; padding-left:8px;}
   .np-actions{display:flex; gap:8px;}
   #npSave{flex:1; border:none; background:var(--accent); color:#fff; border-radius:9px; padding:10px; font-weight:800; cursor:pointer;}
   #npCancel{border:1px solid var(--border); background:var(--bg-elevated); color:var(--text-main); border-radius:9px; padding:10px 14px; cursor:pointer;}
@@ -642,20 +657,25 @@
     <div class="act-box">
       <div class="act-head"><b>みんなの勉強記録</b><span class="act-head-btns"><button type="button" id="actNameBtn">名前を変える</button><button type="button" id="actClose">✕ 閉じる</button></span></div>
       <div id="actBody"></div>
-      <div id="actNameEditor" hidden>
-        <h3 class="act-h">名前を変える</h3>
-        <p class="act-note">動物とイニシャル（英字2文字）を選んでね。みんなの記録にはこの名前で表示されるよ。</p>
-        <div class="np-grid" id="npAnimals"></div>
-        <div class="np-row">
-          <select id="npL1" class="np-letter" aria-label="イニシャル1文字目"></select>
-          <span class="np-dot">.</span>
-          <select id="npL2" class="np-letter" aria-label="イニシャル2文字目"></select>
-        </div>
-        <p class="np-preview">新しい名前：<b id="npPreview"></b></p>
-        <div class="np-actions">
-          <button type="button" id="npSave">保存</button>
-          <button type="button" id="npCancel">キャンセル</button>
-        </div>
+    </div>
+  </div>
+
+  <div id="actNameOverlay" hidden>
+    <div class="np-card">
+      <h3 class="np-title">名前を変える</h3>
+      <p class="act-note">動物とイニシャル（英字2文字）とテーマカラーを選んでね。みんなの記録にはこの名前で表示されるよ。</p>
+      <div class="np-grid" id="npAnimals"></div>
+      <div class="np-row">
+        <select id="npL1" class="np-letter" aria-label="イニシャル1文字目"></select>
+        <span class="np-dot">.</span>
+        <select id="npL2" class="np-letter" aria-label="イニシャル2文字目"></select>
+      </div>
+      <p class="np-label">テーマカラー</p>
+      <div class="np-colors" id="npColors"></div>
+      <p class="np-preview" id="npPreviewRow">新しい名前：<b id="npPreview"></b></p>
+      <div class="np-actions">
+        <button type="button" id="npSave">保存</button>
+        <button type="button" id="npCancel">キャンセル</button>
       </div>
     </div>
   </div>
@@ -676,6 +696,7 @@
     </div>
 
     <button type="button" class="tips-open-btn" id="tipsOpenBtn">📖 単語の覚え方のコツ</button>
+    <button type="button" class="tips-open-btn" id="updOpenBtn">📢 更新履歴</button>
     <a class="xlink-btn" href="https://taronaogalaxy002-gif.github.io/tango-combat/" target="_blank" rel="noopener">⚔️ 単語バトルで対戦する</a>
 
     <div class="panel">
@@ -917,6 +938,14 @@
         </ul>
       </div>
       <button type="button" class="tips-close-btn" id="tipsCloseBtn">閉じる</button>
+    </div>
+  </div>
+
+  <div id="updOverlay" class="tips-overlay hide">
+    <div class="tips-card">
+      <h3>📢 更新履歴</h3>
+      <div class="tips-body" id="updBody"></div>
+      <button type="button" class="tips-close-btn" id="updCloseBtn">閉じる</button>
     </div>
   </div>
 
@@ -1517,6 +1546,20 @@ document.getElementById('weakBtnCard').addEventListener('click', ()=> toggleWeak
 document.getElementById('weakBtnQuiz').addEventListener('click', ()=> toggleWeak(quizState.deck && quizState.deck[quizState.index]));
 document.getElementById('tipsOpenBtn').addEventListener('click', ()=>{ document.getElementById('tipsOverlay').classList.remove('hide'); });
 document.getElementById('tipsCloseBtn').addEventListener('click', ()=>{ document.getElementById('tipsOverlay').classList.add('hide'); });
+
+/* ================= 更新履歴 ================= */
+const UPDATES = [
+  {date:'2026-11-26', items:['「世界史B用語」（728語）を追加', '自動めくり中は画面が消えないようにした', 'みんなの勉強記録で名前（動物＋イニシャル）とテーマカラーを選べるようにした', '勉強記録の表示を表形式にした']},
+  {date:'2026-11-24', items:['「重要古文単語315」「速読英熟語」を追加']},
+  {date:'2026-11-23', items:['語彙力診断を追加（適応式に改良）', '「みんなの勉強記録」を追加', '「多義語」「苦手」ブックを追加']},
+];
+function renderUpdates(){
+  document.getElementById('updBody').innerHTML = UPDATES.map(u =>
+    '<h4>' + u.date + '</h4><ul>' + u.items.map(t => '<li>' + escA(t) + '</li>').join('') + '</ul>'
+  ).join('');
+}
+document.getElementById('updOpenBtn').addEventListener('click', ()=>{ renderUpdates(); document.getElementById('updOverlay').classList.remove('hide'); });
+document.getElementById('updCloseBtn').addEventListener('click', ()=>{ document.getElementById('updOverlay').classList.add('hide'); });
 
 /* ================= もう一度(encore) ================= */
 document.getElementById('encoreBtn').addEventListener('click', ()=>{
@@ -2298,8 +2341,10 @@ const escA = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({'&':'&a
 const Act = {
   enabled: !!SB_ANON_KEY,
   cardSeen: new Set(), cardBook: null, lastSeen: 0, toastTimer: null,
-  ANIMALS: ['ライオン','パンダ','キリン','ゾウ','トラ','クマ','ウサギ','ネコ','イヌ','サル','ペンギン','フクロウ','カバ','シマウマ','コアラ','カンガルー','キツネ','タヌキ','イルカ','クジラ'],
-  _np: {animal: 'ライオン', l1: 'A', l2: 'A'},
+  ANIMALS: ['ライオン','パンダ','キリン','ゾウ','トラ','クマ','ウサギ','ネコ','イヌ','サル','ペンギン','フクロウ','カバ','シマウマ','コアラ','カンガルー','キツネ','タヌキ','イルカ','クジラ','ウマ','ヒツジ','ブタ','ハムスター','カメ','サメ','タコ','ワニ','カエル','リス'],
+  COLORS: ['#e91e63','#f44336','#ff9800','#ffc107','#4caf50','#009688','#2196f3','#3f51b5','#9c27b0','#795548'],
+  _np: {animal: 'ライオン', l1: 'A', l2: 'A', color: null},
+  safeColor(c){ return (typeof c === 'string' && /^#[0-9a-fA-F]{6}$/.test(c)) ? c : null; },
   name(){
     if(saved.customName) return saved.customName;
     if(!saved.anonName){
@@ -2314,12 +2359,16 @@ const Act = {
   },
   paintNameEditor(){
     document.querySelectorAll('#npAnimals .np-animal').forEach(b => b.classList.toggle('sel', b.textContent === Act._np.animal));
+    document.querySelectorAll('#npColors .np-swatch').forEach(b => b.classList.toggle('sel', (b.dataset.color || null) === Act._np.color));
     const p = document.getElementById('npPreview');
     if(p) p.textContent = Act._np.animal + ' ' + Act._np.l1 + '.' + Act._np.l2;
+    const row = document.getElementById('npPreviewRow');
+    if(row) row.style.borderLeftColor = Act._np.color || 'transparent';
   },
   openNameEditor(){
     const m = /^(.+) ([A-Z])\.([A-Z])$/.exec(saved.customName || '');
-    if(m && Act.ANIMALS.includes(m[1])) Act._np = {animal: m[1], l1: m[2], l2: m[3]};
+    if(m && Act.ANIMALS.includes(m[1])) Act._np = {animal: m[1], l1: m[2], l2: m[3], color: null};
+    Act._np.color = Act.safeColor(saved.customColor);
     const grid = document.getElementById('npAnimals');
     grid.innerHTML = '';
     Act.ANIMALS.forEach(a => {
@@ -2328,15 +2377,29 @@ const Act = {
       b.addEventListener('click', ()=>{ Act._np.animal = a; Act.paintNameEditor(); });
       grid.appendChild(b);
     });
+    const cgrid = document.getElementById('npColors');
+    cgrid.innerHTML = '';
+    Act.COLORS.forEach(c => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'np-swatch'; b.dataset.color = c; b.style.background = c;
+      b.setAttribute('aria-label', 'テーマカラー ' + c);
+      b.addEventListener('click', ()=>{ Act._np.color = c; Act.paintNameEditor(); });
+      cgrid.appendChild(b);
+    });
+    const none = document.createElement('button');
+    none.type = 'button'; none.className = 'np-swatch np-none'; none.dataset.color = ''; none.textContent = '色なし';
+    none.addEventListener('click', ()=>{ Act._np.color = null; Act.paintNameEditor(); });
+    cgrid.appendChild(none);
     document.getElementById('npL1').value = Act._np.l1;
     document.getElementById('npL2').value = Act._np.l2;
-    document.getElementById('actNameEditor').hidden = false;
+    document.getElementById('actNameOverlay').hidden = false;
     Act.paintNameEditor();
   },
   saveName(){
     saved.customName = Act._np.animal + ' ' + Act._np.l1 + '.' + Act._np.l2;
+    if(Act._np.color) saved.customColor = Act._np.color; else delete saved.customColor;
     persist();
-    document.getElementById('actNameEditor').hidden = true;
+    document.getElementById('actNameOverlay').hidden = true;
     const n = document.getElementById('actMyName');
     if(n) n.textContent = 'あなたの名前：' + Act.name() + Act.nameNote();
     Act.toast('名前を「' + saved.customName + '」にしたよ');
@@ -2344,12 +2407,29 @@ const Act = {
   headers(){ return {apikey: SB_ANON_KEY, Authorization: 'Bearer ' + SB_ANON_KEY, 'Content-Type': 'application/json'}; },
   async post(kind, questions, correct, bookKey){
     if(!Act.enabled) return;
+    const body = {anon_name: Act.name(), book: ACT_BOOK_LABELS[bookKey] || bookKey, questions: questions, correct: correct, kind: kind};
+    if(Act.safeColor(saved.customColor)) body.color = saved.customColor;
     try{
-      await fetch(SB_URL + '/rest/v1/activity', {method:'POST', headers: Act.headers(), body: JSON.stringify({anon_name: Act.name(), book: ACT_BOOK_LABELS[bookKey] || bookKey, questions: questions, correct: correct, kind: kind})});
+      const res = await fetch(SB_URL + '/rest/v1/activity', {method:'POST', headers: Act.headers(), body: JSON.stringify(body)});
+      if(!res.ok && body.color){
+        const t = await res.text().catch(()=> '');
+        if(t.includes('PGRST204') || (t.includes('color') && /column/i.test(t))){
+          const retry = Object.assign({}, body);
+          delete retry.color;
+          await fetch(SB_URL + '/rest/v1/activity', {method:'POST', headers: Act.headers(), body: JSON.stringify(retry)});
+        }
+      }
     }catch(e){}
   },
   async fetchRecent(limit){
-    const r = await fetch(SB_URL + '/rest/v1/activity?select=id,anon_name,book,questions,correct,kind,created_at&order=id.desc&limit=' + limit, {headers: Act.headers()});
+    const cols = 'id,anon_name,book,questions,correct,kind,created_at';
+    let r = await fetch(SB_URL + '/rest/v1/activity?select=' + cols + ',color&order=id.desc&limit=' + limit, {headers: Act.headers()});
+    if(!r.ok){
+      const t = await r.text().catch(()=> '');
+      if(t.includes('PGRST204') || t.includes('color')){
+        r = await fetch(SB_URL + '/rest/v1/activity?select=' + cols + '&order=id.desc&limit=' + limit, {headers: Act.headers()});
+      }
+    }
     if(!r.ok) throw new Error('ng');
     return r.json();
   },
@@ -2361,6 +2441,40 @@ const Act = {
   fmtTime(iso){
     const d = new Date(iso);
     return (d.getMonth()+1) + '/' + d.getDate() + ' ' + String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  },
+  fmtDate(iso){
+    const d = new Date(iso);
+    return (d.getMonth()+1) + '/' + d.getDate();
+  },
+  fmtHM(iso){
+    const d = new Date(iso);
+    return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  },
+  recentTableHtml(disp){
+    if(!disp.length) return '';
+    const n = disp.length;
+    const dateSpan = new Array(n).fill(0), nameSpan = new Array(n).fill(0), nameColor = new Array(n).fill(null);
+    for(let i = 0; i < n; i++){
+      if(i === 0 || Act.fmtDate(disp[i].created_at) !== Act.fmtDate(disp[i-1].created_at)){
+        let s = 1; while(i + s < n && Act.fmtDate(disp[i+s].created_at) === Act.fmtDate(disp[i].created_at)) s++;
+        dateSpan[i] = s;
+      }
+      if(i === 0 || disp[i].anon_name !== disp[i-1].anon_name){
+        let s = 1; while(i + s < n && disp[i+s].anon_name === disp[i].anon_name) s++;
+        nameSpan[i] = s;
+        for(let j = i; j < i + s; j++){ const c = Act.safeColor(disp[j].color); if(c){ nameColor[i] = c; break; } }
+      }
+    }
+    let html = '<table class="act-table"><thead><tr><th>日付</th><th>時間</th><th>名前</th><th>記録</th></tr></thead><tbody>';
+    for(let i = 0; i < n; i++){
+      const r = disp[i];
+      html += '<tr>';
+      if(dateSpan[i]) html += '<td class="act-td-date"' + (dateSpan[i] > 1 ? ' rowspan="' + dateSpan[i] + '"' : '') + '>' + Act.fmtDate(r.created_at) + '</td>';
+      html += '<td class="act-td-time">' + Act.fmtHM(r.created_at) + '</td>';
+      if(nameSpan[i]) html += '<td class="act-td-name"' + (nameSpan[i] > 1 ? ' rowspan="' + nameSpan[i] + '"' : '') + (nameColor[i] ? ' style="border-left:4px solid ' + nameColor[i] + ';"' : '') + '>' + escA(r.anon_name) + '</td>';
+      html += '<td class="act-td-rec">' + escA(Act.describe(r)) + '</td></tr>';
+    }
+    return html + '</tbody></table>';
   },
   toast(msg){
     const t = document.getElementById('actToast');
@@ -2396,19 +2510,23 @@ const Act = {
       const now = new Date();
       const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7));
       const totals = {};
-      rows.forEach(r => { if(new Date(r.created_at) >= monday) totals[r.anon_name] = (totals[r.anon_name] || 0) + r.questions; });
+      const colorByName = {};
+      rows.forEach(r => {
+        if(new Date(r.created_at) >= monday) totals[r.anon_name] = (totals[r.anon_name] || 0) + r.questions;
+        if(!colorByName[r.anon_name]){ const c = Act.safeColor(r.color); if(c) colorByName[r.anon_name] = c; }
+      });
       const rank = Object.entries(totals).sort((a,b) => b[1] - a[1]);
-      const rankHtml = rank.length ? rank.map(([n, c], i) => '<div class="act-row"><span>' + (i+1) + '. ' + escA(n) + '</span><b>' + c + '</b></div>').join('') : '<p class="act-note">今週の記録はまだないよ</p>';
+      const rankHtml = rank.length ? rank.map(([n, c], i) => '<div class="act-row"' + (colorByName[n] ? ' style="border-left:4px solid ' + colorByName[n] + '; padding-left:6px;"' : '') + '><span>' + (i+1) + '. ' + escA(n) + '</span><b>' + c + '</b></div>').join('') : '<p class="act-note">今週の記録はまだないよ</p>';
       const disp = [];
       for(const r of rows.slice(0, 20)){
         const last = disp[disp.length - 1];
         if(last && last.anon_name === r.anon_name && last.book === r.book && last.kind === r.kind){
           last.questions += r.questions; last.correct += r.correct;
         } else {
-          disp.push(Object.assign({}, r, { showName: !last || last.anon_name !== r.anon_name }));
+          disp.push(Object.assign({}, r));
         }
       }
-      const recentHtml = disp.map(r => '<div class="act-row"><span>' + Act.fmtTime(r.created_at) + ' ・ ' + (r.showName ? escA(r.anon_name) : '〃') + '</span><span>' + escA(Act.describe(r)) + '</span></div>').join('');
+      const recentHtml = Act.recentTableHtml(disp);
       body.innerHTML =
         '<h3 class="act-h">今週の合計（問題数＋カード枚数）</h3>' + rankHtml +
         '<h3 class="act-h">直近の記録</h3>' + (recentHtml || '<p class="act-note">記録はまだないよ</p>') +
@@ -2433,7 +2551,8 @@ const Act = {
       sel.addEventListener('change', ()=>{ Act._np[i === 0 ? 'l1' : 'l2'] = sel.value; Act.paintNameEditor(); });
     });
     document.getElementById('npSave').addEventListener('click', Act.saveName);
-    document.getElementById('npCancel').addEventListener('click', ()=>{ document.getElementById('actNameEditor').hidden = true; });
+    document.getElementById('npCancel').addEventListener('click', ()=>{ document.getElementById('actNameOverlay').hidden = true; });
+    document.getElementById('actNameOverlay').addEventListener('click', (e)=>{ if(e.target.id === 'actNameOverlay') e.target.hidden = true; });
     document.getElementById('actPanel').addEventListener('click', (e)=>{ if(e.target.id === 'actPanel') e.target.hidden = true; });
     setTimeout(Act.poll, 3000);
     setInterval(Act.poll, 45000);
