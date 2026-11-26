@@ -483,6 +483,19 @@
   .act-h{font-size:.85rem; margin:12px 0 6px; color:var(--text-sub);}
   .act-row{display:flex; justify-content:space-between; gap:10px; padding:5px 2px; border-bottom:1px dashed var(--border); font-size:.85rem;}
   .act-note{font-size:.78rem; color:var(--text-sub); margin-top:10px;}
+  .act-head-btns{display:flex; gap:6px;}
+  #actNameBtn{border:1px solid var(--accent); background:var(--bg-elevated); color:var(--accent); border-radius:8px; padding:4px 10px; cursor:pointer; font-weight:700;}
+  #actNameEditor{border-top:1px dashed var(--border); margin-top:12px; padding-top:4px;}
+  .np-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin:8px 0;}
+  .np-animal{border:1.5px solid var(--border); background:var(--bg-elevated); color:var(--text-main); border-radius:9px; padding:9px 2px; font-size:.85rem; cursor:pointer; touch-action:manipulation;}
+  .np-animal.sel{border-color:var(--accent); color:var(--accent); font-weight:800; box-shadow:0 0 0 1px var(--accent) inset;}
+  .np-row{display:flex; align-items:center; gap:8px; margin:8px 0;}
+  .np-letter{flex:1; padding:9px; border:1.5px solid var(--border); border-radius:9px; background:var(--bg-elevated); color:var(--text-main); font-size:1rem; font-weight:700; text-align:center;}
+  .np-dot{font-weight:800; color:var(--text-sub);}
+  .np-preview{font-size:.95rem; margin:8px 0;}
+  .np-actions{display:flex; gap:8px;}
+  #npSave{flex:1; border:none; background:var(--accent); color:#fff; border-radius:9px; padding:10px; font-weight:800; cursor:pointer;}
+  #npCancel{border:1px solid var(--border); background:var(--bg-elevated); color:var(--text-main); border-radius:9px; padding:10px 14px; cursor:pointer;}
   .dg-rules{margin:10px 0 14px; padding-left:20px; font-size:.88rem; line-height:1.7; color:var(--text-sub);}
   .dg-timer-row{display:flex; align-items:center; gap:10px; margin:8px 0 4px;}
   .dg-bar-wrap{flex:1; height:8px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:4px; overflow:hidden;}
@@ -627,8 +640,23 @@
   <div id="actToast" hidden></div>
   <div id="actPanel" hidden>
     <div class="act-box">
-      <div class="act-head"><b>みんなの勉強記録</b><button type="button" id="actClose">✕ 閉じる</button></div>
+      <div class="act-head"><b>みんなの勉強記録</b><span class="act-head-btns"><button type="button" id="actNameBtn">名前を変える</button><button type="button" id="actClose">✕ 閉じる</button></span></div>
       <div id="actBody"></div>
+      <div id="actNameEditor" hidden>
+        <h3 class="act-h">名前を変える</h3>
+        <p class="act-note">動物とイニシャル（英字2文字）を選んでね。みんなの記録にはこの名前で表示されるよ。</p>
+        <div class="np-grid" id="npAnimals"></div>
+        <div class="np-row">
+          <select id="npL1" class="np-letter" aria-label="イニシャル1文字目"></select>
+          <span class="np-dot">.</span>
+          <select id="npL2" class="np-letter" aria-label="イニシャル2文字目"></select>
+        </div>
+        <p class="np-preview">新しい名前：<b id="npPreview"></b></p>
+        <div class="np-actions">
+          <button type="button" id="npSave">保存</button>
+          <button type="button" id="npCancel">キャンセル</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2270,13 +2298,48 @@ const escA = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({'&':'&a
 const Act = {
   enabled: !!SB_ANON_KEY,
   cardSeen: new Set(), cardBook: null, lastSeen: 0, toastTimer: null,
+  ANIMALS: ['ライオン','パンダ','キリン','ゾウ','トラ','クマ','ウサギ','ネコ','イヌ','サル','ペンギン','フクロウ','カバ','シマウマ','コアラ','カンガルー','キツネ','タヌキ','イルカ','クジラ'],
+  _np: {animal: 'ライオン', l1: 'A', l2: 'A'},
   name(){
+    if(saved.customName) return saved.customName;
     if(!saved.anonName){
       const animals = ['ねこ','いぬ','きつね','たぬき','うさぎ','くま','ぱんだ','とら','しか','さる','ぺんぎん','ふくろう'];
       saved.anonName = animals[Math.floor(Math.random()*animals.length)] + '#' + (1000 + Math.floor(Math.random()*9000));
       persist();
     }
     return saved.anonName;
+  },
+  nameNote(){
+    return saved.customName ? '（自分で選んだ名前）' : '（この端末に自動で付いた匿名ネーム）';
+  },
+  paintNameEditor(){
+    document.querySelectorAll('#npAnimals .np-animal').forEach(b => b.classList.toggle('sel', b.textContent === Act._np.animal));
+    const p = document.getElementById('npPreview');
+    if(p) p.textContent = Act._np.animal + ' ' + Act._np.l1 + '.' + Act._np.l2;
+  },
+  openNameEditor(){
+    const m = /^(.+) ([A-Z])\.([A-Z])$/.exec(saved.customName || '');
+    if(m && Act.ANIMALS.includes(m[1])) Act._np = {animal: m[1], l1: m[2], l2: m[3]};
+    const grid = document.getElementById('npAnimals');
+    grid.innerHTML = '';
+    Act.ANIMALS.forEach(a => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'np-animal'; b.textContent = a;
+      b.addEventListener('click', ()=>{ Act._np.animal = a; Act.paintNameEditor(); });
+      grid.appendChild(b);
+    });
+    document.getElementById('npL1').value = Act._np.l1;
+    document.getElementById('npL2').value = Act._np.l2;
+    document.getElementById('actNameEditor').hidden = false;
+    Act.paintNameEditor();
+  },
+  saveName(){
+    saved.customName = Act._np.animal + ' ' + Act._np.l1 + '.' + Act._np.l2;
+    persist();
+    document.getElementById('actNameEditor').hidden = true;
+    const n = document.getElementById('actMyName');
+    if(n) n.textContent = 'あなたの名前：' + Act.name() + Act.nameNote();
+    Act.toast('名前を「' + saved.customName + '」にしたよ');
   },
   headers(){ return {apikey: SB_ANON_KEY, Authorization: 'Bearer ' + SB_ANON_KEY, 'Content-Type': 'application/json'}; },
   async post(kind, questions, correct, bookKey){
@@ -2349,7 +2412,7 @@ const Act = {
       body.innerHTML =
         '<h3 class="act-h">今週の合計（問題数＋カード枚数）</h3>' + rankHtml +
         '<h3 class="act-h">直近の記録</h3>' + (recentHtml || '<p class="act-note">記録はまだないよ</p>') +
-        '<p class="act-note">あなたの名前：' + escA(Act.name()) + '（この端末に自動で付いた匿名ネーム）</p>';
+        '<p class="act-note" id="actMyName">あなたの名前：' + escA(Act.name()) + escA(Act.nameNote()) + '</p>';
       if(rows.length && rows[0].id > Act.lastSeen){ Act.lastSeen = rows[0].id; saved.actLastSeen = Act.lastSeen; persist(); }
     }catch(e){
       body.innerHTML = '<p class="act-note">読み込めませんでした。通信を確認してね。</p>';
@@ -2363,6 +2426,14 @@ const Act = {
     btn.hidden = false;
     btn.addEventListener('click', Act.open);
     document.getElementById('actClose').addEventListener('click', ()=>{ document.getElementById('actPanel').hidden = true; });
+    document.getElementById('actNameBtn').addEventListener('click', Act.openNameEditor);
+    ['npL1','npL2'].forEach((id, i) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(c => '<option value="' + c + '">' + c + '</option>').join('');
+      sel.addEventListener('change', ()=>{ Act._np[i === 0 ? 'l1' : 'l2'] = sel.value; Act.paintNameEditor(); });
+    });
+    document.getElementById('npSave').addEventListener('click', Act.saveName);
+    document.getElementById('npCancel').addEventListener('click', ()=>{ document.getElementById('actNameEditor').hidden = true; });
     document.getElementById('actPanel').addEventListener('click', (e)=>{ if(e.target.id === 'actPanel') e.target.hidden = true; });
     setTimeout(Act.poll, 3000);
     setInterval(Act.poll, 45000);
