@@ -2019,12 +2019,27 @@ function initApp(){
   updateDiagSummary();
 }
 /* ================= 語彙力診断 ================= */
+/* 診断履歴の平均: 較正後(cal付き)の結果は重み1、較正前の旧推定(ただの数値)は重み0.1で薄める */
+const DG_LEGACY_W = 0.1;
+function diagAvg(hist){
+  const h = Array.isArray(hist) ? hist : [];
+  let sw = 0, sv = 0;
+  h.forEach(e => {
+    const isObj = !!(e && typeof e === 'object');
+    if(!isObj && typeof e !== 'number') return;
+    const v = isObj ? Number(e.v) : e;
+    if(!isFinite(v)) return;
+    const w = (isObj && e.cal) ? 1 : DG_LEGACY_W;
+    sw += w; sv += v * w;
+  });
+  return sw > 0 ? sv / sw : 0;
+}
 function updateDiagSummary(){
   const el = document.getElementById('diagSummary');
   if(!el) return;
   const h = Array.isArray(saved.diagHistory) ? saved.diagHistory : [];
   if(!h.length){ el.textContent = ''; updateLvAvg(0, 0); return; }
-  const a = Math.round(h.reduce((x, y) => x + y, 0) / h.length / 10) * 10;
+  const a = Math.round(diagAvg(h) / 10) * 10;
   el.textContent = 'あなたの平均：約 ' + a.toLocaleString() + ' 語（診断' + h.length + '回）';
   updateLvAvg(a, h.length);
 }
@@ -2319,12 +2334,12 @@ const Diag = {
     const level = DG_LEVELS.find(l => est <= l.to) || DG_LEVELS[DG_LEVELS.length - 1];
     const avgSec = Diag.qs.length ? (totalMs / Diag.qs.length / 1000).toFixed(1) : '0.0';
     if(!Array.isArray(saved.diagHistory)) saved.diagHistory = [];
-    saved.diagHistory.push(est);
+    saved.diagHistory.push({ v: est, cal: 1 });
     if(saved.diagHistory.length > 50) saved.diagHistory = saved.diagHistory.slice(-50);
     persist();
     if(window.__actDiag) window.__actDiag(Diag.qs.length, totalCorrect, est);
     const histN = saved.diagHistory.length;
-    const avgEst = Math.round(saved.diagHistory.reduce((a, b) => a + b, 0) / histN / 10) * 10;
+    const avgEst = Math.round(diagAvg(saved.diagHistory) / 10) * 10;
     const avgLevel = DG_LEVELS.find(l => avgEst <= l.to) || DG_LEVELS[DG_LEVELS.length - 1];
     updateDiagSummary();
     const mapRows = DG_MAP.map((r, i) => {
