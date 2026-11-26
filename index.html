@@ -308,6 +308,12 @@
   .dir-btn.active{background:var(--accent); color:var(--btn-text);}
   #bookToggle{flex-wrap:wrap;}
   #bookToggle .dir-btn{flex:1 1 28%; max-width:calc((100% - 8px) / 3);}
+  /* 本選択ボタンの教科別カラー（薄いパステル＋濃い文字で、ダークテーマでも読めるように） */
+  #bookToggle .dir-btn.bk-en{background:#ffe1e1; color:#2f2b26;}
+  #bookToggle .dir-btn.bk-soc{background:#efdfcd; color:#2f2b26;}
+  #bookToggle .dir-btn.bk-kobun{background:#fff3b0; color:#2f2b26;}
+  #bookToggle .dir-btn.bk-weak{background:#e7d7fb; color:#2f2b26;}
+  #bookToggle .dir-btn.active{background:var(--accent); color:var(--btn-text); font-weight:800;}
 
   .bulk-buttons{display:flex; gap:6px; flex:0 0 auto;}
   .bulk-buttons button{
@@ -702,22 +708,22 @@
     <div class="panel">
       <h2 class="panel-title">単語帳</h2>
       <div class="direction-toggle" id="bookToggle">
-        <button type="button" class="dir-btn active" data-book="teppeki">鉄壁</button>
-        <button type="button" class="dir-btn" data-book="target">ターゲット1900</button>
-        <button type="button" class="dir-btn" data-book="systan">シス単</button>
-        <button type="button" class="dir-btn" data-book="target1200">ターゲット1200</button>
-        <button type="button" class="dir-btn" data-book="target1000">ターゲット1000</button>
-        <button type="button" class="dir-btn" data-book="sokudoku">速読英熟語</button>
-        <button type="button" class="dir-btn" data-book="kobun">古文単語601</button>
-        <button type="button" class="dir-btn" data-book="kobun315">重要古文単語315</button>
-        <button type="button" class="dir-btn" data-book="leap">LEAP</button>
-        <button type="button" class="dir-btn" data-book="pass1">パス単1級</button>
-        <button type="button" class="dir-btn" data-book="lingua">リンガメタリカ</button>
-        <button type="button" class="dir-btn" data-book="ex">単熟語EX</button>
-        <button type="button" class="dir-btn" data-book="polysemy">多義語</button>
-        <button type="button" class="dir-btn" data-book="sekaishi">世界史B用語</button>
-        <button type="button" class="dir-btn" data-book="nihonshi">日本史B用語</button>
-        <button type="button" class="dir-btn" data-book="weak">苦手</button>
+        <button type="button" class="dir-btn bk-en active" data-book="teppeki">鉄壁</button>
+        <button type="button" class="dir-btn bk-en" data-book="target">ターゲット1900</button>
+        <button type="button" class="dir-btn bk-en" data-book="systan">シス単</button>
+        <button type="button" class="dir-btn bk-en" data-book="target1200">ターゲット1200</button>
+        <button type="button" class="dir-btn bk-en" data-book="target1000">ターゲット1000</button>
+        <button type="button" class="dir-btn bk-en" data-book="sokudoku">速読英熟語</button>
+        <button type="button" class="dir-btn bk-kobun" data-book="kobun">古文単語601</button>
+        <button type="button" class="dir-btn bk-kobun" data-book="kobun315">重要古文単語315</button>
+        <button type="button" class="dir-btn bk-en" data-book="leap">LEAP</button>
+        <button type="button" class="dir-btn bk-en" data-book="pass1">パス単1級</button>
+        <button type="button" class="dir-btn bk-en" data-book="lingua">リンガメタリカ</button>
+        <button type="button" class="dir-btn bk-en" data-book="ex">単熟語EX</button>
+        <button type="button" class="dir-btn bk-en" data-book="polysemy">多義語</button>
+        <button type="button" class="dir-btn bk-soc" data-book="sekaishi">世界史B用語</button>
+        <button type="button" class="dir-btn bk-soc" data-book="nihonshi">日本史B用語</button>
+        <button type="button" class="dir-btn bk-weak" data-book="weak">苦手</button>
       </div>
       <p class="lv-note">※ パス単1級は単語編2,100語を全収録（Section 2・7・10は別の公開データで補完したため、意味の表記が少し簡潔です）、熟語編は300語のうち69語のみです。単熟語EXは全2,412語を収録しています（ブログ掲載の第2版リストより）。シス単は全2,027語を収録しています（ブログ掲載の5訂版リストより）。リンガメタリカは、公開されているデータが本の一部のみのため、収録が足りていません（497フレーズ）。データは有志の転記をもとに、明らかな誤字を一部修正しています。速読英熟語は熟語875＋構文209の全1,084項目を収録しています（受かる英語の改訂版一覧より）。世界史B用語は、有志の自作クイズの用語問題728語を収録しています。日本史B用語は、有志の自作クイズの用語問題842語を収録しています。</p>
       <div class="lv-wrap">
