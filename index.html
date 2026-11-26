@@ -279,6 +279,14 @@
     letter-spacing:.02em;
   }
   .app-header .subtitle{margin:0; color:var(--text-sub); font-size:.9rem;}
+  .app-header-row{display:flex; align-items:flex-start; gap:10px; position:relative;}
+  .app-header-titles{flex:1; min-width:0;}
+  .streak-badge{flex:0 0 auto; position:relative; text-align:center; line-height:1; user-select:none; -webkit-user-select:none; padding-top:2px;}
+  .streak-flame{position:relative; width:40px; height:40px; margin:0 auto;}
+  .streak-emoji{display:block; font-size:34px; line-height:40px;}
+  .streak-num{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding-top:7px; font-size:.95rem; font-weight:900; color:#fff; text-shadow:0 0 3px rgba(0,0,0,.85), 0 1px 2px rgba(0,0,0,.9), -1px 0 0 rgba(0,0,0,.5), 1px 0 0 rgba(0,0,0,.5), 0 -1px 0 rgba(0,0,0,.5);}
+  .streak-cap{font-size:10px; color:var(--text-sub); margin-top:1px; letter-spacing:.04em;}
+  .streak-badge.streak-off .streak-emoji{filter:grayscale(1); opacity:.5;}
 
   .panel{background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; margin-bottom:14px;}
   .panel-title{font-size:.95rem; font-weight:700; margin:0 0 10px; color:var(--text-main);}
@@ -703,9 +711,17 @@
 
   <section id="screen-settings" class="screen active">
     <header class="app-header">
-      <span class="target-dog" aria-hidden="true">🐕</span>
-      <h1 id="appTitle">単語帳</h1>
-      <p class="subtitle" id="appSubtitle">全2176語 収録</p>
+      <div class="app-header-row">
+        <div id="streakBadge" class="streak-badge streak-off" aria-label="連続日数">
+          <div class="streak-flame"><span class="streak-emoji" aria-hidden="true">🔥</span><span class="streak-num" id="streakNum">0</span></div>
+          <div class="streak-cap">連続日数</div>
+        </div>
+        <div class="app-header-titles">
+          <span class="target-dog" aria-hidden="true">🐕</span>
+          <h1 id="appTitle">単語帳</h1>
+          <p class="subtitle" id="appSubtitle">全2176語 収録</p>
+        </div>
+      </div>
     </header>
 
     <button type="button" class="start-btn" id="diagBtn">📊 語彙力診断（25問）</button>
@@ -1298,6 +1314,38 @@ const SAVE_KEY = 'tango_fc_v1';
 let saved = {book:'teppeki', theme:null, direction:null, sections:{}, learned:{}, weak:{}};
 try{ const p = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); if(p && typeof p === 'object') saved = Object.assign(saved, p); }catch(e){}
 function persist(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(saved)); }catch(e){} }
+
+/* ================= 連続記録(ストリーク) =================
+   アプリに触れた日が続くと +1。最後に触れてから24時間あくと途切れる */
+const STREAK_LIMIT_MS = 24 * 3600 * 1000;
+function streakDateStr(d){
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function renderStreak(){
+  const box = document.getElementById('streakBadge');
+  if(!box) return;
+  const n = (saved.streak && Number.isFinite(saved.streak.n)) ? saved.streak.n : 0;
+  const num = document.getElementById('streakNum');
+  if(num) num.textContent = n;
+  box.classList.toggle('streak-off', n <= 0);
+}
+function touchStreak(){
+  const now = Date.now();
+  if(!saved.streak || typeof saved.streak !== 'object') saved.streak = {n: 0, last: 0, day: null};
+  const s = saved.streak;
+  if(s.last && now - s.last > STREAK_LIMIT_MS) s.n = 0; /* 24時間あけたら途切れる */
+  const today = streakDateStr(new Date(now));
+  if(s.day !== today){
+    const y = new Date(now); y.setDate(y.getDate() - 1);
+    if(s.day === streakDateStr(y) && s.n > 0) s.n += 1; else s.n = 1;
+    s.day = today;
+  }
+  s.last = now;
+  persist();
+  renderStreak();
+}
+touchStreak();
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'visible') touchStreak(); });
 let learnedSet = new Set();
 function loadLearned(){ learnedSet = new Set(Array.isArray(saved.learned[curBook]) ? saved.learned[curBook] : []); }
 function isLearned(w){ return !!w && learnedSet.has(w.id); }
@@ -1582,6 +1630,7 @@ document.getElementById('tipsCloseBtn').addEventListener('click', ()=>{ document
 
 /* ================= 更新履歴 ================= */
 const UPDATES = [
+  {date:'2026-11-27', items:['ホーム画面に連続日数の表示を追加（24時間使わないと途切れます）', 'みんなの勉強記録のプレイヤー詳細に連続記録を表示']},
   {date:'2026-11-26', items:['「世界史B用語」（728語）を追加', '「日本史B用語」（842語）を追加', '自動めくり中は画面が消えないようにした', 'みんなの勉強記録で名前（動物＋イニシャル）とテーマカラーを選べるようにした', '勉強記録の表示を表形式にした', '語彙力診断の推定を見直し（低い語彙でも低く出るように較正）', '勉強記録の診断結果に推定語彙数を表示', '診断のレベル表示を修正し、CEFR表示を追加', '本の選択ボタンを教科別に色分け', '勉強記録でプレイヤー名をタップすると詳細（推定語彙数・CEFR・1日の平均学習量）が見られるようにした', '診断の推定とレベルの基準を実態に合わせて厳しめに見直し']},
   {date:'2026-11-24', items:['「重要古文単語315」「速読英熟語」を追加']},
   {date:'2026-11-23', items:['語彙力診断を追加（適応式に改良）', '「みんなの勉強記録」を追加', '「多義語」「苦手」ブックを追加']},
@@ -2493,13 +2542,14 @@ const Act = {
     const body = {anon_name: Act.name(), book: ACT_BOOK_LABELS[bookKey] || bookKey, questions: questions, correct: correct, kind: kind};
     if(Act.safeColor(saved.customColor)) body.color = saved.customColor;
     if(kind === 'diag' && Number.isFinite(estVal)) body.est = Math.round(estVal);
+    body.streak = (saved.streak && Number.isFinite(saved.streak.n)) ? saved.streak.n : 0;
     try{
       const res = await fetch(SB_URL + '/rest/v1/activity', {method:'POST', headers: Act.headers(), body: JSON.stringify(body)});
       if(!res.ok){
         const t = await res.text().catch(()=> '');
-        /* 任意カラム（color/est）がテーブル側に無い場合だけ、そのカラムを落として1回だけ再送する。
+        /* 任意カラム（color/est/streak）がテーブル側に無い場合だけ、そのカラムを落として1回だけ再送する。
            エラーがカラム名を示していればそのカラムだけ、示していなければ任意カラム全部を落とす */
-        const optCols = ['color', 'est'].filter(k => k in body);
+        const optCols = ['color', 'est', 'streak'].filter(k => k in body);
         const namedCols = optCols.filter(k => t.includes(k) && /column/i.test(t));
         const badCols = namedCols.length ? namedCols : (t.includes('PGRST204') ? optCols : []);
         if(badCols.length){
@@ -2512,10 +2562,10 @@ const Act = {
   },
   async fetchRecent(limit){
     const cols = 'id,anon_name,book,questions,correct,kind,created_at';
-    let r = await fetch(SB_URL + '/rest/v1/activity?select=' + cols + ',color,est&order=id.desc&limit=' + limit, {headers: Act.headers()});
+    let r = await fetch(SB_URL + '/rest/v1/activity?select=' + cols + ',color,est,streak&order=id.desc&limit=' + limit, {headers: Act.headers()});
     if(!r.ok){
       const t = await r.text().catch(()=> '');
-      if(t.includes('PGRST204') || t.includes('color') || t.includes('est')){
+      if(t.includes('PGRST204') || t.includes('color') || t.includes('est') || t.includes('streak')){
         r = await fetch(SB_URL + '/rest/v1/activity?select=' + cols + '&order=id.desc&limit=' + limit, {headers: Act.headers()});
       }
     }
@@ -2584,9 +2634,16 @@ const Act = {
     const daySet = new Set(study.map(r => { const d = new Date(r.created_at); return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate(); }));
     let color = null;
     for(const r of mine){ const c = Act.safeColor(r.color); if(c){ color = c; break; } }
+    let streak = null, streakAt = -1;
+    for(const r of mine){
+      if(typeof r.streak === 'number' && Number.isFinite(r.streak)){
+        const t = new Date(r.created_at).getTime() || 0;
+        if(t >= streakAt){ streakAt = t; streak = r.streak; }
+      }
+    }
     const totals = Act._panelTotals || {};
     return {
-      name: name, color: color,
+      name: name, color: color, streak: streak,
       diagCount: diag.length, estCount: ests.length, estAvg: estAvg, level: level,
       studyTotal: studyTotal, studyDays: daySet.size,
       studyAvg: daySet.size ? Math.round(studyTotal / daySet.size) : null,
@@ -2607,6 +2664,7 @@ const Act = {
       h += '<div class="act-row"><span>レベル</span><b>' + escA(s.level.name) + '（CEFR ' + escA(s.level.cefr) + ' 相当・目安）</b></div>';
       h += '<div class="act-row"><span>診断回数</span><b>' + s.diagCount + '回</b></div>';
     }
+    h += '<div class="act-row"><span>連続記録</span><b>' + (s.streak != null ? s.streak + '日' : '記録なし') + '</b></div>';
     if(s.studyDays === 0){
       h += '<div class="act-row"><span>学習量</span><b>記録なし</b></div>';
     } else {
