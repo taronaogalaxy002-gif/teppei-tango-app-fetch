@@ -757,9 +757,10 @@
         <button type="button" class="dir-btn bk-en" data-book="dragon">ドラゴンイングリッシュ</button>
         <button type="button" class="dir-btn bk-en" data-book="kotowaza">英語のことわざ</button>
         <button type="button" class="dir-btn bk-en" data-book="kaiwa">会話表現</button>
+        <button type="button" class="dir-btn" data-book="kagaku">化学</button>
         <button type="button" class="dir-btn bk-weak" data-book="weak">苦手</button>
       </div>
-      <p class="lv-note">※ パス単1級は単語編2,100語を全収録（Section 2・7・10は別の公開データで補完したため、意味の表記が少し簡潔です）、熟語編は300語のうち69語のみです。単熟語EXは全2,412語を収録しています（ブログ掲載の第2版リストより）。シス単は全2,027語を収録しています（ブログ掲載の5訂版リストより）。リンガメタリカは、公開されているデータが本の一部のみのため、収録が足りていません（497フレーズ）。データは有志の転記をもとに、明らかな誤字を一部修正しています。速読英熟語は熟語875＋構文209の全1,084項目を収録しています（受かる英語の改訂版一覧より）。世界史B用語は、有志の自作クイズの用語問題728語を収録しています。日本史B用語は、有志の自作クイズの用語問題842語を収録しています。ドラゴンイングリッシュは基本英文100文を収録しています。英語のことわざは111選、会話表現は134フレーズを収録しています。</p>
+      <p class="lv-note">※ パス単1級は単語編2,100語を全収録（Section 2・7・10は別の公開データで補完したため、意味の表記が少し簡潔です）、熟語編は300語のうち69語のみです。単熟語EXは全2,412語を収録しています（ブログ掲載の第2版リストより）。シス単は全2,027語を収録しています（ブログ掲載の5訂版リストより）。リンガメタリカは、公開されているデータが本の一部のみのため、収録が足りていません（497フレーズ）。データは有志の転記をもとに、明らかな誤字を一部修正しています。速読英熟語は熟語875＋構文209の全1,084項目を収録しています（受かる英語の改訂版一覧より）。世界史B用語は、有志の自作クイズの用語問題728語を収録しています。日本史B用語は、有志の自作クイズの用語問題842語を収録しています。ドラゴンイングリッシュは基本英文100文を収録しています。英語のことわざは111選、会話表現は134フレーズを収録しています。化学は、無機化学の暗記項目148と高分子101の計249項目を収録しています。</p>
       <div class="lv-wrap">
         <h3 class="lv-title">📊 レベルマップ（詳しい版）</h3>
         <div class="lv-map" id="lvMap">
@@ -1082,8 +1083,12 @@ const KOTOWAZA_DATA_URLS = [
 const KAIWA_DATA_URLS = [
   "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/kaiwa_part1.json"
 ];
-const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS, target1000: JUKUGO1000_DATA_URLS, sokudoku: SOKUDOKU_DATA_URLS, kobun: KOBUN601_DATA_URLS, kobun315: KOBUN315_DATA_URLS, leap: LEAP_DATA_URLS, pass1: PASS1_DATA_URLS, lingua: LINGUA_DATA_URLS, ex: EX_DATA_URLS, systan: SYSTAN_DATA_URLS, polysemy: POLYSEMY_DATA_URLS, sekaishi: SEKAISHI_DATA_URLS, nihonshi: NIHONSHI_DATA_URLS, dragon: DRAGON_DATA_URLS, kotowaza: KOTOWAZA_DATA_URLS, kaiwa: KAIWA_DATA_URLS, weak: []};
-const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000, sokudoku: 1084, kobun: 601, kobun315: 452, leap: 2300, pass1: 2169, lingua: 497, ex: 2412, systan: 2027, polysemy: 589, sekaishi: 728, nihonshi: 842, dragon: 100, kotowaza: 111, kaiwa: 134, weak: 0};
+/* 化学(受験サポートナビの無機化学の暗記一覧13表+無機一問一答・高分子一問一答から変換した249項目)のデータ。en=物質・反応名などの問い、ja=色・性質・製法などの答え */
+const KAGAKU_DATA_URLS = [
+  "https://raw.githubusercontent.com/taronaogalaxy002-gif/tango-data/main/kagaku_part1.json"
+];
+const BOOK_URLS = {teppeki: DATA_URLS, target: TARGET_DATA_URLS, target1200: TARGET1200_DATA_URLS, target1000: JUKUGO1000_DATA_URLS, sokudoku: SOKUDOKU_DATA_URLS, kobun: KOBUN601_DATA_URLS, kobun315: KOBUN315_DATA_URLS, leap: LEAP_DATA_URLS, pass1: PASS1_DATA_URLS, lingua: LINGUA_DATA_URLS, ex: EX_DATA_URLS, systan: SYSTAN_DATA_URLS, polysemy: POLYSEMY_DATA_URLS, sekaishi: SEKAISHI_DATA_URLS, nihonshi: NIHONSHI_DATA_URLS, dragon: DRAGON_DATA_URLS, kotowaza: KOTOWAZA_DATA_URLS, kaiwa: KAIWA_DATA_URLS, kagaku: KAGAKU_DATA_URLS, weak: []};
+const BOOK_EXPECTED = {teppeki: 2176, target: 1900, target1200: 1700, target1000: 1000, sokudoku: 1084, kobun: 601, kobun315: 452, leap: 2300, pass1: 2169, lingua: 497, ex: 2412, systan: 2027, polysemy: 589, sekaishi: 728, nihonshi: 842, dragon: 100, kotowaza: 111, kaiwa: 134, kagaku: 249, weak: 0};
 let curBook = 'teppeki';
 const bookCache = {};
 
@@ -1296,6 +1301,11 @@ const KAIWA_SECTION_STARTS = [1,101];
 const KAIWA_SECTION_TITLES = [
   "会話表現","会話表現"
 ];
+/* 化学: 無機(気体の製法〜工業的製法の表+一問一答)→高分子(糖類〜合成高分子)の順で100項目ごとの3セクション(最後は49項目) */
+const KAGAKU_SECTION_STARTS = [1,101,201];
+const KAGAKU_SECTION_TITLES = [
+  "無機：気体・沈殿・製法","無機・高分子：糖類","高分子：タンパク質・合成高分子"
+];
 const SYSTAN_SECTION_TITLES = [
   "単語","単語","単語","単語","単語","単語","単語","単語","単語","単語","単語",
   "単語","単語","単語","単語","単語","単語","単語","単語","単語","単語"
@@ -1319,6 +1329,7 @@ const BOOK_SECTIONS = {
   dragon: {starts: DRAGON_SECTION_STARTS, titles: DRAGON_SECTION_TITLES},
   kotowaza: {starts: KOTOWAZA_SECTION_STARTS, titles: KOTOWAZA_SECTION_TITLES},
   kaiwa: {starts: KAIWA_SECTION_STARTS, titles: KAIWA_SECTION_TITLES},
+  kagaku: {starts: KAGAKU_SECTION_STARTS, titles: KAGAKU_SECTION_TITLES},
   weak: {starts: [1], titles: ['苦手']}
 };
 const curStarts = () => BOOK_SECTIONS[curBook].starts;
@@ -1453,7 +1464,7 @@ function applyBookChrome(list){
   document.querySelectorAll('#bookToggle .dir-btn').forEach(b=>b.classList.toggle('active', b.dataset.book === curBook));
   document.querySelectorAll('#directionToggle .dir-btn').forEach(b=>{
     if(curBook === 'kobun' || curBook === 'kobun315') b.textContent = b.dataset.dir === 'ja-en' ? '現代語 → 古文' : '古文 → 現代語';
-    else if(curBook === 'sekaishi' || curBook === 'nihonshi') b.textContent = b.dataset.dir === 'ja-en' ? '説明 → 用語' : '用語 → 説明';
+    else if(curBook === 'sekaishi' || curBook === 'nihonshi' || curBook === 'kagaku') b.textContent = b.dataset.dir === 'ja-en' ? '説明 → 用語' : '用語 → 説明';
     else b.textContent = b.dataset.dir === 'ja-en' ? '日本語 → 英語' : '英語 → 日本語';
   });
 }
@@ -1639,7 +1650,7 @@ function speakEn(text){
     if(!('speechSynthesis' in window) || !text) return;
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(String(text));
-    u.lang = (curBook === 'kobun' || curBook === 'kobun315' || curBook === 'sekaishi' || curBook === 'nihonshi') ? 'ja-JP' : 'en-US'; u.rate = 0.92;
+    u.lang = (curBook === 'kobun' || curBook === 'kobun315' || curBook === 'sekaishi' || curBook === 'nihonshi' || curBook === 'kagaku') ? 'ja-JP' : 'en-US'; u.rate = 0.92;
     speechSynthesis.speak(u);
   }catch(e){}
 }
@@ -1663,7 +1674,7 @@ document.getElementById('tipsCloseBtn').addEventListener('click', ()=>{ document
 
 /* ================= 更新履歴 ================= */
 const UPDATES = [
-  {date:'2026-11-27', items:['「ドラゴンイングリッシュ」（基本英文100文）を追加', '「英語のことわざ」（111選）を追加', '「会話表現」（134フレーズ）を追加', 'ホーム画面に連続日数の表示を追加（24時間使わないと途切れます）', 'みんなの勉強記録のプレイヤー詳細に連続記録を表示']},
+  {date:'2026-11-27', items:['「ドラゴンイングリッシュ」（基本英文100文）を追加', '「英語のことわざ」（111選）を追加', '「会話表現」（134フレーズ）を追加', '「化学」（無機・高分子249項目）を追加', 'ホーム画面に連続日数の表示を追加（24時間使わないと途切れます）', 'みんなの勉強記録のプレイヤー詳細に連続記録を表示']},
   {date:'2026-11-26', items:['「世界史B用語」（728語）を追加', '「日本史B用語」（842語）を追加', '自動めくり中は画面が消えないようにした', 'みんなの勉強記録で名前（動物＋イニシャル）とテーマカラーを選べるようにした', '勉強記録の表示を表形式にした', '語彙力診断の推定を見直し（低い語彙でも低く出るように較正）', '勉強記録の診断結果に推定語彙数を表示', '診断のレベル表示を修正し、CEFR表示を追加', '本の選択ボタンを教科別に色分け', '勉強記録でプレイヤー名をタップすると詳細（推定語彙数・CEFR・1日の平均学習量）が見られるようにした', '診断の推定とレベルの基準を実態に合わせて厳しめに見直し']},
   {date:'2026-11-24', items:['「重要古文単語315」「速読英熟語」を追加']},
   {date:'2026-11-23', items:['語彙力診断を追加（適応式に改良）', '「みんなの勉強記録」を追加', '「多義語」「苦手」ブックを追加']},
@@ -2501,7 +2512,7 @@ window.addEventListener('popstate', ()=> Diag.stop());
 /* ================= みんなの勉強記録（Supabase・匿名） ================= */
 const SB_URL = 'https://wwjbmoizsggifehzrvjk.supabase.co';
 const SB_ANON_KEY = 'sb_publishable_QDRHRGX_0IoQcz17413jEg_qyqwZltY';
-const ACT_BOOK_LABELS = {teppeki:'鉄壁', target:'ターゲット1900', target1200:'ターゲット1200', target1000:'熟語ターゲット1000', sokudoku:'速読英熟語', kobun:'古文単語601', kobun315:'重要古文単語315', leap:'LEAP', pass1:'パス単1級', lingua:'リンガメタリカ', ex:'単熟語EX', systan:'シス単', polysemy:'多義語', sekaishi:'世界史B用語', nihonshi:'日本史B用語', dragon:'ドラゴンイングリッシュ', kotowaza:'英語のことわざ', kaiwa:'会話表現', weak:'苦手単語'};
+const ACT_BOOK_LABELS = {teppeki:'鉄壁', target:'ターゲット1900', target1200:'ターゲット1200', target1000:'熟語ターゲット1000', sokudoku:'速読英熟語', kobun:'古文単語601', kobun315:'重要古文単語315', leap:'LEAP', pass1:'パス単1級', lingua:'リンガメタリカ', ex:'単熟語EX', systan:'シス単', polysemy:'多義語', sekaishi:'世界史B用語', nihonshi:'日本史B用語', dragon:'ドラゴンイングリッシュ', kotowaza:'英語のことわざ', kaiwa:'会話表現', kagaku:'化学', weak:'苦手単語'};
 const escA = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const Act = {
   enabled: !!SB_ANON_KEY,
