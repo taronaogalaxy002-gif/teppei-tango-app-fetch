@@ -261,11 +261,11 @@
   body{
     background:var(--bg); color:var(--text-main);
     font-family:var(--font-sans);
-    min-height:100vh;
+    min-height:100vh; min-height:100dvh;
     -webkit-font-smoothing:antialiased;
     transition: background .3s ease, color .3s ease;
   }
-  #app{max-width:560px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column;}
+  #app{max-width:560px; margin:0 auto; min-height:100vh; min-height:100dvh; display:flex; flex-direction:column;}
 
   .screen{display:none; flex:1; flex-direction:column; padding:20px 18px calc(20px + env(safe-area-inset-bottom));}
   .screen.active{display:flex;}
@@ -391,9 +391,9 @@
   .auto-speed{width:58px; height:14px; margin:0; accent-color:var(--accent, #d16a8c);}
   .auto-speed-val{font-family:var(--font-sans); font-size:.62rem; color:var(--text-sub); min-width:24px; text-align:right;}
 
-  .card-stage{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; overflow:hidden; perspective:1700px;}
+  .card-stage{flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; overflow:hidden; perspective:1700px;}
   .card-wrap{
-    width:100%; max-width:420px; height:min(52vh,420px);
+    width:100%; max-width:420px; flex:1 1 auto; min-height:0; max-height:560px;
     touch-action:pan-y; will-change:transform; cursor:grab; user-select:none;
   }
   .card-wrap:active{cursor:grabbing;}
@@ -406,6 +406,7 @@
     position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
     border-radius:22px; border:1px solid var(--border); box-shadow:var(--shadow);
     display:flex; flex-direction:column; align-items:center; justify-content:center;
+    justify-content:safe center;
     padding:30px 24px; text-align:center; overflow-y:auto;
   }
   .card-front{background:var(--bg-elevated);}
@@ -458,6 +459,30 @@
   .card-meta{
     position:absolute; top:14px; right:16px; font-size:.62rem; font-weight:700;
     color:var(--text-sub); letter-spacing:.03em; text-align:right; line-height:1.3;
+  }
+
+  /* ---- カード画面：どの機種でも画面内に収める（重なり・スクロール対策） ---- */
+  #screen-card{flex:none; height:100vh; height:100dvh; overflow:hidden; padding:calc(14px + env(safe-area-inset-top)) 14px calc(12px + env(safe-area-inset-bottom));}
+  #screen-card .card-header{flex:none; flex-wrap:wrap; row-gap:10px; margin-bottom:10px; padding-right:52px;}
+  #screen-card .icon-btn{font-size:.8rem;}
+  #screen-card .auto-ctl{padding:3px 6px; gap:3px;}
+  #screen-card .auto-speed{width:40px;}
+  #screen-card .progress{font-size:.82rem; padding:5px 9px;}
+  .card-actions{display:flex; flex:none; flex-wrap:wrap; justify-content:center; align-items:center; gap:8px; margin-bottom:10px;}
+  #screen-card .card-actions .speak-btn{margin:0; padding:8px clamp(12px, 4vw, 22px);}
+  #screen-card .card-actions .learned-btn{margin:0; padding:8px clamp(10px, 3.5vw, 16px);}
+  #screen-card .encore-btn{flex:none; margin-top:10px;}
+  #screen-card .nav-buttons{flex:none; margin-top:10px;}
+  @media (max-width:400px){
+    #screen-card .header-right{flex-basis:100%; justify-content:flex-end;}
+  }
+  @media (max-height:480px){
+    #screen-card .card-face{padding:14px 16px;}
+    #screen-card .card-text{font-size:clamp(1.05rem, 6vh, 1.6rem);}
+    #screen-card .card-back .card-text{font-size:clamp(.95rem, 5vh, 1.3rem);}
+    #screen-card .hint{display:none;}
+    #screen-card .nav-btn{padding:9px;}
+    #screen-card .encore-btn{padding:7px;}
   }
 
   /* ---- テストモード ---- */
@@ -857,7 +882,9 @@
       </div>
     </header>
 
-    <button type="button" class="speak-btn" id="speakBtnCard">🔊 発音</button><button type="button" class="learned-btn" id="learnedBtnCard">✓ 覚えた</button><button type="button" class="learned-btn weak-btn" id="weakBtnCard">⚠ 苦手</button>
+    <div class="card-actions">
+      <button type="button" class="speak-btn" id="speakBtnCard">🔊 発音</button><button type="button" class="learned-btn" id="learnedBtnCard">✓ 覚えた</button><button type="button" class="learned-btn weak-btn" id="weakBtnCard">⚠ 苦手</button>
+    </div>
 
     <div class="card-stage">
       <div class="card-wrap" id="cardWrap">
@@ -1674,6 +1701,7 @@ document.getElementById('tipsCloseBtn').addEventListener('click', ()=>{ document
 
 /* ================= 更新履歴 ================= */
 const UPDATES = [
+  {date:'2026-11-28', items:['カード画面のレイアウトを調整（どの機種でも画面内に収まり、ボタンやカードが重ならずスクロール不要に）']},
   {date:'2026-11-27', items:['「ドラゴンイングリッシュ」（基本英文100文）を追加', '「英語のことわざ」（111選）を追加', '「会話表現」（134フレーズ）を追加', '「化学」（無機・高分子249項目）を追加', 'ホーム画面に連続日数の表示を追加（24時間使わないと途切れます）', 'みんなの勉強記録のプレイヤー詳細に連続記録を表示']},
   {date:'2026-11-26', items:['「世界史B用語」（728語）を追加', '「日本史B用語」（842語）を追加', '自動めくり中は画面が消えないようにした', 'みんなの勉強記録で名前（動物＋イニシャル）とテーマカラーを選べるようにした', '勉強記録の表示を表形式にした', '語彙力診断の推定を見直し（低い語彙でも低く出るように較正）', '勉強記録の診断結果に推定語彙数を表示', '診断のレベル表示を修正し、CEFR表示を追加', '本の選択ボタンを教科別に色分け', '勉強記録でプレイヤー名をタップすると詳細（推定語彙数・CEFR・1日の平均学習量）が見られるようにした', '診断の推定とレベルの基準を実態に合わせて厳しめに見直し']},
   {date:'2026-11-24', items:['「重要古文単語315」「速読英熟語」を追加']},
